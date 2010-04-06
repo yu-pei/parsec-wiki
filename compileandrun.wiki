@@ -1,0 +1,140 @@
+== How to Compile and Run Dplasma ==
+
+Version 1.0, May 5, 2010, supposed to work on release [[http://bitbucket.org/bosilca/dplasma/changeset/2bc23263939a/|1187:2bc23263939a]].
+
+=== Tools Dependences ===
+
+To compile dplasma on a new platform, you will need:
+* cmake version 2.8.0 or above. cmake can be found in the debian package cmake, or as sources at [[http://www.cmake.org/cmake/resources/software.html|the cmake download page]]
+* plasma version 2.0 or above.
+* a BLAS library optimized for your platform.
+
+=== Configuring Dplasma for a new platform ===
+
+CMake is comparable to configure, but it's subtly different. For one thing, CMake display the commands with colors, which is its most prominent feature.
+
+CMake keeps everything it found hitherto in a cache file name CMakeCache.txt. Until you have successfully configured dplasma, remove the CMakeCache.txt file each time you run cmake.
+
+Assume that on your architecture, the BLAS are mkl in /opt/mkl/lib/em64t; that you need to link with mkl_gf_lp64, mkl_sequential and mkl_core to have all the BLAS working (NB: with dplasma, use the sequential version of the BLAS, always. Using the threaded version of the BLAS will decrease performance, even if setting OMP_NUM_THREADS=1). Assume also that the PLASMA library was installed in /opt/plasma. You'll want to run
+
+{{{
+rm -f CMakeCache.txt
+cmake . -DBLAS_LIBRARIES="-L/opt/mkl/lib/em64t -lmkl_gf_lp64 -lmkl_sequential -lmkl_core" -DPLASMA_DIR=/opt/plasma -DDPLASMA_MPI=ON
+}}}
+
+in the dplasma directory. Hopefully, this will output something similar to:
+
+{{{
+-- The C compiler identification is GNU
+-- The Fortran compiler identification is GNU
+-- Check for working C compiler: /usr/bin/gcc
+-- Check for working C compiler: /usr/bin/gcc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working Fortran compiler: /usr/bin/gfortran
+-- Check for working Fortran compiler: /usr/bin/gfortran -- works
+-- Detecting Fortran compiler ABI info
+-- Detecting Fortran compiler ABI info - done
+-- Checking whether /usr/bin/gfortran supports Fortran 90
+-- Checking whether /usr/bin/gfortran supports Fortran 90 -- yes
+-- Building for target x86_64
+-- Found target X86_64
+-- Performing Test C_M64
+-- Performing Test C_M64 - Success
+-- Add -m64 to the compiler flags
+-- Found FLEX: /usr/bin/flex
+-- Found BISON: /usr/bin/bison
+-- Performing Test HAVE_STD_C99
+-- Performing Test HAVE_STD_C99 - Success
+-- Check if the compiler provides atomic operations directives
+-- Looking for __GCC_HAVE_SYNC_COMPARE_AND_SWAP_4
+-- Looking for __GCC_HAVE_SYNC_COMPARE_AND_SWAP_4 - found
+-- Looking for __GCC_HAVE_SYNC_COMPARE_AND_SWAP_8
+-- Looking for __GCC_HAVE_SYNC_COMPARE_AND_SWAP_8 - found
+-- Looking for include files CMAKE_HAVE_PTHREAD_H
+-- Looking for include files CMAKE_HAVE_PTHREAD_H - found
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE
+-- Looking for pthread_create
+-- Looking for pthread_create - found
+-- Looking for sched_setaffinity
+-- Looking for sched_setaffinity - found
+-- Performing Test HAVE_TIMESPEC_TV_NSEC
+-- Performing Test HAVE_TIMESPEC_TV_NSEC - Failed
+-- Looking for clock_gettime in rt
+-- Looking for clock_gettime in rt - found
+-- A library with BLAS API found.
+-- Looking for plasma.h
+-- Looking for plasma.h - found
+-- A library with PLASMA API found.
+-- Found MPI: /home/herault/OpenMPI/fast/lib/libmpi_cxx.so
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/herault/dplasma
+}}}
+
+If this is done, congratulations, dplasma is configured.
+
+==== Troubleshooting ====
+
+* Issues we have encountered with BLAS libraries are un-enumerable, and cannot be described here. Refer to your own experience to find how to have a working BLAS library, and header files. Those are supposed to be in the BLAS_LIBRARIES/lib and BLAS_LIBRARIES/include directories (create a phony directory with symbolic links to include/ and lib/ if needed).
+* When using the plasma-installer, some have reported that it was necessary after the make and make install, to copy all .h files found in src/ to include/
+* Don't mind if HWLOC or PAPI
+* Check that you have a working MPI somewhere accessible (mpicc and mpirun should be in your PATH)
+* If you have strange behavior, check that you have one among (if not, the atomic operations will not work, and that is damageable for the good operation of Dplasma)
+** Found target X86_64
+** Found target gcc
+** Found target macosx
+** Found target x86_32
+* You can tune the compiler using variables (see also ccmake section):
+** CC to choose your C compiler
+** FC to choose your Fortran compiler
+** MPICC to choose your mpicc compiler
+** MPIFC to choose your mpifortran compiler
+** CFLAGS to change your C compilation flags
+** LDFLAGS to change your C linking falgs
+** etc...
+
+=== Tuning the configuration : ccmake ===
+
+When the configuration is successful, you can tune it using ccmake:
+
+{{{
+ccmake .
+}}}
+
+(notice the double c of ccmake). This is an interactive tool, that let you choose the compilation parameters. Recommended parameters are:
+* BUILD_SHARED_LIBS OFF
+* CACHE_AWARENESS OFF
+* CMAKE_BUILD_TYPE Release
+* DO_THE_NASTY_VALIDATIONS ON
+* DPLASMA_CALL_TRACE OFF
+* DPLASMA_DRY_RUN OFF
+* DPLASMA_GRAPHER OFF
+* DPLASMA_MPI ON
+* DPLASMA_PAPI OFF
+* DPLASMA_PROFILING OFF
+* DPLASMA_SCHED_HWLOC OFF
+* DPLASMA_STATS OFF
+* DPLASMA_WARM_UP OFF
+
+Using the 'expert' mode (key 't' to toggle to expert mode), you can change other usefull options, like
+* CMAKE_C_FLAGS_RELEASE
+* CMAKE_EXE_LINKER_FLAGS_RELEASE
+* CMAKE_Fortran_FLAGS_RELEASE
+* CMAKE_VERBOSE_MAKEFILE
+* And others to change the path to some compilers, for example.
+The CMAKE_VERBOSE_MAKEFILE option, when turned ON, will display the command run when compiling, which can help debugging configurations mistakes.
+
+When you have set all the options you want in ccmake, type 'c' to configure again, and 'g' to generate the files. If you entered wrong values in some fields, ccmake will complain at 'c' time.
+
+=== Building Dplasma ===
+
+If the configuration was good, compilation should be as simple and fancy as 'make'. To debug issues, turn the CMAKE_VERBOSE_MAKEFILE option to ON using ccmake, and check your compilation lines, and adapt your configuration options accordingly.
+
+=== Running Dplasma ===
+
+TBD.
