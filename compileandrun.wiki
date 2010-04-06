@@ -160,6 +160,6 @@ A typical dplasma run using MPI looks like:
  mpirun -np 81 -hostfile ${PBS_NODEFILE} -bynode ./mpi_dgesv -c 16 -g 9 -m 30000 -B 300
 }}}
 
-Meaning that we'll run LU on 81 nodes, 16 computing threads per node, nodes being arranged in a 9x9 matrix, with a distributed generation of the matrix of size 43000x43000 doubles, with tiles of size 300x300 (hence the matrix is 100x100 tiles wide).
+Meaning that we'll run LU on 81 nodes, 16 computing threads per node, nodes being arranged in a 9x9 grid, with a distributed generation of the matrix of size 30000x30000 doubles, with tiles of size 300x300 (hence the matrix is 100x100 tiles wide).
 
 Each test can dump the list of options with -h. Some tests have specific options (like -I to tune the inner block size in QR and LU, and -M in QR to have non-square matrices).
