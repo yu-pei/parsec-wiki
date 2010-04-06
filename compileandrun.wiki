@@ -137,4 +137,29 @@ If the configuration was good, compilation should be as simple and fancy as 'mak
 
 === Running Dplasma ===
 
-TBD.
+All benches are located into the subdirectory 'tests':
+* tests/LU -> pdgesv
+* tests/QR -> pdgels
+* test/pdpotrf -> Cholesy
+
+At the time we wrote this wiki page, LU and Cholesky were working allright, but we were still working on improving QR (performance-wise and functionality-wise: to be able to run on non square matrices, more efficiently).
+
+There are usually two versions of each benchmark: x and mpi_x. The mpi_x is the MPI-enabled version, while the x is the SMP only version.
+
+All the binaries should accept as input:
+* -c <n> the number of threads used for kernel execution on each node. This should be set to the number of cores. Remember that one additional thread will be spawned to handle the communications in the MPI version, but in normal run, this thread shares the most available core with another thread.
+* SIZE, a mandatory argument to define the size of the matrix
+* -B <blocksize> the dimension of a tile (a tile is blocksize x blocksize doubles; if no -B is passed, the result of PLASMA_TUNE is used)
+* -m to ask for a distributed generation of the matrix. This is to be used on all MPI runs without checks.
+* -g <number of columns> to ask for a 2-D block cyclic distribution of NP/number-of-columns w number-of-columns. number-of-columns must divide NP, the number of nodes.
+* -x to ask for a check of the result. This is to be used for validation purposes only, and exclude the -m flag, thus reduces the maximal size of the matrix to something accessible to a single node
+* -w to ask for warmup phase. This is to make a first run before the measurement, to be sure that all structures are allocated before the run. This should have no measurable effect on medium to large size matrices.
+
+A typical dplasma run using MPI looks like:
+{{{
+ mpirun -np 81 -hostfile ${PBS_NODEFILE} -bynode ./mpi_dgesv -c 16 -g 9 -m 30000 -B 300
+}}}
+
+Meaning that we'll run LU on 81 nodes, 16 computing threads per node, nodes being arranged in a 9x9 matrix, with a distributed generation of the matrix of size 43000x43000 doubles, with tiles of size 300x300 (hence the matrix is 100x100 tiles wide).
+
+Each test can dump the list of options with -h. Some tests have specific options (like -I to tune the inner block size in QR and LU, and -M in QR to have non-square matrices).
