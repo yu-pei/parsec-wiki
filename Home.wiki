@@ -1,3 +1,7 @@
+== How to Compile and Run Dplasma ==
+
+On [[compileandrun|how to compile and run dplasma]]
+
 == Welcome ==
 
 Welcome to your wiki! This is the default page we've installed for your convenience. Go ahead and edit it.
