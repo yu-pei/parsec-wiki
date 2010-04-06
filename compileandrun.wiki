@@ -82,7 +82,7 @@ If this is done, congratulations, dplasma is configured.
 
 * Issues we have encountered with BLAS libraries are un-enumerable, and cannot be described here. Refer to your own experience to find how to have a working BLAS library, and header files. Those are supposed to be in the BLAS_LIBRARIES/lib and BLAS_LIBRARIES/include directories (create a phony directory with symbolic links to include/ and lib/ if needed).
 * When using the plasma-installer, some have reported that it was necessary after the make and make install, to copy all .h files found in src/ to include/
-* Don't mind if HWLOC or PAPI
+* Don't mind if HWLOC or PAPI do not exist.
 * Check that you have a working MPI somewhere accessible (mpicc and mpirun should be in your PATH)
 * If you have strange behavior, check that you have one among (if not, the atomic operations will not work, and that is damageable for the good operation of Dplasma)
 ** Found target X86_64
@@ -106,7 +106,7 @@ When the configuration is successful, you can tune it using ccmake:
 ccmake .
 }}}
 
-(notice the double c of ccmake). This is an interactive tool, that let you choose the compilation parameters. Recommended parameters are:
+(notice the double c of ccmake). This is an interactive tool, that let you choose the compilation parameters. Navigate with the arrows to the parameter you want to change and hit enter to edit. Recommended parameters are:
 * BUILD_SHARED_LIBS OFF
 * CACHE_AWARENESS OFF
 * CMAKE_BUILD_TYPE Release
