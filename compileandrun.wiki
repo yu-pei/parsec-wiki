@@ -15,6 +15,8 @@ CMake is comparable to configure, but it's subtly different. For one thing, CMak
 
 CMake keeps everything it found hitherto in a cache file name CMakeCache.txt. Until you have successfully configured dplasma, remove the CMakeCache.txt file each time you run cmake.
 
+First, there are example invocations of cmake in the dplasma trunk (config.dancer is a typical  linux system, config.jaguar is for, you got it, XT5, ...). We advise you to start  from this file and tweak it for your system accordingly to the following guidelines. 
+
 Assume that on your architecture, the BLAS are mkl in /opt/mkl/lib/em64t; that you need to link with mkl_gf_lp64, mkl_sequential and mkl_core to have all the BLAS working (NB: with dplasma, use the sequential version of the BLAS, always. Using the threaded version of the BLAS will decrease performance, even if setting OMP_NUM_THREADS=1). Assume also that the PLASMA library was installed in /opt/plasma. You'll want to run
 
 {{{
