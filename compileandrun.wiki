@@ -1,12 +1,12 @@
 == How to Compile and Run Dplasma ==
 
-Version 1.0, May 5, 2010, supposed to work on release [[http://bitbucket.org/bosilca/dplasma/changeset/2bc23263939a/|1187:2bc23263939a]].
+Version 1.5, April 18, 2011, tested with on release [[https://bitbucket.org/bosilca/dplasma/changeset/7d8acbc70791|26307:d8acbc70791]].
 
 === Tools Dependences ===
 
 To compile dplasma on a new platform, you will need:
 * cmake version 2.8.0 or above. cmake can be found in the debian package cmake, or as sources at [[http://www.cmake.org/cmake/resources/software.html|the cmake download page]]
-* plasma version 2.0 or above.
+* [[http://icl.cs.utk.edu/plasma/|PLASMA] version 2.1 or above.
 * a BLAS library optimized for your platform.
 
 === Configuring Dplasma for a new platform ===
@@ -27,32 +27,53 @@ cmake . -DBLAS_LIBRARIES="-L/opt/mkl/lib/em64t -lmkl_gf_lp64 -lmkl_sequential -l
 in the dplasma directory. Hopefully, this will output something similar to:
 
 {{{
--- The C compiler identification is GNU
--- The Fortran compiler identification is GNU
--- Check for working C compiler: /usr/bin/gcc
--- Check for working C compiler: /usr/bin/gcc -- works
+-- The C compiler identification is Intel
+-- The CXX compiler identification is GNU
+-- The Fortran compiler identification is Intel
+-- Check for working C compiler: /opt/intel/Compiler/11.1/072/bin/intel64/icc
+-- Check for working C compiler: /opt/intel/Compiler/11.1/072/bin/intel64/icc -- works
 -- Detecting C compiler ABI info
 -- Detecting C compiler ABI info - done
--- Check for working Fortran compiler: /usr/bin/gfortran
--- Check for working Fortran compiler: /usr/bin/gfortran -- works
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working Fortran compiler: /opt/intel/Compiler/11.1/072/bin/intel64/ifort
+-- Check for working Fortran compiler: /opt/intel/Compiler/11.1/072/bin/intel64/ifort -- works
 -- Detecting Fortran compiler ABI info
 -- Detecting Fortran compiler ABI info - done
--- Checking whether /usr/bin/gfortran supports Fortran 90
--- Checking whether /usr/bin/gfortran supports Fortran 90 -- yes
+-- Checking whether /opt/intel/Compiler/11.1/072/bin/intel64/ifort supports Fortran 90
+-- Checking whether /opt/intel/Compiler/11.1/072/bin/intel64/ifort supports Fortran 90 -- yes
+-- Found BISON: /usr/local/bin/bison
+-- Found FLEX: /usr/local/bin/flex
+-- Add -nofor_main to the Fortran linker.
 -- Building for target x86_64
 -- Found target X86_64
--- Performing Test C_M64
--- Performing Test C_M64 - Success
--- Add -m64 to the compiler flags
--- Found FLEX: /usr/bin/flex
--- Found BISON: /usr/bin/bison
+-- Performing Test C_M32or64
+-- Performing Test C_M32or64 - Success
 -- Performing Test HAVE_STD_C99
 -- Performing Test HAVE_STD_C99 - Success
+-- Performing Test HAVE_WALL
+-- Performing Test HAVE_WALL - Success
+-- Performing Test HAVE_WEXTRA
+-- Performing Test HAVE_WEXTRA - Failed
+-- Performing Test HAVE_WD
+-- Performing Test HAVE_WD - Success
 -- Check if the compiler provides atomic operations directives
--- Looking for __GCC_HAVE_SYNC_COMPARE_AND_SWAP_4
--- Looking for __GCC_HAVE_SYNC_COMPARE_AND_SWAP_4 - found
--- Looking for __GCC_HAVE_SYNC_COMPARE_AND_SWAP_8
--- Looking for __GCC_HAVE_SYNC_COMPARE_AND_SWAP_8 - found
+-- Performing Test DAGUE_ATOMIC_USE_GCC_32_BUILTINS
+-- Performing Test DAGUE_ATOMIC_USE_GCC_32_BUILTINS - Success
+-- Performing Test DAGUE_ATOMIC_USE_GCC_64_BUILTINS
+-- Performing Test DAGUE_ATOMIC_USE_GCC_64_BUILTINS - Success
+-- Performing Test DAGUE_ATOMIC_USE_MIPOSPRO_32_BUILTINS
+-- Performing Test DAGUE_ATOMIC_USE_MIPOSPRO_32_BUILTINS - Failed
+-- Performing Test DAGUE_ATOMIC_USE_MIPOSPRO_64_BUILTINS
+-- Performing Test DAGUE_ATOMIC_USE_MIPOSPRO_64_BUILTINS - Failed
+-- Performing Test DAGUE_ATOMIC_USE_SUN_32
+-- Performing Test DAGUE_ATOMIC_USE_SUN_32 - Failed
+-- Performing Test DAGUE_ATOMIC_USE_SUN_64
+-- Performing Test DAGUE_ATOMIC_USE_SUN_64 - Failed
+-- 	 support for 32 bits atomics - found
+-- 	 support for 64 bits atomics - found
 -- Looking for include files CMAKE_HAVE_PTHREAD_H
 -- Looking for include files CMAKE_HAVE_PTHREAD_H - found
 -- Looking for pthread_create in pthreads
@@ -68,25 +89,65 @@ in the dplasma directory. Hopefully, this will output something similar to:
 -- Performing Test HAVE_TIMESPEC_TV_NSEC - Failed
 -- Looking for clock_gettime in rt
 -- Looking for clock_gettime in rt - found
--- A library with BLAS API found.
--- Looking for plasma.h
--- Looking for plasma.h - found
--- A library with PLASMA API found.
--- Found MPI: /home/herault/OpenMPI/fast/lib/libmpi_cxx.so
+-- Looking for include files HAVE_STDARG_H
+-- Looking for include files HAVE_STDARG_H - found
+-- Looking for va_copy
+-- Looking for va_copy - not found
+-- Looking for __va_copy
+-- Looking for __va_copy - not found
+-- Looking for asprintf
+-- Looking for asprintf - found
+-- Looking for vasprintf
+-- Looking for vasprintf - found
+-- Looking for include files HAVE_GETOPT_H
+-- Looking for include files HAVE_GETOPT_H - found
+-- Looking for include files HAVE_UNISTD_H
+-- Looking for include files HAVE_UNISTD_H - found
+-- Looking for getopt_long
+-- Looking for getopt_long - found
+-- Looking for include files HAVE_ERRNO_H
+-- Looking for include files HAVE_ERRNO_H - found
+-- Looking for include files HAVE_STDDEF_H
+-- Looking for include files HAVE_STDDEF_H - found
+-- Looking for getrusage
+-- Looking for getrusage - found
+-- Looking for hwloc.h
+-- Looking for hwloc.h - found
+-- Performing Test HAVE_HWLOC_PARENT_MEMBER
+-- Performing Test HAVE_HWLOC_PARENT_MEMBER - Success
+-- Performing Test HAVE_HWLOC_CACHE_ATTR
+-- Performing Test HAVE_HWLOC_CACHE_ATTR - Success
+-- Performing Test HAVE_HWLOC_OBJ_PU
+-- Performing Test HAVE_HWLOC_OBJ_PU - Success
+-- Looking for hwloc_bitmap_free in /opt/hwloc/lib/libhwloc.so
+-- Looking for hwloc_bitmap_free in /opt/hwloc/lib/libhwloc.so - found
+-- Found MPI: /usr/lib64/libmpi.so
+-- Found CUDA: /opt/cuda-4.0.11
+-- checking for one of the modules 'plasma'
+--   found plasma, version 2.1.0
+-- Performing Test PLASMA_C_COMPILE_SUCCESS
+-- Performing Test PLASMA_C_COMPILE_SUCCESS - Success
+-- A Library with PLASMA API found (using C compiler+linker).
+-- Found PLASMA: plasma;coreblas;quark;lapacke;mkl_intel_lp64;mkl_sequential;mkl_core;pthread;m
+    PLASMA_CFLAGS       = [-I/opt/plasma-svn1659-mkl_seq_lp64-intel-11.1.072/include]
+    PLASMA_LDFLAGS      = [-L/opt/plasma-svn1659-mkl_seq_lp64-intel-11.1.072/lib -L/opt/intel/Compiler/11.1/072/mkl/lib/em64t -lplasma -lcoreblas -lquark -llapacke -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm -lplasma]
+    PLASMA_INCLUDE_DIRS = [/opt/plasma-svn1659-mkl_seq_lp64-intel-11.1.072/include]
+    PLASMA_LIBRARY_DIRS = [/opt/plasma-svn1659-mkl_seq_lp64-intel-11.1.072/lib;/opt/intel/Compiler/11.1/072/mkl/lib/em64t]
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/herault/dplasma
+-- Build files have been written to: /home/demo/dplasma
 }}}
 
-If this is done, congratulations, dplasma is configured.
+If this is done, congratulations, dplasma is configured. Check that
+the PLASMA flags are meaningful. 
 
 ==== Troubleshooting ====
 
-* Issues we have encountered with BLAS libraries are un-enumerable, and cannot be described here. Refer to your own experience to find how to have a working BLAS library, and header files. Those are supposed to be in the BLAS_LIBRARIES/lib and BLAS_LIBRARIES/include directories (create a phony directory with symbolic links to include/ and lib/ if needed).
+* Issues we have encountered with BLAS libraries are out of scope of this README. Please, refer to your own experience to find how to have a working BLAS library, and header files. Those are supposed to be in the BLAS_LIBRARIES/lib and BLAS_LIBRARIES/include directories (create a phony directory with symbolic links to include/ and lib/ if needed).
 * When using the plasma-installer, some have reported that it was necessary after the make and make install, to copy all .h files found in src/ to include/
 * Don't mind if HWLOC or PAPI do not exist.
 * Check that you have a working MPI somewhere accessible (mpicc and mpirun should be in your PATH)
-* If you have strange behavior, check that you have one among (if not, the atomic operations will not work, and that is damageable for the good operation of Dplasma)
+* If you have strange behavior, check that you have one of the following (if not, the atomic operations will not work, and that is damageable for the good operation of Dplasma)
 ** Found target X86_64
 ** Found target gcc
 ** Found target macosx
@@ -94,11 +155,10 @@ If this is done, congratulations, dplasma is configured.
 * You can tune the compiler using variables (see also ccmake section):
 ** CC to choose your C compiler
 ** FC to choose your Fortran compiler
-** MPICC to choose your mpicc compiler
+** MPI_COMPILER to choose your mpicc compiler
 ** MPIFC to choose your mpifortran compiler
 ** CFLAGS to change your C compilation flags
 ** LDFLAGS to change your C linking falgs
-** etc...
 
 === Tuning the configuration : ccmake ===
 
@@ -109,19 +169,14 @@ ccmake .
 }}}
 
 (notice the double c of ccmake). This is an interactive tool, that let you choose the compilation parameters. Navigate with the arrows to the parameter you want to change and hit enter to edit. Recommended parameters are:
-* BUILD_SHARED_LIBS OFF
-* CACHE_AWARENESS OFF
-* CMAKE_BUILD_TYPE Release
-* DO_THE_NASTY_VALIDATIONS ON
+* DAGUE_DEBUG  OFF (and all other DAGUE_DEBUG options)
+* DAGUE_DIST_COLLECTIVES ON
+* DAGUE_DIST_WITH_MPI ON
+* DAGUE_GPU_WITH_CUDA ON                                                                                                                                                                                                                  
+* DAGUE_OMEGA_DIR OFF
+* DAGUE_PROF_* OFF (all DAGUE_PROF_ flags off)
 * DPLASMA_CALL_TRACE OFF
-* DPLASMA_DRY_RUN OFF
-* DPLASMA_GRAPHER OFF
-* DPLASMA_MPI ON
-* DPLASMA_PAPI OFF
-* DPLASMA_PROFILING OFF
-* DPLASMA_SCHED_HWLOC OFF
-* DPLASMA_STATS OFF
-* DPLASMA_WARM_UP OFF
+* DPLASMA_GPU_WITH_MAGMA           OFF                    
 
 Using the 'expert' mode (key 't' to toggle to expert mode), you can change other usefull options, like
 * CMAKE_C_FLAGS_RELEASE
@@ -139,29 +194,26 @@ If the configuration was good, compilation should be as simple and fancy as 'mak
 
 === Running Dplasma ===
 
-All benches are located into the subdirectory 'tests':
-* tests/LU -> pdgesv
-* tests/QR -> pdgels
-* test/pdpotrf -> Cholesy
-
-At the time we wrote this wiki page, LU and Cholesky were working allright, but we were still working on improving QR (performance-wise and functionality-wise: to be able to run on non square matrices, more efficiently).
-
-There are usually two versions of each benchmark: x and mpi_x. The mpi_x is the MPI-enabled version, while the x is the SMP only version.
+The dplasma library is compiled into dplasma/library. All testing
+programs are compiled in dplasma/testing. Exemples are:
+* dplasma/testing/testing_?getrf -> LU Factorization (simple or double precision)
+* dplasma/testing/testing_?geqrf -> QR Factorization (simple or double precision)
+* dplasma/testing/testing_?potrf -> Cholesy Factorization (simple or double precision)
 
 All the binaries should accept as input:
 * -c <n> the number of threads used for kernel execution on each node. This should be set to the number of cores. Remember that one additional thread will be spawned to handle the communications in the MPI version, but in normal run, this thread shares the most available core with another thread.
-* SIZE, a mandatory argument to define the size of the matrix
-* -B <blocksize> the dimension of a tile (a tile is blocksize x blocksize doubles; if no -B is passed, the result of PLASMA_TUNE is used)
-* -m to ask for a distributed generation of the matrix. This is to be used on all MPI runs without checks.
-* -g <number of columns> to ask for a 2-D block cyclic distribution of NP/number-of-columns w number-of-columns. number-of-columns must divide NP, the number of nodes.
-* -x to ask for a check of the result. This is to be used for validation purposes only, and exclude the -m flag, thus reduces the maximal size of the matrix to something accessible to a single node
-* -w to ask for warmup phase. This is to make a first run before the measurement, to be sure that all structures are allocated before the run. This should have no measurable effect on medium to large size matrices.
+* -N SIZE, a mandatory argument to define the size of the matrix
+* -g <number of GPUs> number of GPUs to use, if the operation is GPU-enabled
+* -t <blocksize> columns in a tile (if no -t is passed, the result of PLASMA_TUNE is used)
+* -T <blocksize> rows in a tile (if no -T is passed, the result of PLASMA_TUNE is used)
+* -p <number of rows> to require a 2-D block cyclic distribution of p rows
+* -q <number of columns> to require a 2D block cyclic distribution of q columns 
 
 A typical dplasma run using MPI looks like:
 {{{
- mpirun -np 81 -hostfile ${PBS_NODEFILE} -bynode ./mpi_dgesv -c 16 -g 9 -m 30000 -B 300
+mpirun -np 8 ./testing_spotrf -c 8 -g 0 -p 4 -q 2 -t 120 -T 120 -N 1000
 }}}
 
-Meaning that we'll run LU on 81 nodes, 16 computing threads per node, nodes being arranged in a 9x9 grid, with a distributed generation of the matrix of size 30000x30000 doubles, with tiles of size 300x300 (hence the matrix is 100x100 tiles wide).
+Meaning that we'll run LU on 8 nodes, 8 computing threads per node, nodes being arranged in a 4x2 grid, with a distributed generation of the matrix of size 1000x1000 singles, with tiles of size 120x120.
 
 Each test can dump the list of options with -h. Some tests have specific options (like -I to tune the inner block size in QR and LU, and -M in QR to have non-square matrices).
