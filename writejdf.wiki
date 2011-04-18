@@ -4,7 +4,7 @@ See [[understanding|Understanding the Compilation process]] to get a big picture
 
 === Input Format ===
 
-=== Calling the JDF Translator [[#1]] ===
+=== Calling the JDF Translator ===
 
 === Now What? ===
 
