@@ -38,11 +38,7 @@ RW T <- (k == 0) ? A(k, k) : T HERK(k-1, k)
      -> A(k, k)
 
 BODY
-        CORE_zpotrf(
-            uplo,
-            NB, /*k == A.nt-1 ? A.n-k*A.nb : A.nb,*/
-            T /* A(k, k) */, NB, /*A.nb,*/
-            INFO );
+        CORE_zpotrf(uplo, NB, T, NB, INFO );
 END
 
 /**************************************************
@@ -68,17 +64,11 @@ BODY
    if( uplo == PlasmaLower ) {
            CORE_ztrsm(
                 PlasmaRight, PlasmaLower, PlasmaTrans, PlasmaNonUnit,
-                NB, 
-                NB,
-                (Dague_Complex64_t)1.0, T, NB, 
-                                        C, NB);
+                NB, NB, (Dague_Complex64_t)1.0, T, NB, C, NB);
     } else {
            CORE_ztrsm(
                 PlasmaLeft, PlasmaUpper, PlasmaTrans, PlasmaNonUnit,
-                NB,
-                NB,
-                (Dague_Complex64_t)1.0, T, NB, 
-                                        C, NB );
+                NB, NB, (Dague_Complex64_t)1.0, T, NB, C, NB );
    }
 END
 
@@ -102,18 +92,12 @@ RW    T <- (k == 0) ? A(n,n) : T HERK(k-1, n)
 BODY
    if( uplo == PlasmaLower ) {
            CORE_zherk(
-                PlasmaLower, PlasmaNoTrans,
-                NB,
-                NB,
-                (double)-1.0, A, NB, 
-                (double) 1.0, T, NB );
+                PlasmaLower, PlasmaNoTrans, NB, NB,
+                (double)-1.0, A, NB, (double) 1.0, T, NB );
    } else {
            CORE_zherk(
-                PlasmaUpper, PlasmaTrans,
-                NB,
-                NB,
-                (double)-1.0, A, NB,
-                (double) 1.0, T, NB);
+                PlasmaUpper, PlasmaTrans, NB, NB,
+                (double)-1.0, A, NB, (double) 1.0, T, NB);
    }
 END
 
@@ -138,22 +122,14 @@ RW    C <- (k == 0) ? A(m, n) : C GEMM(k-1, m, n)
 BODY
     if( uplo == PlasmaLower ) {
            CORE_zgemm( 
-                PlasmaNoTrans, PlasmaTrans,
-                NB,
-                NB,
-                NB,
-                (Dague_Complex64_t)-1.0, B, NB,
-                                         A, NB,
+                PlasmaNoTrans, PlasmaTrans, NB, NB, NB,
+                (Dague_Complex64_t)-1.0, B, NB, A, NB,
                 (Dague_Complex64_t) 1.0, C, NB);
    } else {
-           CORE_zgemm(
-                PlasmaTrans, PlasmaNoTrans,
-                NB,
-                NB,
-                NB,
-                (Dague_Complex64_t)-1.0, A, NB,
-                                         B, NB, 
-                (Dague_Complex64_t) 1.0, C, NB );
+           CORE_zgemm( 
+                PlasmaTrans, PlasmaNoTrans, NB, NB, NB,
+                (Dague_Complex64_t)-1.0, B, NB, A, NB,
+                (Dague_Complex64_t) 1.0, C, NB);
    }
 END
 }}}
@@ -198,11 +174,7 @@ RW T <- (k == 0) ? A(k, k) : T HERK(k-1, k)
      -> A(k, k)
 
 BODY
-        CORE_zpotrf(
-            uplo,
-            NB, /*k == A.nt-1 ? A.n-k*A.nb : A.nb,*/
-            T /* A(k, k) */, NB, /*A.nb,*/
-            INFO );
+        CORE_zpotrf(uplo, NB, T, NB, INFO );
 END
 }}}
 The task is defined with a single parameter, k. This parameter must have an execution space that is entirely defined by the list of global objects that were defined in the beginning of the JDF. In this case, k is between 0 and SIZE-1, and since SIZE is a parameter of the generator function, k is entirely defined. As you can see with GEMM, for example, multiple parameters can be used, and parameters can depend on the value of preceding parameters (in GEMM, k is defined by SIZE, m is defined by the possible values of k and by SIZE, n is defined by the possible values of k and m). This definition must be restrictive: if the task POTRF(0) exists by its parameters (i.e. k can be equal to 0), it will be scheduled by the runtime system.
