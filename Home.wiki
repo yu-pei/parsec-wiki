@@ -1,10 +1,10 @@
 == How to Compile and Run Dplasma ==
 
-On [[compileandrun|how to compile and run dplasma]]
-On [[understanding|understanding the compilation and runtime process of DAGuE]]
- * On [[compilejdf|how to write a DAGuE enabled operation by using the DAGuE compiler]]
- * On [[writejdf|how to write a DAGuE enabled operation by editing the JDF file directly]]
- * On [[datadistribution|how to write a program that uses a DAGuE enabled operation]] (a.k.a. "what is this data distribution thing?")
+* On [[compileandrun|how to compile and run dplasma]]
+* On [[understanding|understanding the compilation and runtime process of DAGuE]]
+ - On [[compilejdf|how to write a DAGuE enabled operation by using the DAGuE compiler]]
+ - On [[writejdf|how to write a DAGuE enabled operation by editing the JDF file directly]]
+ - On [[datadistribution|how to write a program that uses a DAGuE enabled operation]] (a.k.a. "what is this data distribution thing?")
 
  ---- 
 
