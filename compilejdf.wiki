@@ -11,7 +11,7 @@ If you didn't compile the compiler yet (it is an optional step, with additional 
 
 ==== Now What? ====
 
-You should have a look at the generated JDF, maybe tune it, to add priorities, or change the data affinity. And then, proceed to the translation of the JDF into a C file, and a dague opaque object. See [[writejdf|The Calling the JDF Translator]] section of How to Write a DAGuE-Enabled Operation by editing the JDF file directly.
+You should have a look at the generated JDF, maybe tune it, to add priorities, or change the data affinity. And then, proceed to the translation of the JDF into a C file, and a dague opaque object. See the [[writejdf|Calling the JDF Translator]] section of How to Write a DAGuE-Enabled Operation by editing the JDF file directly.
 
 === Compiling the DAGuE Compiler ===
 
