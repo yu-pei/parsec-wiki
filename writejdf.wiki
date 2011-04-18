@@ -1,0 +1,12 @@
+== How to Write a DAGuE-Enabled Operation by editing the JDF file directly ==
+
+See [[understanding|Understanding the Compilation process]] to get a big picture. 
+
+=== Input Format ===
+
+=== Calling the JDF Translator [[#1]] ===
+
+=== Now What? ===
+
+Your DAGuE-Enabled operation is ready! To test it, you should [[datadistribution|Write a program that uses a DAGuE-Enabled Operation]].
+

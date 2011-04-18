@@ -1,0 +1,15 @@
+== Understanding the compilation/runtime process of DAGuE ==
+
+The goal of this page is to give the DAGuE-Enabled Operation Developper (someone who codes her operation using DAGuE), or the DAGuE user (someone who develops an application that includes one or more DAGuE-Enabled Operations), a global view of the different steps. They are summarized by the image below:
+
+{{compilation.png|An image is better than a thousands words}}
+
+=== Compilation process ===
+
+The compilation process starts either with a JDF, or with a Serial code.
+
+Using the DAGuE compiler, the developper of a DAGuE-Enabled operation can generate the JDF for a Serial Code. This process is described in [[compilejdf|How to write a DAGuE-Enabled operation using the DAGuE compiler]].
+
+One a JDF is obtained, it can be edited by the DAGuE-Enabled Operation Developper, and it passes through the JDF translator to build a C file, see [[compilejdf| How to write a DAGuE enabled operation by editing the JDF file directly]], section "Compiling the JDF".
+
+This C file defines a set of functions. The DAGuE-Enabled Operation User links her code with the DAGuE runtime library and the compiled version of this file, to be enable to call the DAGuE-Enabled Operation. See [[datadistribution|How to write a program that uses a DAGuE-Enabled Operation]] to study this is part is done.

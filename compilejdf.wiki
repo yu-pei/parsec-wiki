@@ -1,0 +1,17 @@
+== How to Write a DAGuE-Enabled Operation by using the DAGuE Compiler ==
+
+See [[understanding|Understanding the Compilation process]] to get a big picture. 
+
+If you didn't compile the compiler yet (it is an optional step, with additional tools dependences), see [[#1|Compiling the DAGuE Compiler]] below.
+
+=== Input Format ===
+
+=== Calling the DAGuE Compiler ===
+
+
+==== Now What? ====
+
+You should have a look at the generated JDF, maybe tune it, to add priorities, or change the data affinity. And then, proceed to the translation of the JDF into a C file, and a dague opaque object. See [[writejdf#1|The Calling the JDF Translator]] section of [[writejdf|How to Write a DAGuE-Enabled Operation by editing the JDF file directly]].
+
+=== Compiling the DAGuE Compiler [[#1]] ===
+
