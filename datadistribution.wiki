@@ -1,1 +1,362 @@
 == How to Write a program that uses a DAGuE-Enabled Operation ==
+
+This section is written using the very simple Round Time Trip
+benchmark, located in dague/tests/rtt/. Using the JDF Translator tool
+(daguepp, see end of [[writejdf|How to write a DAGuE enabled operation]]), 
+you have built a dague object generator function. This
+function comes into two files: rtt.jdf will generate rtt.h and rtt.c.
+
+=== Overlook ===
+
+If you look at rtt.h, you will find the following:
+{{{
+#ifndef _rtt_h_
+#define _rtt_h_
+#include <dague.h>
+#include <assert.h>
+
+#define DAGUE_rtt_DEFAULT_ARENA    0
+
+typedef struct dague_rtt_object {
+  dague_object_t super;
+  /* The list of globals */
+  dague_ddesc_t* A /* data A */;
+  int NT;
+  /* The array of datatypes DEFAULT */
+  dague_arena_t* arenas[1];
+} dague_rtt_object_t;
+
+extern dague_rtt_object_t *dague_rtt_new(dague_ddesc_t* A /* data A */, int NT);
+extern void dague_rtt_destroy( dague_rtt_object_t *o );
+#endif /* _rtt_h_ */ 
+}}}
+
+dague_rtt_new is the generator function, dague_rtt_destroy the cleanup function.
+In the dague_rtt_object structure, you can find the data A that is used in the code of rtt.jdf,
+the global NT that is also used in rtt.jdf, and some arenas (the arenas array of the structure,
+and the define DAGUE_rtt_DEFAULT_ARENA).
+
+In order to move data between nodes during the execution, DAGUE needs
+to know what is the shape of the data, how it is distributed among the
+nodes, and will need to allocate temporary memory space to store such
+data elements when moving them along.
+
+Data shape (the fact that a data element is for example a NT x MT
+matrix of doubles) is defined using the powerful MPI Datatype
+representation. Each data type must thus be assigned an MPI data type.
+
+The data distribution is expressed using dage_ddesc_t objects. Each
+data that is referenced in a JDF is thus a dague_ddesc_t *, or a
+pointer to a structure that begins with a dague_ddesc_t. We will see
+later how the data distribution is expressed using these objects.
+
+How to allocate temporary memory for storing such data elements is
+defined using the arenas.
+
+=== Wrapper ===
+
+So, the first thing that we advise you do is to create a set of
+wrapper for these new / destroy functions to fillup the missing
+elements and cleanup the invokation. That is what the file
+rtt_wrapper.c / rtt_wrapper.h in dague/tests/rtt/ do:
+
+{{{
+#include "dague.h"
+
+#if defined(HAVE_MPI)
+#include <mpi.h>
+static MPI_Datatype block;
+#endif
+}}}
+
+If using MPI, mpi.h must be included. dague_config.h defines a macro
+HAVE_MPI if and only if dague has been compiled with MPI, so this
+macro can be tested to see whether it is needed to include mpi.h or
+not. We also define a static to hold the MPI definition of the datatype
+DAGuE is going to use to move the A data along.
+
+{{{
+#include "rtt.h"
+#include "rtt_wrapper.h"
+
+/**
+ * @param [IN] A    the data, already distributed and allocated
+ * @param [IN] size size of each local data element
+ * @param [IN] nb   number of iterations
+ *
+ * @return the dague object to schedule.
+ */
+dague_object_t *rtt_new(dague_ddesc_t *A, int size, int nb)
+{
+    dague_rtt_object_t *o = NULL;
+
+    if( nb <= 0 || size <= 0 ) {
+        fprintf(stderr, "To work, RTT must do at least one round time trip of at least one byte\n");
+        return (dague_object_t*)o;
+    }
+
+    o = dague_rtt_new(A, nb);
+}}}
+
+The wrapper begins by doing some safety checking, then it calls the
+generator function to create a ping pong DAG that will iterate on A nb
+times.
+
+{{{
+#if defined(HAVE_MPI)
+    {
+    	MPI_Type_vector(1, size, size, MPI_BYTE, &block);
+        MPI_Type_commit(&block);
+        dague_arena_construct(o->arenas[DAGUE_rtt_DEFAULT_ARENA],
+                              size * sizeof(char), size * sizeof(char), 
+                              block);
+    }
+#endif
+
+    return (dague_object_t*)o;
+}
+}}}
+
+Then, this is when the dague_rtt_object_t preparation should be
+completed, to construct the arena that will potentially allocate
+temporary data. There is one arena per data type that was expressed in
+the JDF, and a default arena. If all flows are typed, the default
+arena does not need to be constructured. An arena is defined by the
+number of bytes to store elements (size characters in this case), the
+alignment of the data chunks (this can be necessary when using GPU, to
+receive data in memory that is pinable for example), and the MPI
+datatype used to transfer such data. In this case, we create a vector
+type that holds 1 block of size bytes aligned together.
+
+On a shared memory system, where MPI is not needed, it is not
+necessary to construct the arenas.
+
+{{{
+/**
+ * @param [INOUT] o the dague object to destroy
+ */
+void rtt_destroy(dague_object_t *o)
+{
+#if defined(HAVE_MPI)
+    MPI_Type_free( &block );
+#endif
+
+    dague_rtt_destroy( (dague_rtt_object_t*)o );
+}
+}}}
+
+The destructor simply releases the MPI datatype and destroy the dague
+object.
+
+=== Data Distribution ===
+
+Now, the next step is to write a set of functions to access the data
+and describe its distribution to dague. This is done in the file
+rtt_data.c, that is explained below:
+{{{
+#include "rtt_data.h"
+#include "stdarg.h"
+#include "data_distribution.h"
+
+typedef struct {
+    dague_ddesc_t super;
+    unsigned char *data;
+} my_datatype_t;
+}}}
+
+The internal representation of the data A in the rtt JDF is
+encapsulated in the my_datatype_t structure. It must derive the
+initial datatype dague_ddesc_t.
+
+{{{
+dague_ddesc_t *create_and_distribute_data(int rank, int world, int cores, int size)
+{
+    my_datatype_t *m = (my_datatype_t*)calloc(1, sizeof(my_datatype_t));
+    dague_ddesc_t *d = &(m->super);
+
+    d->myrank = rank;
+    d->cores  = cores;
+    d->nodes  = world;
+    d->rank_of = rank_of;
+    d->data_of = data_of;
+
+    m->data = (unsigned char *)malloc(size);
+
+    return d;
+}
+}}}
+
+DAGuE will use all fields of the dague_ddesc_t object, and it is the
+user responsibility to fill them. myrank, cores, and nodes is
+(respectfully) the rank of the local MPI process, the number of local
+cores, the number of nodes in the MPI Communicator. Then, the two only
+other obligatory fields are function pointers to locate which rank
+holds which data, and where the data is for the local MPI
+process. Those are given by (respectfully) the functions rank_of and
+data_of.
+
+The my_datatype_t structure only adds a placeholder to store the base
+pointer of the local part of the data. This could be optional, since
+in the RTT benchmark, only one data is used. But it is a good practice
+to have it relative to the descriptor object, to facilitate reuse and
+multiple instanciations of the same dague object.
+
+The RTT benchmark will initially take the data from the rank 0, and
+move it to the next placeholder until it reaches the end. Thus, each
+rank need only one data holder of size size, and that is why we
+allocate only one.
+
+The code for the access functions is given below:
+{{{
+static uint32_t rank_of(dague_ddesc_t *desc, ...)
+{
+    int k;
+    va_list ap;
+    my_datatype_t *dat = (my_datatype_t*)desc;
+
+    va_start(ap, desc);
+    k = va_arg(ap, int);
+    va_end(ap);
+
+    return k % dat->super.nodes;
+}
+
+static void *data_of(dague_ddesc_t *desc, ...)
+{
+    int k;
+
+    va_list ap;
+    my_datatype_t *dat = (my_datatype_t*)desc;
+
+    va_start(ap, desc);
+    k = va_arg(ap, int);
+    va_end(ap);
+
+    (void)k;
+
+    return (void*)(dat->data);
+} 
+}}}
+
+When in the JDF the user wrote :A(k) to say that this task was going
+to run at the same place as the data A(k), DAGuE will call
+rank_of(descA, k) to compute what is the rank that hold the
+data. Here, the code places this data on rank k % world_size,
+implementing a cyclic distribution of the data. The parameters of
+these functions must be variadic arguments to allow the user to define
+data on as many dimensions as wanted, and the user must be careful to
+access the right number of arguments using the va_arg macros.
+
+When the user says that in a given flow, data comes from A(k) or goes
+to A(k), DAGuE will call the data_of(descA, k) function to obtain the
+corresponding address. Thus, this function should return the address
+of the first byte of data that is described by A(k).  Since in the RTT
+benchmark we don't use the data, the data_of function simply ignore
+the argument, and returns always the allocated chunck of size bytes
+that is stored in the data descriptor.
+
+{{{
+void free_data(dague_ddesc_t *d)
+{
+    my_datatype_t *m = (my_datatype_t*)d;
+    free(m->data);
+    dague_ddesc_destroy(d);
+    free(d);
+}
+}}}
+
+The last part of this file consists in releasing allocated resources.
+
+The user is encourage to re-use the data distributions that have
+already been coded in the data_dist/ subdirectory of the dague source
+code, instead of creating her own for every occasion. However, this
+might be necessary for specific purposes.
+
+=== Main Programm ==
+
+Once this is completed, we can easily code the main RTT benchmark:
+
+{{{
+#include "dague.h"
+#include "rtt_wrapper.h"
+#include "rtt_data.h"
+
+int main(int argc, char *argv[])
+{
+    dague_context_t* dague;
+    int rank, world, cores;
+    int size, nb;
+    dague_ddesc_t *ddescA;
+    dague_object_t *rtt;
+
+#if defined(HAVE_MPI)
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &world);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#else
+    world = 1;
+    rank = 0;
+#endif
+    cores = 8;
+    dague = dague_init(cores, &argc, &argv);
+}}}
+
+First, the MPI level must be initialized if necessary. Then, dague
+must also be initialized to create the dague_context_t, and specify
+the number of cores that one wants to use for dague-related operations.
+
+{{{
+    size = 256;
+
+    ddescA = create_and_distribute_data(rank, world, cores, size);
+    dague_ddesc_set_key(ddescA, "A");
+}}}
+
+Then, the data must be created and distributed. The user is encouraged
+to re-use the data distributions that have already been coded in
+dague/data_distribution, or create her own ad-hoc data distributions,
+as is the case for the rtt benchmark.
+
+Data keys can be put to help profiling the execution of the DAGuE operation.
+    
+{{{
+    nb   = 4 * world;
+    rtt = rtt_new(ddescA, size, nb);
+}}}
+
+Then, the DAG generator is instanciated, with the corresponding data
+description and additional parameters. At this time, DAGuE computes
+the initial tasks for this DAG with these parameters, and the number
+of tasks to run locally.
+
+{{{
+    dague_enqueue(dague, rtt);
+}}}
+
+It is enqueued to the dague context.
+
+{{{
+    dague_progress(dague);
+}}}
+
+And the code releases the control of all MPI processes to the DAGuE
+engine, until the DAGuE enabled operations that have been enqueued in
+the DAGuE context complete.
+
+{{{
+    dague_fini(&dague);
+    free_data(ddescA);
+
+#ifdef HAVE_MPI
+    MPI_Finalize();
+#endif    
+    
+    return 0;
+}
+}}}
+
+When this is done, the dague engine can be release, the data
+descriptors freed (if the DAGuE enabled operation had a side effect on
+the data, which is usually the case, results should be read in the
+data before freeing the data descriptors), and finally the MPI level
+can be finalized.
