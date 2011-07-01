@@ -1,4 +1,8 @@
-== How to Compile and Run Dplasma ==
+== How to get more information on DPLASMA ==
+
+Two moderated mailing-lists are available, one for the users and the other for the developers involved in the project. The user mailinglist subscriptions are handled via [[https://lists.eecs.utk.edu/mailman/listinfo/dplasma-users|the user mailing-list]], while the developpers via [[https://lists.eecs.utk.edu/mailman/listinfo/dplasma-devel|the developers mailing-list]]. Please feel free to join us.
+
+== How to Compile and Run DPLASMA ==
 
 * [[compileandrun|How to compile and run dplasma]]
 * [[understanding|Understanding the compilation and runtime process of DAGuE]]
