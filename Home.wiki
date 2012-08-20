@@ -13,7 +13,7 @@ Two moderated mailing-lists are available, one for the users and the other for t
 
 == HPL over PARSEC ==
  
- * [[v0|V0]]: First version numerically correct with dynamic creation of workspaces, (9f2b7ee1366d+ 5304+ zenati)
+ * [[version0|V0]]: First version numerically correct with dynamic creation of workspaces, (9f2b7ee1366d+ 5304+ zenati)
 
 
  ---- 
