@@ -11,6 +11,11 @@ Two moderated mailing-lists are available, one for the users and the other for t
 ** [[datadistribution|How to write a program that uses a DAGuE enabled operation]] (a.k.a. "what is this data distribution thing?")
 ** [[profile|How to profile DAGuE applications]]
 
+== HPL over PARSEC ==
+ 
+ * [[V0|V0]]: First version numerically correct with dynamic creation of workspaces, (9f2b7ee1366d+ 5304+ zenati)
+
+
  ---- 
 
 [[wikiediting|Hints on the wiki editing]] (the previous welcome page)
