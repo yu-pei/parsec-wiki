@@ -24,7 +24,7 @@ Two moderated mailing-lists are available, one for the users and the other for t
  ** Update:
  *** Swap exchanges are done with a full tile
  *** GEMM and SWAP are done in column major
- *** SWAP_COLLECT are done through a chain
+ *** SWAP_COLLECT are done in parallel
  *** SWAP_RECV and GEMM are not merged together
 
  ---- 
