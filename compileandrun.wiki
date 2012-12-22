@@ -1,156 +1,192 @@
-== How to Compile and Run Dplasma ==
+== How to Compile and Run DPLASMA ==
 
-Version 1.5, April 18, 2011, tested with on release [[https://bitbucket.org/bosilca/dplasma/changeset/7d8acbc70791|26307:d8acbc70791]].
+Version 2.0, December 22, 2012, tested with on release 1.0 (from the public repository [[https://bitbucket.org/bosilca/dague.public/commits/e0fef3754b8fffb2d6fe48c6670f22836fdbc47b]]).
 
 === Tools Dependences ===
 
-To compile dplasma on a new platform, you will need:
+To compile DPLASMA on a new platform, you will need:
 * cmake version 2.8.0 or above. cmake can be found in the debian package cmake, or as sources at [[http://www.cmake.org/cmake/resources/software.html|the cmake download page]]
-* [[http://icl.cs.utk.edu/plasma/|PLASMA] version 2.1 or above.
-* a BLAS library optimized for your platform.
+* [[http://icl.cs.utk.edu/plasma/|PLASMA] version 2.5 or above.
+* a BLAS library optimized for your platform: MKL, ACML, Goto, Atlas, VecLib (MAC OS X), or in the worst case default BLAS.
 
-=== Configuring Dplasma for a new platform ===
+=== Configuring DPLASMA for a new platform ===
 
 CMake is comparable to configure, but it's subtly different. For one thing, CMake display the commands with colors, which is its most prominent feature.
 
 CMake keeps everything it found hitherto in a cache file name CMakeCache.txt. Until you have successfully configured dplasma, remove the CMakeCache.txt file each time you run cmake.
 
-First, there are example invocations of cmake in the dplasma trunk (config.dancer is a typical  linux system, config.jaguar is for, you got it, XT5, ...). We advise you to start  from this file and tweak it for your system accordingly to the following guidelines. 
+First, there are example invocations of cmake in the DPLASMA trunk (config.dancer is a typical  linux system, config.jaguar is for, you got it, XT5, ...). We advise you to start  from this file and tweak it for your system accordingly to the following guidelines. 
 
-Assume that on your architecture, the BLAS are mkl in /opt/mkl/lib/em64t; that you need to link with mkl_gf_lp64, mkl_sequential and mkl_core to have all the BLAS working (NB: with dplasma, use the sequential version of the BLAS, always. Using the threaded version of the BLAS will decrease performance, even if setting OMP_NUM_THREADS=1). Assume also that the PLASMA library was installed in /opt/plasma. You'll want to run
+In order to enable the Linear Algebra package the PLASMA library is required. If you have a fairly recent version, correctly configured, this should be a breeze as it provides a pkg-config file that our configuration scripts understand. Thus, is your version of PLASMA is recent enough providing -DPLASMA_DIR=**my path to the PLASMA lib**, should be enough to have a straightforward configurations process.
+
+If not, the steps are slightly more complicated, as in addition to correctly configuring your PLASMA installation you will need to provide our configuration scripts with few hints to help the detection process. Assume that on your architecture, the BLAS are mkl in /opt/mkl/lib/em64t; that you need to link with mkl_gf_lp64, mkl_sequential and mkl_core to have all the BLAS working (NB: with DPLASMA, use the sequential version of the BLAS, always. Using the threaded version of the BLAS will decrease performance, even if setting OMP_NUM_THREADS=1). Assume also that the PLASMA library was installed in /opt/plasma. You'll want to run the following script in the DPLASMA directory.
 
 {{{
 rm -f CMakeCache.txt
 cmake . -DBLAS_LIBRARIES="-L/opt/mkl/lib/em64t -lmkl_gf_lp64 -lmkl_sequential -lmkl_core" -DPLASMA_DIR=/opt/plasma -DDPLASMA_MPI=ON
 }}}
 
-in the dplasma directory. Hopefully, this will output something similar to:
+Hopefully, once the expected arguments are provided the output will look similar to:
 
 {{{
--- The C compiler identification is Intel
--- The CXX compiler identification is GNU
--- The Fortran compiler identification is Intel
--- Check for working C compiler: /opt/intel/Compiler/11.1/072/bin/intel64/icc
--- Check for working C compiler: /opt/intel/Compiler/11.1/072/bin/intel64/icc -- works
+-- The C compiler identification is GNU 4.6.0
+-- The CXX compiler identification is GNU 4.6.0
+-- The Fortran compiler identification is GNU
+-- Checking whether C compiler has -isysroot
+-- Checking whether C compiler has -isysroot - yes
+-- Checking whether C compiler supports OSX deployment target flag
+-- Checking whether C compiler supports OSX deployment target flag - yes
+-- Check for working C compiler: /usr/local/bin/gcc
+-- Check for working C compiler: /usr/local/bin/gcc -- works
 -- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working CXX compiler: /usr/bin/c++
--- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting C compiler ABI info - failed
+-- Checking whether CXX compiler has -isysroot
+-- Checking whether CXX compiler has -isysroot - yes
+-- Checking whether CXX compiler supports OSX deployment target flag
+-- Checking whether CXX compiler supports OSX deployment target flag - yes
+-- Check for working CXX compiler: /usr/local/bin/g++
+-- Check for working CXX compiler: /usr/local/bin/g++ -- works
 -- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Check for working Fortran compiler: /opt/intel/Compiler/11.1/072/bin/intel64/ifort
--- Check for working Fortran compiler: /opt/intel/Compiler/11.1/072/bin/intel64/ifort -- works
+-- Detecting CXX compiler ABI info - failed
+-- Check for working Fortran compiler: /usr/local/bin/gfortran
+-- Check for working Fortran compiler: /usr/local/bin/gfortran  -- works
 -- Detecting Fortran compiler ABI info
--- Detecting Fortran compiler ABI info - done
--- Checking whether /opt/intel/Compiler/11.1/072/bin/intel64/ifort supports Fortran 90
--- Checking whether /opt/intel/Compiler/11.1/072/bin/intel64/ifort supports Fortran 90 -- yes
--- Found BISON: /usr/local/bin/bison
--- Found FLEX: /usr/local/bin/flex
--- Add -nofor_main to the Fortran linker.
--- Building for target x86_64
--- Found target X86_64
+-- Detecting Fortran compiler ABI info - failed
+-- Checking whether /usr/local/bin/gfortran supports Fortran 90
+-- Checking whether /usr/local/bin/gfortran supports Fortran 90 -- yes
+-- Found BISON: /opt/local/bin/bison (found version "2.6.5") 
+-- Found FLEX: /opt/local/bin/flex (found version "2.5.37") 
+-- Building for target i386
+-- Found target for X86
 -- Performing Test C_M32or64
--- Performing Test C_M32or64 - Success
+-- Performing Test C_M32or64 - Failed
 -- Performing Test HAVE_STD_C99
--- Performing Test HAVE_STD_C99 - Success
+-- Performing Test HAVE_STD_C99 - Failed
 -- Performing Test HAVE_WALL
--- Performing Test HAVE_WALL - Success
+-- Performing Test HAVE_WALL - Failed
 -- Performing Test HAVE_WEXTRA
 -- Performing Test HAVE_WEXTRA - Failed
 -- Performing Test HAVE_WD
--- Performing Test HAVE_WD - Success
--- Check if the compiler provides atomic operations directives
+-- Performing Test HAVE_WD - Failed
+-- Performing Test HAVE_G3
+-- Performing Test HAVE_G3 - Failed
 -- Performing Test DAGUE_ATOMIC_USE_GCC_32_BUILTINS
--- Performing Test DAGUE_ATOMIC_USE_GCC_32_BUILTINS - Success
--- Performing Test DAGUE_ATOMIC_USE_GCC_64_BUILTINS
--- Performing Test DAGUE_ATOMIC_USE_GCC_64_BUILTINS - Success
+-- Performing Test DAGUE_ATOMIC_USE_GCC_32_BUILTINS - Failed
+-- Performing Test DAGUE_ATOMIC_USE_XLC_32_BUILTINS
+-- Performing Test DAGUE_ATOMIC_USE_XLC_32_BUILTINS - Failed
 -- Performing Test DAGUE_ATOMIC_USE_MIPOSPRO_32_BUILTINS
 -- Performing Test DAGUE_ATOMIC_USE_MIPOSPRO_32_BUILTINS - Failed
--- Performing Test DAGUE_ATOMIC_USE_MIPOSPRO_64_BUILTINS
--- Performing Test DAGUE_ATOMIC_USE_MIPOSPRO_64_BUILTINS - Failed
 -- Performing Test DAGUE_ATOMIC_USE_SUN_32
 -- Performing Test DAGUE_ATOMIC_USE_SUN_32 - Failed
--- Performing Test DAGUE_ATOMIC_USE_SUN_64
--- Performing Test DAGUE_ATOMIC_USE_SUN_64 - Failed
--- 	 support for 32 bits atomics - found
--- 	 support for 64 bits atomics - found
--- Looking for include files CMAKE_HAVE_PTHREAD_H
--- Looking for include files CMAKE_HAVE_PTHREAD_H - found
--- Looking for pthread_create in pthreads
--- Looking for pthread_create in pthreads - not found
--- Looking for pthread_create in pthread
--- Looking for pthread_create in pthread - found
--- Found Threads: TRUE
--- Looking for pthread_create
--- Looking for pthread_create - found
+-- Looking for OSAtomicCompareAndSwap32
+-- Looking for OSAtomicCompareAndSwap32 - not found
+-- Looking for OSAtomicCompareAndSwap64
+-- Looking for OSAtomicCompareAndSwap64 - not found
+-- Looking for include file pthread.h
+-- Looking for include file pthread.h - not found.
+-- Could NOT find Threads (missing:  Threads_FOUND) 
 -- Looking for sched_setaffinity
--- Looking for sched_setaffinity - found
+-- Looking for sched_setaffinity - not found
 -- Performing Test HAVE_TIMESPEC_TV_NSEC
 -- Performing Test HAVE_TIMESPEC_TV_NSEC - Failed
 -- Looking for clock_gettime in rt
--- Looking for clock_gettime in rt - found
--- Looking for include files HAVE_STDARG_H
--- Looking for include files HAVE_STDARG_H - found
--- Looking for va_copy
--- Looking for va_copy - not found
--- Looking for __va_copy
--- Looking for __va_copy - not found
+-- Looking for clock_gettime in rt - not found
+-- Looking for include file stdarg.h
+-- Looking for include file stdarg.h - not found.
 -- Looking for asprintf
--- Looking for asprintf - found
+-- Looking for asprintf - not found
 -- Looking for vasprintf
--- Looking for vasprintf - found
--- Looking for include files HAVE_GETOPT_H
--- Looking for include files HAVE_GETOPT_H - found
--- Looking for include files HAVE_UNISTD_H
--- Looking for include files HAVE_UNISTD_H - found
+-- Looking for vasprintf - not found
+-- Looking for include file getopt.h
+-- Looking for include file getopt.h - not found.
+-- Looking for include file unistd.h
+-- Looking for include file unistd.h - not found.
 -- Looking for getopt_long
--- Looking for getopt_long - found
--- Looking for include files HAVE_ERRNO_H
--- Looking for include files HAVE_ERRNO_H - found
--- Looking for include files HAVE_STDDEF_H
--- Looking for include files HAVE_STDDEF_H - found
+-- Looking for getopt_long - not found
+-- Looking for include file errno.h
+-- Looking for include file errno.h - not found.
+-- Looking for include file stddef.h
+-- Looking for include file stddef.h - not found.
 -- Looking for getrusage
--- Looking for getrusage - found
--- Looking for hwloc.h
--- Looking for hwloc.h - found
+-- Looking for getrusage - not found
+-- Looking for include file limits.h
+-- Looking for include file limits.h - not found.
+-- Looking for include file string.h
+-- Looking for include file string.h - not found.
+-- Looking for include file complex.h
+-- Looking for include file complex.h - not found.
+-- Found HWLOC: /opt/lib/libhwloc.dylib  
 -- Performing Test HAVE_HWLOC_PARENT_MEMBER
--- Performing Test HAVE_HWLOC_PARENT_MEMBER - Success
+-- Performing Test HAVE_HWLOC_PARENT_MEMBER - Failed
 -- Performing Test HAVE_HWLOC_CACHE_ATTR
--- Performing Test HAVE_HWLOC_CACHE_ATTR - Success
+-- Performing Test HAVE_HWLOC_CACHE_ATTR - Failed
 -- Performing Test HAVE_HWLOC_OBJ_PU
--- Performing Test HAVE_HWLOC_OBJ_PU - Success
--- Looking for hwloc_bitmap_free in /opt/hwloc/lib/libhwloc.so
--- Looking for hwloc_bitmap_free in /opt/hwloc/lib/libhwloc.so - found
--- Found MPI: /usr/lib64/libmpi.so
--- Found CUDA: /opt/cuda-4.0.11
+-- Performing Test HAVE_HWLOC_OBJ_PU - Failed
+-- Looking for hwloc_bitmap_free in /opt/lib/libhwloc.dylib
+-- Looking for hwloc_bitmap_free in /opt/lib/libhwloc.dylib - not found
+-- Found MPI_C: /opt/trunk/debug/lib/libmpi.dylib;/usr/lib/libm.dylib  
+-- Found MPI_CXX: /opt/trunk/debug/lib/libmpi.dylib;/usr/lib/libm.dylib  
+-- Found MPI_Fortran: /opt/trunk/debug/lib/libmpi_usempi.a;  
+-- Looking for MPI_Type_create_resized
+-- Looking for MPI_Type_create_resized - not found
+-- Looking for include file Ayudame.h
+-- Looking for include file Ayudame.h - not found.
+-- Add '-undefined dynamic_lookup' to the linking flags
+-- Could NOT find GTG (missing:  GTG_LIBRARY) 
+-- Found Graphviz: /usr/local/lib/libcdt.dylib
+-- Looking for gdImagePng in /opt/local/lib/libgd.dylib
+-- Looking for gdImagePng in /opt/local/lib/libgd.dylib - not found
+-- Looking for gdImageJpeg in /opt/local/lib/libgd.dylib
+-- Looking for gdImageJpeg in /opt/local/lib/libgd.dylib - not found
+-- Looking for gdImageGif in /opt/local/lib/libgd.dylib
+-- Looking for gdImageGif in /opt/local/lib/libgd.dylib - not found
+-- Found OMEGA: /tools/Omega/binary/include/omega  
+-- Found PythonInterp: /opt/local/bin/python (found version "2.7.3") 
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/data_dist/matrix
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/data_dist/matrix - Done
+-- Found PkgConfig: /opt/local/bin/pkg-config (found version "0.27.1") 
 -- checking for one of the modules 'plasma'
---   found plasma, version 2.1.0
 -- Performing Test PLASMA_C_COMPILE_SUCCESS
--- Performing Test PLASMA_C_COMPILE_SUCCESS - Success
--- A Library with PLASMA API found (using C compiler+linker).
--- Found PLASMA: plasma;coreblas;quark;lapacke;mkl_intel_lp64;mkl_sequential;mkl_core;pthread;m
-    PLASMA_CFLAGS       = [-I/opt/plasma-svn1659-mkl_seq_lp64-intel-11.1.072/include]
-    PLASMA_LDFLAGS      = [-L/opt/plasma-svn1659-mkl_seq_lp64-intel-11.1.072/lib -L/opt/intel/Compiler/11.1/072/mkl/lib/em64t -lplasma -lcoreblas -lquark -llapacke -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm -lplasma]
-    PLASMA_INCLUDE_DIRS = [/opt/plasma-svn1659-mkl_seq_lp64-intel-11.1.072/include]
-    PLASMA_LIBRARY_DIRS = [/opt/plasma-svn1659-mkl_seq_lp64-intel-11.1.072/lib;/opt/intel/Compiler/11.1/072/mkl/lib/em64t]
+-- Performing Test PLASMA_C_COMPILE_SUCCESS - Failed
+-- Performing Test PLASMA_F_COMPILE_SUCCESS
+-- Performing Test PLASMA_F_COMPILE_SUCCESS - Failed
+-- A library with PLASMA API not found. Please specify library location.
+    PLASMA_CFLAGS       = [-I/opt/PLASMA/plasma-svn/include]
+    PLASMA_LDFLAGS      = [-framework veclib -L/opt/PLASMA/plasma-svn/lib -lplasma -lcoreblas -lquark -llapacke -ltmg -lpthread -lm -lplasma]
+    PLASMA_INCLUDE_DIRS = [/opt/PLASMA/plasma-svn/include]
+    PLASMA_LIBRARY_DIRS = [/opt/PLASMA/plasma-svn/lib]
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/include
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/include - Done
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/cores
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/cores - Done
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/cores
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/cores - Done
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/lib
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/lib - Done
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/lib
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/lib - Done
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/testing
+-- Generate precision dependencies in /unstable/dplasma/sandbox/dague.public/dplasma/testing - Done
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/demo/dplasma
+-- Build files have been written to: /unstable/dplasma/sandbox/dague.public/build
+
 }}}
 
-If this is done, congratulations, dplasma is configured. Check that
-the PLASMA flags are meaningful. 
+If this is done, congratulations, DPLASMA is configured and you're ready for building and testing the system.
+
+In the unlikely case something goes wrong, read carefully the error message. We spend a significant amount of time trying to output something meaningful for you and for us (in case you need help to debug/understand). If the output is not helpful enough to fix the problem, you should contact us via the DPLASMA user mailing list and provide the CMake command and the flags, the output as well as the files CMakeFiles/CMakeError.log and CMakeFiles/CMakeOutput.log.
 
 ==== Troubleshooting ====
 
 * Issues we have encountered with BLAS libraries are out of scope of this README. Please, refer to your own experience to find how to have a working BLAS library, and header files. Those are supposed to be in the BLAS_LIBRARIES/lib and BLAS_LIBRARIES/include directories (create a phony directory with symbolic links to include/ and lib/ if needed).
 * When using the plasma-installer, some have reported that it was necessary after the make and make install, to copy all .h files found in src/ to include/
-* Don't mind if HWLOC or PAPI do not exist.
+* We use quite a few packages that are optional, don't panic if they are not found during the configuration. However, some of them are critical for increasing the performance (such as HWLOC).
 * Check that you have a working MPI somewhere accessible (mpicc and mpirun should be in your PATH)
-* If you have strange behavior, check that you have one of the following (if not, the atomic operations will not work, and that is damageable for the good operation of Dplasma)
+* If you have strange behavior, check that you have one of the following (if not, the atomic operations will not work, and that is damageable for the good operation of DPLASMA)
 ** Found target X86_64
 ** Found target gcc
-** Found target macosx
+** Found target MACOSX
 ** Found target x86_32
 * You can tune the compiler using variables (see also ccmake section):
 ** CC to choose your C compiler
