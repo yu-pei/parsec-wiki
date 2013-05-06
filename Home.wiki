@@ -10,6 +10,7 @@ Two moderated mailing-lists are available, one for the users and the other for t
 ** [[writejdf|How to write a DAGuE enabled operation by editing the JDF file directly]]
 ** [[datadistribution|How to write a program that uses a DAGuE enabled operation]] (a.k.a. "what is this data distribution thing?")
 ** [[profile|How to profile DAGuE applications]]
+** [[PINS|How to instrument DAGuE applications with PINS]]
 
 == HPL over PARSEC ==
  
