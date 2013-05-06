@@ -64,7 +64,7 @@ Currently, this method is not commonly used, as the initialization process for t
 
 **{{{pins_handle_fini}}}** is not currently provided by the PINS system, though it will soon be implemented and will provide a functionality mirroring that of {{{pins_handle_init}}}, and resembling that of {{{pins_fini}}}, but per handle instead of per PaRSEC runtime.
 
-**{{{pins_thread_init}}}** is invoked once per thread created by the PaRSEC runtime, very close to the beginning of that thread's lifetime, but, crucially, **after** the initialization of the PaRSEC profiling system and the registration of the thread with PAPI. This allows for the full and safe use of both the profiling system and PAPI calls, e.g. {{{PAPI_create_eventset()}}}. In PaRSEC, each thread is associated with one and only one {{{dague_execution_unit_t}}} for its entire lifetime, and these objects will have been fully initialized before the call to the module thread_init routine. However, the order of these per-thread invocations is not guaranteed.
+**{{{pins_thread_init}}}** is invoked once per thread created by the PaRSEC runtime, very close to the beginning of that thread's lifetime, but, crucially, **after** the initialization of the PaRSEC profiling system and the registration of the thread with PAPI. This allows for the full and safe use of both the profiling system and PAPI calls, e.g. {{{PAPI_create_eventset()}}}. In PaRSEC, each thread is associated with one and only one {{{dague_execution_unit_t}}} for its entire lifetime, and these objects will have been fully initialized before the call to the module thread_init routine. However, the order of these per-thread invocations is //**undefined**//.
 
 In {{{print_steals}}}, the thread_init routine simply allocates per-execution unit data counters.
 
@@ -76,7 +76,7 @@ static void pins_thread_init_print_steals(dague_execution_unit_t * exec_unit) {
 
 **{{{pins_thread_fini}}}** is invoked once per thread very near the end of the thread's lifetime, but before the destruction of the profiling system. 
 
-The order of **these** invocations **is** defined: the master thread (thread 0) will be fini'd first, and the rest of the threads will be fini'd in counting order of which core they were bound to, e.g.: 0, 1, 2, 3, ..., 46, 47, 48. This is particularly useful for the {{{print_steals}}} module, as it allows an elegant, in-order, row-by-row print of the task-stealing matrix that would otherwise have to be accomplished by nested {{{for}}} loops in the {{{pins_fini}}} call.
+The order of **these** invocations //**is**// defined: the master thread (thread 0) will be fini'd first, and the rest of the threads will be fini'd in counting order of which core they were bound to, e.g.: 0, 1, 2, 3, ..., 46, 47, 48. This is particularly useful for the {{{print_steals}}} module, as it allows an elegant, in-order, row-by-row print of the task-stealing matrix that would otherwise have to be accomplished by nested {{{for}}} loops in the {{{pins_fini}}} call.
 
 {{{
 static void pins_thread_fini_print_steals(dague_execution_unit_t * exec_unit) {
