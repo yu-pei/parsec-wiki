@@ -6,10 +6,43 @@ PINS is implemented as an extension to the Modular Component Architecture, origi
 
 A PINS module is generally comprised of two main pieces - the initialization and finalization code, and the callback functions that perform the instrumentation itself. There are 3 pairs of initialization and finalization functions - each invoked by a specific part of the runtime - and your module may implement as many or as few of them as are needed. They are:
 * {{{pins_init}}}
-* pins_fini
-* pins_thread_init
-* pins_thread_fini
-* pins_handle_init
-* pins_handle_fini
-pins_init is invoked
+* {{{pins_fini}}}
+* {{{pins_thread_init}}}
+* {{{pins_thread_fini}}}
+* {{{pins_handle_init}}}
+* {{{pins_handle_fini}}}
+
+{{{pins_init}}} is invoked a single time, during {{{dague_init()}}}, before the PaRSEC profiling system is active, and before the entirety of the dague_context_t structure (particularlly including all virtual process and thread structures) is instantiated.  This is the right place to perform any custom initialization, such as global memory allocation, that does not depend on anything thread or handle-related. 
+This also is the usual place to make calls to {{{PINS_REGISTER()}}}, the macro which will register your custom callback code with whichever callbacks your module requires. It is customary, in order to provide callback-overloading, that you store the return value of PINS_REGISTER (a function pointer) so that it can be called before your callback returns, as seen in {{{print_steals}}}:
+{{{
+static parsec_pins_callback * select_begin_prev; // courtesy calls to previously-registered cbs
+static parsec_pins_callback * select_end_prev;
+static int total_cores;
+
+// This will be called by pins_init()
+static void pins_init_print_steals(dague_context_t * master) {
+	select_begin_prev = PINS_REGISTER(SELECT_BEGIN, start_print_steals_count);
+	select_end_prev   = PINS_REGISTER(SELECT_END,   stop_print_steals_count);
+	total_cores = master->nb_vp * master->virtual_processes[0]->nb_cores;
+}
+
+static void start_print_steals_count(dague_execution_unit_t * exec_unit, 
+                                    dague_execution_context_t * exec_context, 
+                                    void * data) {
+	// keep the contract with the previous registrant
+	if (select_begin_prev != NULL) {
+		(*select_begin_prev)(exec_unit, exec_context, data);
+	}
+}
+
+static void stop_print_steals_count(dague_execution_unit_t * exec_unit, 
+                                   dague_execution_context_t * exec_context, 
+                                   void * data) {
+   ....
+	// keep the contract with the previous registrant
+	if (select_end_prev != NULL) {
+		(*select_end_prev)(exec_unit, exec_context, data);
+	}
+}
+}}}
 
