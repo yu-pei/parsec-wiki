@@ -2,7 +2,7 @@
 
 This page will explain how to use the Performance INStrumentation (PINS) system to instrument the operation of PaRSEC. It uses the existing "print_steals" module (source code available in the {{{src/mca/pins/print_steals}}} directory) as an example of a bare-bones PINS module that does not require the use of the PaRSEC profiling system for the collection of its data, and does not use PAPI for hardware measurement purposes. For help with using PAPI and the profiling system in PaRSEC to perform low-impact hardware-provided event measurements, refer to the built-in {{{papi_exec}}} and {{{papi_select}}} modules once you understand the architecture of the PINS system.
 
-PINS is implemented as an extension to the Modular Component Architecture, originally of OpenMPI. This provides very simple integration with the PaRSEC build process and PaRSEC runtime, at the cost of some extra 'markup' code in a {{{pins_<module name>_component.c}}} file for each module. You are encouraged to use any existing PINS module as a reference for how to write the code necessary for MCA to understand your PINS module. Please do note that the naming scheme of <directory with module's name> (e.g. {{{print_steals/}}}, containing a bare minimum of {{{pins_<module name>_component.c}}} and {{{pins_<module name>_module.c}}} is **absolutely mandatory** for the PaRSEC MCA compilation and initialization process to function at all.
+PINS is implemented as an extension to the Modular Component Architecture, originally of OpenMPI. This provides very simple integration with the PaRSEC build process and PaRSEC runtime, at the cost of some extra 'markup' code in a {{{pins_<module name>_component.c}}} file for each module. You are encouraged to use any existing PINS module as a reference for how to write the code necessary for MCA to understand your PINS module. //Please note// that the naming scheme of <directory with module's name>, e.g. {{{print_steals/}}}, containing a bare minimum of {{{pins_<module name>_component.c}}} and {{{pins_<module name>_module.c}}} (e.g., {{{pins_print_steals_component.c}}}) is **absolutely mandatory** for the PaRSEC MCA compilation and initialization process to function at all.
 
 A PINS module is generally comprised of two main pieces: the initialization and finalization code, and your custom instrumentation callback functions themselves. 
 
@@ -17,23 +17,23 @@ There are 3 pairs of initialization and finalization routines - each invoked by 
 * {{{pins_thread_init}}}
 * {{{pins_thread_fini}}}
 
-Again, any of these 6 routines may be provided by your module, and they will be invoked automatically by the PaRSEC runtime if they exist. You **must** specify which of the init/fini routines are provided, using a {{{dague_pins_module_t}}} struct similar to the one in {{{print_steals}}}'s {{{pins_print_steals_module.c}}} file:
+It is customary to name the init/fini routines {{{pins_<init/fini type>_<module name>}}} in order to maintain a level of consistency that will be helpful to other module developers. This naming convention is fully demonstrated in the {{{papi_exec}}}, {{{print_steals}}}, {{{papi_select}}}, and {{{papi_socket}}} modules.
+
+Any of these 6 routines may be provided by your module, and they will be invoked automatically by the PaRSEC runtime if they exist. You **must** specify which of the init/fini routines are provided, using a {{{dague_pins_module_t}}} struct similar to the one in {{{print_steals}}}'s {{{pins_print_steals_module.c}}} file:
 
 {{{
 const dague_pins_module_t dague_pins_print_steals_module = {
     &dague_pins_print_steals_component,
     {
-	    pins_init_print_steals, // name of function as prototyped
+	    pins_init_print_steals,
 	    pins_fini_print_steals,
-	    NULL, // HANDLE_INIT - not implemented, or not provided
-	    NULL, // HANDLE_FINI - not implemented, or not provided
+	    NULL, // not implemented, or not provided
+	    NULL, // not implemented, or not provided
 	    pins_thread_init_print_steals,
-	    NULL  // THREAD_FINI - not implemented, or not provided
+	    pins_thread_fini_print_steals
     }
 };
 }}}
-
-It is customary to name the init/fini routines {{{pins_<init/fini type>_<module name>}}} in order to maintain a level of consistency that will be helpful to other module developers. This naming convention is fully demonstrated in the {{{papi_exec}}}, {{{print_steals}}}, {{{papi_select}}}, and {{{papi_socket}}} modules.
 
 {{{pins_init}}} is invoked a single time, during {{{dague_init()}}}, before the PaRSEC profiling system is active, and before the entirety of the {{{dague_context_t}}} structure (particularlly including all virtual process and thread structures) is instantiated, but after the initialization of the PaRSEC profiling system (if built).  This is the right place to perform any custom initialization, such as global memory allocation, that does not depend on anything thread or handle-related. 
 
