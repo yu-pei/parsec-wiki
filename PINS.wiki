@@ -1,6 +1,6 @@
 == How to Write a Performance Instrumentation module ==
 
-This page will explain how to use the Performance INStrumentation (PINS) system to instrument the operation of PaRSEC. It uses the existing "print_steals" module (source code available in the {{{src/mca/pins/print_steals}}} directory) as an example of a bare-bones PINS module that does not require the use of the PaRSEC profiling system for the collection of its data, and does not use PAPI for hardware measurement purposes. For help with using PAPI and the profiling system in PaRSEC to perform low-impact hardware-provided event measurements, refer to the built-in {{{papi_exec}}} and {{{papi_select}}} modules once you understand the architecture of the PINS system.
+This page will explain how to use the Performance INStrumentation (PINS) system to instrument the operation of PaRSEC. It uses the existing {{{print_steals}}} module (source code available in the {{{src/mca/pins/print_steals}}} directory) as an example of a bare-bones PINS module that does not require the use of the PaRSEC profiling system for the collection of its data, and does not use PAPI for hardware measurement purposes. For help with using PAPI and the profiling system in PaRSEC to perform low-impact hardware-provided event measurements, refer to the built-in {{{papi_exec}}} and {{{papi_select}}} modules once you understand the architecture of the PINS system.
 
 PINS is implemented as an extension to the Modular Component Architecture, originally of OpenMPI. This provides very simple integration with the PaRSEC build process and PaRSEC runtime, at the cost of some extra 'markup' code in a {{{pins_<module name>_component.c}}} file for each module. You are encouraged to use any existing PINS module as a reference for how to write the code necessary for MCA to understand your PINS module. //Please note// that the naming scheme of <directory with module's name>, e.g. {{{print_steals/}}}, containing a bare minimum of {{{pins_<module name>_component.c}}} and {{{pins_<module name>_module.c}}} (e.g., {{{pins_print_steals_component.c}}}) is **absolutely mandatory** for the PaRSEC MCA compilation and initialization process to function at all.
 
@@ -100,7 +100,7 @@ Most modules will likely use the built-in callback types. The most up-to-date li
 * {{{SELECT_END}}} - called after scheduler has finished looking for an available task
 * {{{EXEC_BEGIN}}} - called before thread executes a task
 * {{{EXEC_END}}} - called after thread executes a task
-* {{{THREAD_INIT}}} - //special//. Provided as an option for modules to run work during thread init without using the MCA module registration system.
+* {{{THREAD_INIT}}} - //special//. Provided as an option for modules to do work during thread init without using the MCA module registration system.
 * {{{THREAD_FINI}}} - //special//. Similar to above, for thread finalization.
 * {{{HANDLE_INIT}}} - //special//. Similar to {{{THREAD_INIT}}}, for handle initialization.
 * {{{HANDLE_FINI}}} - //special//. Similar to {{{THREAD_FINI}}}, for handle finalialization.
