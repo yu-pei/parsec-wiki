@@ -74,9 +74,7 @@ static void pins_thread_init_print_steals(dague_execution_unit_t * exec_unit) {
 }
 }}}
 
-**{{{pins_thread_fini}}}** is invoked once per thread very near the end of the thread's lifetime, but before the destruction of the profiling system. 
-
-The order of **these** invocations //**is**// defined: the master thread (thread 0) will be fini'd first, and the rest of the threads will be fini'd in counting order of which core they were bound to, e.g.: 0, 1, 2, 3, ..., 46, 47, 48. This is particularly useful for the {{{print_steals}}} module, as it allows an elegant, in-order, row-by-row print of the task-stealing matrix that would otherwise have to be accomplished by nested {{{for}}} loops in the {{{pins_fini}}} call.
+**{{{pins_thread_fini}}}** is invoked once per thread very near the end of the thread's lifetime, but before the destruction of the profiling system. The order of **these** invocations //**is**// defined: the master thread (thread 0) will be fini'd first, and the rest of the threads will be fini'd in counting order of which core they were bound to, e.g.: 0, 1, 2, 3, ..., 46, 47, 48. This is particularly useful for the {{{print_steals}}} module, as it allows an elegant, in-order, row-by-row print of the task-stealing matrix that would otherwise have to be accomplished by nested {{{for}}} loops in the {{{pins_fini}}} call.
 
 {{{
 static void pins_thread_fini_print_steals(dague_execution_unit_t * exec_unit) {
