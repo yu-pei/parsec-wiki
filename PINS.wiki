@@ -37,7 +37,7 @@ const dague_pins_module_t dague_pins_print_steals_module = {
 
 {{{pins_init}}} is invoked a single time, during {{{dague_init()}}}, before the PaRSEC profiling system is active, and before the entirety of the {{{dague_context_t}}} structure (particularlly including all virtual process and thread structures) is instantiated, but after the initialization of the PaRSEC profiling system (if built).  This is the right place to perform any custom initialization, such as global memory allocation, that does not depend on anything thread or handle-related. 
 
-{{{pins_init}}} is also the usual place to make calls to {{{PINS_REGISTER()}}}, the macro which will register your custom callback code with whichever callbacks your module requires. It is customary, in order to provide callback-overloading, that you store the return value of {{{PINS_REGISTER}}} (a {{{parsec_pins_callback function}}} pointer) so that it can be called before your callback returns.
+{{{pins_init}}} is also the usual place to make calls to {{{PINS_REGISTER()}}}, the macro which will register your custom callback code with whichever callbacks your module requires. It is customary, in order to provide callback-overloading, that you store the return value of {{{PINS_REGISTER}}} (a {{{parsec_pins_callback function}}} pointer) so that it can be called before your callback returns -- this will be demonstrated in the section on Callback functions.
 {{{
 static parsec_pins_callback * select_end_prev; // courtesy call to previously-registered callback
 static int total_cores;
@@ -94,7 +94,18 @@ The callback functions are the core of most PINS modules. Various callback types
 
 PINS callbacks are functions with a very specific function prototype - the callbacks receive a pointer to a {{{dague_execution_unit_t}}} (the thread-specific data structure), a pointer to a {{{dague_execution_context_t}}} (the data structure encapsulating a single task in the DAG), and a {{{void}}} pointer, which may or may not be a pointer to some sort of data specific to a particular callback type. Most callback types will provide valid pointers for at least the first two. However, any of these 3 pointers may be NULL depending on whether it makes sense and is possible to provide each of the items for the given callback type. 
 
-Most modules will likely use the built-in callback types. {{{print_steals}}} uses only one type - {{{SELECT_END}}}, which is called at the end of task selection by the scheduler. It receives an execution unit, an execution context, and, by the particular implementation of the SELECT_END callback type in the schedulers that come included with PaRSEC, an integer (in the guise of a {{{void *}}}) representing the number of the core from which the execution context was stolen. These three items are used to increment one of the steal counters for the provided execution unit. Then, as previously mentioned, the callback is chained to the next registered callback (if any) with a simple invocation of the function pointer returned by the original call to {{{PINS_REGISTER()}}} in the {{{pins_init_print_steals}}} initialization routine.
+Most modules will likely use the built-in callback types. The most up-to-date list of callback types can be found in the source file {{{pins.h}}}, but as of this writing, the provided and working callback types are: 
+
+* {{{SELECT_BEGIN}}} - called before scheduler begins looking for an available task
+* {{{SELECT_END}}} - called after scheduler has finished looking for an available task
+* {{{EXEC_BEGIN}}} - called before thread executes a task
+* {{{EXEC_END}}} - called after thread executes a task
+* {{{THREAD_INIT}}} - //special//. Provided as an option for modules to run work during thread init without using the MCA module registration system.
+* {{{THREAD_FINI}}} - //special//. Similar to above, for thread finalization.
+* {{{HANDLE_INIT}}} - //special//. Similar to {{{THREAD_INIT}}}, for handle initialization.
+* {{{HANDLE_FINI}}} - //special//. Similar to {{{THREAD_FINI}}}, for handle finalialization.
+
+{{{print_steals}}} uses only one type - {{{SELECT_END}}}, which is called at the end of task selection by the scheduler. It receives an execution unit, an execution context, and, by the particular implementation of the {{{SELECT_END}}} callback type in the schedulers that come included with PaRSEC, an integer (in the guise of a {{{void *}}}) representing the number of the core from which the execution context was stolen. These three items are used to increment one of the steal counters for the provided execution unit. Then, as previously mentioned, the callback is chained to the next registered callback (if any) with a simple invocation of the function pointer returned by the original call to {{{PINS_REGISTER()}}} in the {{{pins_init_print_steals}}} initialization routine.
 
 {{{
 static void stop_print_steals_count(dague_execution_unit_t * exec_unit, 
