@@ -1,8 +1,8 @@
 == How to Write a Performance Instrumentation module ==
 
-This page will explain how to use the Performance INStrumentation (PINS) system to instrument the operation of PaRSEC. It uses the existing "print_steals" module (source code available in the src/mca/pins/print_steals directory) as an example of a bare-bones PINS module that does not require the use of the PaRSEC profiling system for the collection of its data, and does not use PAPI for hardware measurement purposes. For help with using PAPI and the profiling system in PaRSEC to perform low-impact hardware-provided event measurements, refer to the built-in "papi_exec" and "papi_select" modules once you understand the architecture of the PINS system.
+This page will explain how to use the Performance INStrumentation (PINS) system to instrument the operation of PaRSEC. It uses the existing "print_steals" module (source code available in the {{{src/mca/pins/print_steals}}} directory) as an example of a bare-bones PINS module that does not require the use of the PaRSEC profiling system for the collection of its data, and does not use PAPI for hardware measurement purposes. For help with using PAPI and the profiling system in PaRSEC to perform low-impact hardware-provided event measurements, refer to the built-in {{{papi_exec}}} and {{{papi_select}}} modules once you understand the architecture of the PINS system.
 
-PINS is implemented as an extension to the Modular Component Architecture, originally of OpenMPI. This provides very simple integration with the PaRSEC build process and PaRSEC runtime, at the cost of some extra 'markup' code in the *_component.c file for each module. You can use any MCA component or PINS module as a reference for how to write the code necessary for MCA to understand your PINS module.
+PINS is implemented as an extension to the Modular Component Architecture, originally of OpenMPI. This provides very simple integration with the PaRSEC build process and PaRSEC runtime, at the cost of some extra 'markup' code in the *{{{_component.c}}} file for each module. You can use any MCA component or PINS module as a reference for how to write the code necessary for MCA to understand your PINS module.
 
 A PINS module is generally comprised of two main pieces: the initialization and finalization code, and your custom instrumentation callback functions themselves. There are 3 pairs of initialization and finalization routines - each invoked by a specific part of the runtime - and your module may implement as many or as few of them as are needed. They are:
 * {{{pins_init}}}
@@ -12,7 +12,7 @@ A PINS module is generally comprised of two main pieces: the initialization and 
 * {{{pins_thread_init}}}
 * {{{pins_thread_fini}}}
 
-Again, any of these 6 routines may be provided by your module, and they will be invoked automatically by the PaRSEC runtime if they exist. You **must** specify which of the init/fini routines are provided, using a dague_pins_module_t struct similar to the one in {{{print_steals}}}'s {{{pins_print_steals_module.c}}} file:
+Again, any of these 6 routines may be provided by your module, and they will be invoked automatically by the PaRSEC runtime if they exist. You **must** specify which of the init/fini routines are provided, using a {{{dague_pins_module_t}}} struct similar to the one in {{{print_steals}}}'s {{{pins_print_steals_module.c}}} file:
 
 {{{
 const dague_pins_module_t dague_pins_print_steals_module = {
@@ -28,11 +28,11 @@ const dague_pins_module_t dague_pins_print_steals_module = {
 };
 }}}
 
-It is customary to name the init/fini routines with the prefix "pins_<init/fini type>_<module name>" in order to maintain a level of consistency that will be of use to other module developers. This naming convention is fully demonstrated in the papi_exec, print_steals, papi_select, and papi_socket modules.
+It is customary to name the init/fini routines {{{pins_<init/fini type>_<module name>}}} in order to maintain a level of consistency that will be of use to other module developers. This naming convention is fully demonstrated in the {{{papi_exec}}}, {{{print_steals}}}, {{{papi_select}}}, and {{{papi_socket}}} modules.
 
-{{{pins_init}}} is invoked a single time, during {{{dague_init()}}}, before the PaRSEC profiling system is active, and before the entirety of the dague_context_t structure (particularlly including all virtual process and thread structures) is instantiated.  This is the right place to perform any custom initialization, such as global memory allocation, that does not depend on anything thread or handle-related. 
+{{{pins_init}}} is invoked a single time, during {{{dague_init()}}}, before the PaRSEC profiling system is active, and before the entirety of the {{{dague_context_t}}} structure (particularlly including all virtual process and thread structures) is instantiated.  This is the right place to perform any custom initialization, such as global memory allocation, that does not depend on anything thread or handle-related. 
 
-{{{pins_init}}} is also the usual place to make calls to {{{PINS_REGISTER()}}}, the macro which will register your custom callback code with whichever callbacks your module requires. It is customary, in order to provide callback-overloading, that you store the return value of PINS_REGISTER (a parsec_pins_callback function pointer) so that it can be called before your callback returns, as seen in {{{print_steals}}}:
+{{{pins_init}}} is also the usual place to make calls to {{{PINS_REGISTER()}}}, the macro which will register your custom callback code with whichever callbacks your module requires. It is customary, in order to provide callback-overloading, that you store the return value of {{{PINS_REGISTER}}} (a {{{parsec_pins_callback function}}} pointer) so that it can be called before your callback returns, as seen in {{{print_steals}}}:
 {{{
 static parsec_pins_callback * select_begin_prev; // courtesy calls to previously-registered cbs
 static parsec_pins_callback * select_end_prev;
@@ -66,3 +66,30 @@ static void stop_print_steals_count(dague_execution_unit_t * exec_unit,
 }
 }}}
 
+{{{pins_fini}}} is the companion routine for {{{pins_init}}}. It is invoked a single time per PaRSEC runtime, after all processing has been completed, after the profiling subsystem has been flushed and removed, and after the virtual process and thread structures have been destroyed. It is generally used to undo everything done by the corresponding initialization routine, which should also generally include the re-registration of previously stored callback pointers returned by PINS_REGISTER, in order to cleanly allow for future use cases in which callbacks may continue to occur throughout PaRSEC system shutdown and cleanup. 
+
+As in the case of the {{{print_steals}}} module, the {{{pins_fini}}} routine may also be used to perform final operations with items stored in self-allocated or otherwise safe global memory:
+
+{{{
+static void pins_fini_print_steals(dague_context_t * master) {
+	PINS_REGISTER(SELECT_BEGIN, select_begin_prev);
+	PINS_REGISTER(SELECT_END,   select_end_prev);
+	// print and free counter arrays
+	int total_cores = master->nb_vp * master->virtual_processes[0]->nb_cores;
+	for (int i = 0; i < master->nb_vp; i++) {
+		for (int j = 0; j < master->virtual_processes[i]->nb_cores; j++) {
+			for (int k = 0; k < total_cores + 2; k++) {
+				printf("%7ld ", master->virtual_processes[i]->execution_units[j]->steal_counters[k]);
+			}
+			printf("\n");
+			free(master->virtual_processes[i]->execution_units[j]->steal_counters);
+		}
+	}
+}
+}}}
+
+{{{pins_handle_init}}} is invoked a single time per instantiated {{{dague_handle_t}}}. It is called after most of the handle information has been created, so initialization that is dependent on the handle's aspects should generally function as desired. 
+
+Currently, this method is not commonly used, as the initialization process for the {{{dague_handle_t}}} itself does not lend itself to the reliable use of the corresponding {{{pins_handle_fini}}} routine, and the PINS system itself does not allow for separate callbacks per handle. In the future, it is expected that instrumentation relating to the performance of most tasks would be best initialized and finalized per handle, as opposed to per overall PaRSEC process ({{{pins_init}}}), so as to provide the full flexibility of the PaRSEC runtime as it potentially runs many separate DAG graphs in parallel.
+
+{{{pins_handle_fini}}} is not currently provided by the PINS system, though it will soon be implemented and will provide a functionality mirroring that of {{{pins_handle_init}}}, and resembling that of {{{pins_fini}}}, but per handle instead of per PaRSEC runtime.
