@@ -124,3 +124,14 @@ static void stop_print_steals_count(dague_execution_unit_t * exec_unit,
 	}
 }
 }}}
+
+
+----
+=== Limiting Allowable Modules at Runtime ===
+By default, PaRSEC compiles (via MCA) all modules present in the {{{src/mca/pins/}}} directory at build time.  PINS is designed to allow multiple modules to run at the same time. However, PINS also does not perform any kind of automatic deconfliction between modules that may conflict with each other for whatever reason (e.g., multiple concurrent or overlapping registrations for PAPI events), and this means that it may sometimes be desirable to exclude some or all PINS modules from activation without the additional work of moving directories out of the source tree and recompiling. 
+
+Therefore, there is also a built-in capability to limit activated modules by name during runtime. The function **{{{set_allowable_pins_modules()}}}** is a once-per-runtime invocation that receives an array of {{{char *}}} names corresponding to the module names (recall that the module name is also the name of the directory inside the PINS source directory that contains the module code) that you wish to allow for activation during runtime. 
+
+It is not necessary to use this function at all - by default, all modules are **//enabled//**. If you //do// wish to use the function, you must call it **before** calling {{{dague_init()}}}, as the function will have no effect after {{{pins_init()}}} is run. 
+
+However, the DPLASMA testing executables provided with PaRSEC automatically invoke this function with an empty list in order to simplify testing processes. Therefore, in order to enable the use of any PINS modules when testing with a provided DPLASMA testing executable, you must use the {{{--mca-pins}}} command line flag with a list of comma-separated PINS module names, e.g. {{{./testing_dpotrf -N 10000 --mca-pins=print_steals}}}, or {{{./testing_dgeqrf -N 10000 --mca-pins=papi_socket,papi_select}}}.
