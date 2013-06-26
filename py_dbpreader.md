@@ -1,6 +1,6 @@
 The Python Profile reader, also named py_dbpreader, is a Python utility that uses the basic capabilities of the dbpreader tool written in C to expose the profiling information to Python code. 
 
-To build the Python tool successfully, an installation of Python 2.7 or greater is recommended, and Cython 0.16 or greater is required. After building PaRSEC with the -fPIC flag set for all C compilers, enter the tools/profiling/python subdirectory of the source code, and run "python setup.py build_ext --inplace" to build py_dbpreader. The setup.py file may require some editing to get the build working on your machine. Contact pgaultne@utk.edu for help.
+To build the Python tool successfully, an installation of Python 2.7 or greater is recommended, and Cython 0.16 or greater is required. After building PaRSEC with the -fPIC flag set for all C compilers, enter the tools/profiling/python subdirectory of the source code, and run "python setup.py build_ext --inplace" to build py_dbpreader. The setup.py script may require some editing to get the environment properly configured on your machine. Contact pgaultne@utk.edu for help.
 
 Once built, add the same tools/profiling/python directory to your PATH, PYTHONPATH, and LD_LIBRARY_PATH environment variables in order to ensure that the tool will run without issue.
 
