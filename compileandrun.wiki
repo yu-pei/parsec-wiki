@@ -6,7 +6,7 @@ Version 2.0, December 22, 2012, tested with on release 1.0 (from the public repo
 
 To compile DPLASMA on a new platform, you will need:
 * cmake version 2.8.0 or above. cmake can be found in the debian package cmake, or as sources at [[http://www.cmake.org/cmake/resources/software.html|the cmake download page]]
-* [[http://icl.cs.utk.edu/plasma/|PLASMA] version 2.5 or above.
+* [[http://icl.cs.utk.edu/plasma/software/index.html |PLASMA] version 2.5 or above.
 * a BLAS library optimized for your platform: MKL, ACML, Goto, Atlas, VecLib (MAC OS X), or in the worst case default BLAS.
 
 === Configuring DPLASMA for a new platform ===
