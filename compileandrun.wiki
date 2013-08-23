@@ -15,7 +15,7 @@ CMake is comparable to configure, but it's subtly different. For one thing, CMak
 
 CMake keeps everything it found hitherto in a cache file name CMakeCache.txt. Until you have successfully configured dplasma, remove the CMakeCache.txt file each time you run cmake.
 
-First, there are example invocations of cmake in the DPLASMA trunk (config.dancer is a typical  linux system, config.jaguar is for, you got it, XT5, ...). We advise you to start  from this file and tweak it for your system accordingly to the following guidelines. 
+First, there are example invocations of cmake in the DPLASMA trunk ( [DPLASMA/contrib/platforms/] config.dancer is a typical  linux system, config.jaguar is for, you got it, XT5, ...). We advise you to start  from this file and tweak it for your system accordingly to the following guidelines. 
 
 In order to enable the Linear Algebra package the PLASMA library is required. If you have a fairly recent version, correctly configured, this should be a breeze as it provides a pkg-config file that our configuration scripts understand. Thus, is your version of PLASMA is recent enough providing -DPLASMA_DIR=**my path to the PLASMA lib**, should be enough to have a straightforward configurations process.
 
