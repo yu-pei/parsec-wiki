@@ -9,7 +9,7 @@ Two moderated mailing-lists are available, one for the users and the other for t
 ** [[compilejdf|How to write a DAGuE enabled operation by using the DAGuE compiler]]
 ** [[writejdf|How to write a DAGuE enabled operation by editing the JDF file directly]]
 ** [[datadistribution|How to write a program that uses a DAGuE enabled operation]] (a.k.a. "what is this data distribution thing?")
-** [[profile|How to profile DAGuE applications]]
+** [[Profiling%20DAGuE-based%20applications|How to profile DAGuE applications]]
 ** [[PINS|How to instrument DAGuE applications with PINS]]
 ** [[py_dbpreader|How to use the Python Profile Reader]]
 
