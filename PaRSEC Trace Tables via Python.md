@@ -4,7 +4,7 @@ For PaRSEC-generated traces that fit comfortably within the limits of your syste
 
 There are two fundamental components to the PaRSEC Trace Tables system - a converter library, **pbt2ptt**, written in Cython that interfaces directly with the C-level dbpreader library, and a Python-only library, **parsec_trace_tables.py**, designed for interfacing with the converted traces. It will commonly be necessary to use both of these libraries at the same time, first to convert a binary trace file to the Trace Tables format, and then to access the data.
 
-# **Conversion** #
+# **Conversion and Load** #
 
 ## Basic Conversion ##
 
@@ -32,7 +32,7 @@ DISTRIBUTED-MEMORY (ONE BINARY FILE PER RANK, 4 RANKS):
 
 **Note: It is important that you carefully provide the binary files of all ranks from a distributed trace if you wish to use the basic converter. If you leave out any of the ranks, or add ranks from a separate trace, the trace conversion may fail, or may even succeed without complaint, leaving you with a broken/corrupted set of trace tables, or no trace tables at all.**
 
-## Converted Trace Files ##
+## About the Converted Trace Files ##
 
 The pbt2ptt converter will store your Trace Tables in a single file for the entire trace (whether shared or distributed memory), using the excellent HDF5 file format via the Python library PyTables [(http://www.pytables.org)](http://www.pytables.org). Use of the pbt2ptt Trace Tables converter requires that you have enough local storage to contain the new Trace Tables copy of the trace. 
 
@@ -40,9 +40,10 @@ There is currently no option to provide an output file name for the converter. T
 
 HDF5 is a very common big-data storage format, and as such the trace file may easily be read by many different languages and libraries. Only the Python parsec_trace_tables.py module is supported by the PaRSEC team, however.
 
-## Basic Trace Tables Read/Open ##
 
-To open a Trace Tables file from a Python script, the most basic method is to pass the filename to the from_hdf function in the parsec_trace_tables module:
+## Basic Load ##
+
+To load an already-converted Trace Tables file into a Python script, the most basic method is to pass the filename to the from_hdf function in the parsec_trace_tables module:
 
 ```
 #!Python
@@ -51,3 +52,27 @@ import parsec_trace_tables as ptt  # note that the 'ptt' shorthand is highly rec
 my_trace = ptt.from_hdf("testing_dpotrf-59mfcH.h5")
 print(my_trace.sched)
 ```
+
+To read a trace directly from the binary file(s), you use the pbt2ptt module function "read()":
+
+```
+#!Python
+import parsec_trace_tables as ptt
+import pbt2ptt
+
+# note that read() takes a list of filenames even if there is only one file
+my_trace = pbt2ptt.read(["testing_dpotrf.prof-59mfcH"])
+print(my_trace.sched)
+```
+
+## *Preferred* Method for Conversion and Load - **ptt_utils.py** ##
+
+While the above methods (both command line and scripted) for converting and using the PaRSEC Trace Tables are fully supported, it is recommended that you do not use them under most circumstances. They require the user to manually curate his or her set of trace files: to keep distributed traces grouped properly; to name and organize traces appropriately for later access; to write his/her scripts to access the unconverted binary files the first time, and the converted files all subsequent times in order to avoid the delays associated with conversion. 
+
+Instead, it is recommend that you use the ptt_utils.py utility to transparently convert and open your traces. This utility provided the following functionality and benefits:
+
+1. Performs simultaneous multi-core conversion of multiple traces.
+2. Automatically analyzes and groups binary trace files from different ranks but the same run.
+3. 
+
+# Usage #
