@@ -1,8 +1,10 @@
-## Intro ##
+# **Intro** #
 
 For PaRSEC-generated traces that fit comfortably within the limits of your system memory, there is a Python interface for converting and interacting with them. It's called Trace Tables, because all parts of the trace are stored as part of a tabular data structure (i.e., a matrix). This extremely powerful and flexible approach is made possible by the open-source Python library pandas ([http://pandas.pydata.org/](http://pandas.pydata.org/)).
 
 There are two fundamental components to the PaRSEC Trace Tables system - a converter library, **pbt2ptt**, written in Cython that interfaces directly with the C-level dbpreader library, and a Python-only library, **parsec_trace_tables.py**, designed for interfacing with the converted traces. It will commonly be necessary to use both of these libraries at the same time, first to convert a binary trace file to the Trace Tables format, and then to access the data.
+
+# **Conversion** #
 
 ## Basic Conversion ##
 
@@ -32,7 +34,7 @@ DISTRIBUTED-MEMORY (ONE BINARY FILE PER RANK, 4 RANKS):
 
 ## Converted Trace Files ##
 
-Use of the pbt2ptt Trace Tables converter requires that you have enough local storage to contain the new Trace Tables copy of the trace. The pbt2ptt converter will store your Trace Tables in a single file for the entire trace (whether shared or distributed memory), using the excellent HDF5 file format via the Python library PyTables [(http://www.pytables.org)](http://www.pytables.org). 
+The pbt2ptt converter will store your Trace Tables in a single file for the entire trace (whether shared or distributed memory), using the excellent HDF5 file format via the Python library PyTables [(http://www.pytables.org)](http://www.pytables.org). Use of the pbt2ptt Trace Tables converter requires that you have enough local storage to contain the new Trace Tables copy of the trace. 
 
 There is currently no option to provide an output file name for the converter. The converter will, by default, select the name of the first of the binary trace files provided at the command line, modify it slightly in order not to overwrite the original, and use that as the output filename. The output filenames will have a ".h5" extension in order to signify that they are a standard HDF5 file.
 
