@@ -8,7 +8,8 @@ There are two fundamental components to the PaRSEC Trace Tables system - a conve
 
 ## Basic Conversion ##
 
-The most basic way of performing this conversion is to run the converter library as a stand-alone program over the binary trace files that comprise an entire PaRSEC trace. For a shared-memory trace, there should be only one binary file per trace, but for a distributed trace there will be one binary file *per rank*. For each full trace, whether one file or many, you should invoke the pbt2ptt converter by passing as command line arguments the names of *all* of the files for **one and only one** trace.
+### Basic Command Line Method ###
+The most basic way of performing this conversion is to run the converter library as a stand-alone program over the binary trace files that comprise an entire PaRSEC trace. For a shared-memory trace, there will be only one binary file per trace, but for a distributed trace there will be one binary file *per rank*. For each full trace, whether one file or many, you should invoke the pbt2ptt converter by passing as command line arguments the names of *all* of the files for **one and only one** trace.
 
 For example:
 
@@ -30,7 +31,31 @@ DISTRIBUTED-MEMORY (ONE BINARY FILE PER RANK, 4 RANKS):
 ./pbt2ptt testing_dpotrf.prof-S7HmvJ testing_dpotrf.prof-PGpOS0 testing_dpotrf.prof-yr8jcS testing_dpotrf.prof-wiRjgs
 ```
 
-**Note: It is important that you carefully provide the binary files of all ranks from a distributed trace if you wish to use the basic converter. If you leave out any of the ranks, or add ranks from a separate trace, the trace conversion may fail, or may even succeed without complaint, leaving you with a broken/corrupted set of trace tables, or no trace tables at all.**
+### Basic Python Interface Method ###
+
+SHARED-MEMORY (ONE BINARY FILE PER TRACE):
+
+```
+#!Python
+import pbt2ptt
+
+pbt2ptt.convert(["testing_dpotrf.prof-59mfcH"])
+pbt2ptt.convert(["testing_dpotrf.prof-EjAi0I"])
+pbt2ptt.convert(["testing_dpotrf.prof-L41nAM"])
+```
+
+DISTRIBUTED-MEMORY (ONE BINARY FILE PER RANK, 4 RANKS):
+
+```
+#!Python
+import pbt2ptt
+
+pbt2ptt.convert(["testing_dpotrf.prof-S7HmvJ", "testing_dpotrf.prof-PGpOS0", 
+                 "testing_dpotrf.prof-yr8jcS", "testing_dpotrf.prof-wiRjgs"])
+```
+
+**It is important that you carefully provide the binary files of *all* ranks of a distributed trace if you wish to use the basic converter. If you leave out any of the ranks, or add rank trace files from a different trace, the trace conversion may fail, or may even succeed without complaint, leaving you with a broken/corrupted set of trace tables, or no trace tables at all. 
+Therefore, it is recommended that you use instead the autoload sequence described later in this document.**
 
 ## About the Converted Trace Files ##
 
@@ -62,6 +87,19 @@ import pbt2ptt
 
 # note that read() takes a list of filenames even if there is only one file
 my_trace = pbt2ptt.read(["testing_dpotrf.prof-59mfcH"])
+print(my_trace.sched)
+```
+
+Alternatively, if you wish to first convert the binary trace to a Trace Tables file, you may call from_hdf() with the return value of convert():
+
+```
+#!Python
+import parsec_trace_tables as ptt
+import pbt2ptt
+
+# convert will return the new PTT filename
+ptt_filename = pbt2ptt.convert(["testing_dpotrf.prof-59mfcH"])
+my_trace = pbt2ptt.from_hdf(ptt_filename)
 print(my_trace.sched)
 ```
 
