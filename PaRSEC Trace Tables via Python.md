@@ -71,8 +71,10 @@ While the above methods (both command line and scripted) for converting and usin
 
 Instead, it is recommend that you use the ptt_utils.py utility to transparently convert and open your traces. This utility provided the following functionality and benefits:
 
-1. Performs simultaneous multi-core conversion of multiple traces.
-2. Automatically analyzes and groups binary trace files from different ranks but the same run.
-3. 
+1. Automatically analyzes and groups binary trace files from different ranks of the same run.
+2. Performs simultaneous multi-core conversion of multiple traces.
+3. Enhances trace filenames to provide basic trace information via simple 'ls'.
+4. Compresses existing Trace Tables HDF5 files in parallel.
+5. Transparently loads from converted traces, if they exist, when provided the binary trace filenames.
 
 # Usage #
