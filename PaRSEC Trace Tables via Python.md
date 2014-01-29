@@ -9,7 +9,7 @@ There are two fundamental components to the Trace Tables system - a converter li
 
 **Note:** all command line instructions on this page assume that you have the Python scripts in your PATH environment variable. You may *source* the Bash script found in your PaRSEC build directory at **tools/profiling/python/utilities/bash.env** to automatically set up your environment.
 
-# **Conversion and Load** #
+# **Rudimentary Conversion and Load** #
 
 ## Basic Python Interface Conversion ##
 
