@@ -11,7 +11,7 @@ Two moderated mailing-lists are available, one for the users and the other for t
 ** [[datadistribution|How to write a program that uses a DAGuE enabled operation]] (a.k.a. "what is this data distribution thing?")
 ** [[Profiling%20DAGuE-based%20applications|How to profile DAGuE applications]]
 ** [[PINS|How to instrument DAGuE applications with PINS]]
-** [[py_dbpreader|How to use the Python Profile Reader]]
+** [[PaRSEC%20Trace%20Tables%20via%20Python|How to use the Python PaRSEC Trace Tables interface]]
 
 == HPL over PARSEC ==
  
