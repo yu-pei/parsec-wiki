@@ -2,9 +2,9 @@
 
 # **Intro** #
 
-For PaRSEC Binary Trace (PBT) files that fit comfortably within the limits of your system memory, there is a Python interface for converting and interacting with them. It's called PaRSEC Trace Tables (PTT), because all parts of the trace are stored as part of a tabular data structure (i.e., a matrix). This extremely powerful and flexible approach is made possible by the open-source Python library pandas ([http://pandas.pydata.org/](http://pandas.pydata.org/)).
+For PaRSEC Binary Trace (PBT) files that fit comfortably within the limits of your system memory, there is a Python interface for converting and interacting with them. It's called PaRSEC Trace Tables (PTT), because all parts of the trace are stored as part of a tabular data structure (i.e., a matrix). This extremely powerful and flexible approach is made possible by the open-source Python library pandas ([http://pandas.pydata.org/](http://pandas.pydata.org/)), which is therefore required to be present in your Python installation in order to use the Trace Tables.
 
-There are two fundamental components to the Trace Tables system - a converter library, **pbt2ptt**, written in Cython that interfaces directly with the C-level dbpreader library, and a Python-only library, **parsec_trace_tables.py**, designed for interfacing with the converted traces. It will commonly be necessary to use both of these libraries at the same time, first to convert a binary trace file to the Trace Tables format, and then to access the data.
+There are two fundamental components to the Trace Tables system - a converter library, **pbt2ptt**, written in Cython that interfaces directly with the C-level dbpreader library, and a Python-only library, **parsec_trace_tables.py**, designed for interfacing with the converted traces. It will commonly be necessary to use both of these libraries, first to convert a binary trace file to the Trace Tables format, and then to access the data.
 
 
 **Note:** all command line instructions on this page assume that you have the Python scripts in your PATH environment variable. You may *source* the Bash script found in your PaRSEC build directory at **tools/profiling/python/utilities/bash.env** to automatically set up your environment.
