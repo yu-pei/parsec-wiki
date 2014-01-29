@@ -6,6 +6,10 @@ For PaRSEC Binary Trace (PBT) files that fit comfortably within the limits of yo
 
 There are two fundamental components to the Trace Tables system - a converter library, **pbt2ptt**, written in Cython that interfaces directly with the C-level dbpreader library, and a Python-only library, **parsec_trace_tables.py**, designed for interfacing with the converted traces. It will commonly be necessary to use both of these libraries, first to convert a binary trace file to the Trace Tables format, and then to access the data.
 
+## software requirements as of January 2014 ##
+
+* PaRSEC Trace Tables is based on pandas, and requires version 0.12 or higher.
+* Cython 0.18+ is required for the compilation of the pbt2ptt library and all conversion-related routines.
 
 **Note:** all command line instructions on this page assume that you have the Python scripts in your PATH environment variable. You may *source* the Bash script found in your PaRSEC build directory at **tools/profiling/python/utilities/bash.env** to automatically set up your environment.
 
@@ -101,8 +105,8 @@ Instead, it is recommend that you use the ptt_utils.py utility to transparently 
 1. Algorithmically groups binary trace files from different ranks of the same run, reducing user error.
 2. Converts multiple traces simultaneously on multiple cores, reducing wait time.
 3. Configurably renames trace files to provide basic trace information as part of the filename, reducing user confusion.
-4. Compresses existing Trace Tables HDF5 files in parallel, to reduce wait time and disk space usage.
-5. Transparently loads from converted traces, if they exist, when provided the binary trace filenames, reducing script complexity and clutter.
+4. Compresses existing Trace Tables HDF5 files in parallel, to reduce disk space usage.
+5. Transparently loads from converted traces, if they exist in the same directory, when provided the binary trace filenames, reducing script complexity and clutter.
 
 The fifth benefit is the first benefit that most users will notice, as the command line and Python interfaces are both dramatically simplified. The method for almost every command line-based operation is "run ptt_utils.py over all files," and the method for almost every Python scripting operation is "call autoload_traces() with a list of all filenames." 
 
