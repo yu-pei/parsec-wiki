@@ -155,7 +155,7 @@ ptt_utils.py --compress *.h5 other_dir/testing_dpotrf-59mfcH.h5 other_dir/testin
 
 ## PaRSEC Trace Tables Structure ##
 
-The PaRSEC Trace Tables Python class is a relatively simple container object for multiple pandas DataFrames (or tables) and multiple pandas Series (or dictionaries). You can think of the DataFrame as a 2-D matrix, with the columns specifying the different data types and their names/labels, and the rows being the data themselves - one row per collection of data elements that make a complete set. The current table and dictionary types can be easily referenced from the **parsec_trace_tables.py** Python module file, but the table names as of this writing are:
+The PaRSEC Trace Tables Python class is a relatively simple container object for multiple pandas DataFrames (or tables) and multiple pandas Series (or dictionaries). You can think of the DataFrame as a 2-D matrix, with the columns specifying the different data types and their names/labels, and the rows being the data themselves - one row per set of related data elements (e.g., a single trace event, or the information about a single thread). The current table and dictionary types can be easily referenced from the **parsec_trace_tables.py** Python module file, but the table names as of this writing are:
 
 * events
 * nodes
