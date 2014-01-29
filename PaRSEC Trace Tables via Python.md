@@ -151,4 +151,15 @@ Similarly, it is possible to compress PTT files from the command line with ptt_u
 ptt_utils.py --compress *.h5 other_dir/testing_dpotrf-59mfcH.h5 other_dir/testing_dpotrf-kVDDBr.h5
 ```
 
-# Usage #
+# **Usage** #
+
+The PaRSEC Trace Tables Python class is a relatively simple container object for multiple pandas DataFrames, or tables. The current table types can be easily referenced from the **parsec_trace_tables.py** Python module file, but the table names as of this writing are:
+
+* events
+* event_types
+* event_names
+* nodes
+* threads
+* information
+* errors
+* event_attributes
