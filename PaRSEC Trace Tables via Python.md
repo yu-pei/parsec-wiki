@@ -51,6 +51,7 @@ HDF5 is a very common big-data storage format, and as such the trace file may ea
 
 ## Basic Python Load ##
 
+### from Trace Tables (PTT) ###
 To load an already-converted Trace Tables file into a Python script, the most basic method is to pass the filename to the from_hdf function in the parsec_trace_tables module:
 
 ```
@@ -61,9 +62,9 @@ my_trace = ptt.from_hdf("testing_dpotrf-59mfcH.h5")
 print(my_trace.sched)
 ```
 
-#### Load from Binary Format ####
+### from Binary Format (PBT) ###
 
-To read a trace directly from the binary file(s), you use the pbt2ptt module function "read()":
+To read a trace directly from the binary file(s) without first converting in order to save the local storage space used by a converted PTT file, you use the pbt2ptt module function "read()":
 
 ```
 #!Python
@@ -89,7 +90,7 @@ my_trace = pbt2ptt.from_hdf(ptt_filename)
 print(my_trace.sched)
 ```
 
-**HOWEVER... It would be better if you ignored all of the above options for conversion and loading, and skipped straight to the section below about ptt_utils.py!**
+**HOWEVER...** It will be better if you **ignore all of the above options for conversion and loading**, and skipp straight to the section below about ptt_utils.py!
 
 # **ptt_utils.py** - the *Preferred* Method for Conversion and Load #
 
