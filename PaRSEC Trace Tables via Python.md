@@ -11,31 +11,9 @@ There are two fundamental components to the Trace Tables system - a converter li
 
 # **Conversion and Load** #
 
-## Basic Command Line Conversion ###
-The most basic way of performing this conversion is to run the converter library as a stand-alone program over the binary trace files that comprise an entire PaRSEC trace. For a shared-memory trace, there will be only one binary file per trace, but for a distributed trace there will be one binary file *per rank*. For each full trace, whether one file or many, you should invoke the pbt2ptt converter by passing as command line arguments the names of *all* of the files for **one and only one** trace.
+## Basic Python Interface Conversion ##
 
-For example:
-
-SHARED-MEMORY (ONE BINARY FILE PER TRACE):
-
-```
-#!Bash
-
-pbt2ptt.py testing_dpotrf.prof-59mfcH
-pbt2ptt.py testing_dpotrf.prof-9C19zV
-pbt2ptt.py testing_dpotrf.prof-4xACDt
-```
-
-DISTRIBUTED-MEMORY (ONE BINARY FILE PER RANK, 4 RANKS):
-
-```
-#!Bash
-
-pbt2ptt.py testing_dpotrf.prof-S7HmvJ testing_dpotrf.prof-PGpOS0 testing_dpotrf.prof-yr8jcS testing_dpotrf.prof-wiRjgs
-pbt2ptt.py testing_dpotrf.prof-kVDDBr testing_dpotrf.prof-L41nAM
-```
-
-## Basic Python Interface Conversion ###
+The most basic way of performing this conversion is to import the converter library in a Python script and call its methods on the binary trace files that comprise an entire PaRSEC trace. For a shared-memory trace, there will be only one binary file per trace, but for a distributed trace there will be one binary file *per rank*. Whether one file or many, you should invoke the pbt2ptt converter by passing a list of *all* of the filenames for **one and only one** trace.
 
 SHARED-MEMORY (ONE BINARY FILE PER TRACE):
 ```
@@ -66,7 +44,7 @@ Therefore, *it is recommended that you use instead the autoload sequence describ
 
 The pbt2ptt converter will store your Trace Tables in a single file for the entire trace (whether shared or distributed memory), using the excellent HDF5 file format via the Python library PyTables [(http://www.pytables.org)](http://www.pytables.org). Use of the pbt2ptt Trace Tables converter requires that you have enough local storage to contain the new Trace Tables copy of the trace. 
 
-There is currently no option to provide an output file name for the converter. The converter will, by default, select the name of the first of the binary trace files provided at the command line, modify it slightly in order not to overwrite the original, and use that as the output filename. The output filenames will have a ".h5" extension in order to signify that they are a standard HDF5 file.
+If you do not provide an output file name for the converter, the converter will select the name of the first of the binary trace files provided at the command line, modify it slightly in order not to overwrite the original, and use that as the output filename. The output filenames will have a ".h5" extension in order to signify that they are a standard HDF5 file. It is recommended that you allow the converter to choose its own filename, or, better yet, use the supplied ptt_utils.py functionality that will rename your files to a more useful name.
 
 HDF5 is a very common big-data storage format, and as such the trace file may easily be read by many different languages and libraries. Only the Python parsec_trace_tables.py module is supported by the PaRSEC team, however.
 
