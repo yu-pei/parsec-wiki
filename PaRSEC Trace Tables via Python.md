@@ -153,13 +153,49 @@ ptt_utils.py --compress *.h5 other_dir/testing_dpotrf-59mfcH.h5 other_dir/testin
 
 # **Usage** #
 
-The PaRSEC Trace Tables Python class is a relatively simple container object for multiple pandas DataFrames, or tables. The current table types can be easily referenced from the **parsec_trace_tables.py** Python module file, but the table names as of this writing are:
+## PaRSEC Trace Tables Structure ##
+
+The PaRSEC Trace Tables Python class is a relatively simple container object for multiple pandas DataFrames (or tables) and multiple pandas Series (or dictionaries). You can think of the DataFrame as a 2-D matrix, with the columns specifying the different data types and their names/labels, and the rows being the data themselves - one row per collection of data elements that make a complete set. The current table and dictionary types can be easily referenced from the **parsec_trace_tables.py** Python module file, but the table names as of this writing are:
 
 * events
-* event_types
-* event_names
 * nodes
 * threads
-* information
 * errors
+
+and the dictionary names are:
+
+* event_types
+* event_names
+* information
 * event_attributes
+
+## Events ##
+
+The events table is the most important, as it contains one row for every event in the trace. Not all events have all the same elements (i.e., not all rows have a non-null datum for every column), but all PaRSEC trace events currently have at least the following data elements:
+
+* id
+* node_id
+* thread_id
+* handle_id
+* type
+* begin
+* end
+* duration
+* flags
+
+These event data can be accessed, like any other data element belonging to a given event, with the following common Python syntax:
+
+```
+#!Python
+import ptt_utils
+
+my_traces = ptt_utils.autoload_traces(['testing_dpotrf.prof-fjf93f'])
+my_trace = my_traces[0]
+
+my_trace.events.node_id # this will provide a Series of all node_ids for all events
+my_trace.events.node_id.iloc[4] # this will provide the node_id for the event in row 4 (0 indexed)
+
+# this next statement provides node_ids where the node_id == 4
+my_trace.events.node_id[:][trace.events.node_id == 4] 
+
+```
