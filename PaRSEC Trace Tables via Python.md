@@ -209,3 +209,22 @@ my_trace.events.node_id.iloc[4] # this will provide the node_id for the event in
 my_trace.events.node_id[:][trace.events.node_id == 4] # this is a special pandas syntax for filtering data from a DataFrame
 
 ```
+
+## Event Names & Types ##
+
+There are two dictionary lookups to assist in filtering the PTT data in a human-readable way. Every PaRSEC trace event has a "type," and these types are represented in the event data itself by integers. In order to perform a lookup by name, use the event_types dictionary to retrieve the integer type associated with a name. For a reverse lookup of a name by integer type, use the event_names dictionary:
+
+
+```
+#!Python
+# we already have loaded a trace...
+
+GEMM_type_int = trace.event_types['GEMM']
+# now filter the events to view only the GEMM events
+gemm_events = trace.events[:][trace.events.type == GEMM_type_int]
+
+# now we lookup the type name of a randomly-selected event
+random_event = trace.events.iloc[3435]
+event_type_name = trace.event_names[random_event.type]
+
+```
