@@ -153,16 +153,24 @@ ptt_utils.py --compress *.h5 other_dir/testing_dpotrf-59mfcH.h5 other_dir/testin
 
 # **Usage** #
 
+## PTT **is** pandas ###
+
+The PaRSEC Trace Tables Python class is a relatively simple container for multiple [pandas](http://pandas.pydata.org) DataFrames (or tables) and multiple pandas Series (or dictionaries). It is highly recommended that you refer to the [pandas documentation](http://pandas.pydata.org/pandas-docs/stable/) for specifics on how to interact with the data. 
+
+As a basic introduction, however, you can think of the pandas DataFrame as a 2-D matrix, with the columns specifying the different data types and their names/labels, and the rows being the data themselves - one row per set of related data elements (e.g., a single trace event, or the information about a single thread). A Series is basically a dictionary or hash table, though you can also think of it as being a one-row DataFrame. 
+
+In addition to the pandas docs, you may find the demo_ptt.py script in the "tools/profiling/python/examples" directory to be a helpful and quick reference for some of the basic ways to interact with the data.
+
 ## PaRSEC Trace Tables Structure ##
 
-The PaRSEC Trace Tables Python class is a relatively simple container object for multiple pandas DataFrames (or tables) and multiple pandas Series (or dictionaries). You can think of the DataFrame as a 2-D matrix, with the columns specifying the different data types and their names/labels, and the rows being the data themselves - one row per set of related data elements (e.g., a single trace event, or the information about a single thread). The current table and dictionary types can be easily referenced from the **parsec_trace_tables.py** Python module file, but the table names as of this writing are:
+The current table and dictionary types can be easily referenced from the **parsec_trace_tables.py** Python module file, but the table/DataFrame names as of this writing are:
 
 * events
 * nodes
 * threads
 * errors
 
-and the dictionary names are:
+and the dictionary/Series names are:
 
 * event_types
 * event_names
@@ -183,6 +191,8 @@ The events table is the most important, as it contains one row for every event i
 * duration
 * flags
 
+Depending on the event, there may be additional data elements (columns), such as "kernel_type".
+
 These event data can be accessed, like any other data element belonging to a given event, with the following common Python syntax:
 
 ```
@@ -196,6 +206,6 @@ my_trace.events.node_id # this will provide a Series of all node_ids for all eve
 my_trace.events.node_id.iloc[4] # this will provide the node_id for the event in row 4 (0 indexed)
 
 # this next statement provides node_ids where the node_id == 4
-my_trace.events.node_id[:][trace.events.node_id == 4] 
+my_trace.events.node_id[:][trace.events.node_id == 4] # this is a special pandas syntax for filtering data from a DataFrame
 
 ```
