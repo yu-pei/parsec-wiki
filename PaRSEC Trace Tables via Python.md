@@ -228,3 +228,25 @@ random_event = trace.events.iloc[3435]
 event_type_name = trace.event_names[random_event.type]
 
 ```
+
+## describe() and dtypes ##
+
+For further information about each part of the PaRSEC Trace Tables object, you can use both of the following pieces of code for each part:
+
+
+```
+#!Python
+
+print(trace.events.dtypes)
+print(trace.nodes.dtypes)
+print(trace.information.dtypes)
+# etc
+
+# -- and --
+
+print(trace.events.describe())
+print(trace.threads.describe())
+print(trace.event_types.describe())
+# etc
+
+```
