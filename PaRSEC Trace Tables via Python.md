@@ -212,7 +212,7 @@ my_trace.events.node_id[:][trace.events.node_id == 4] # this is a special pandas
 
 ## Event Names & Types ##
 
-There are two dictionary lookups to assist in filtering the PTT data in a human-readable way. Every PaRSEC trace event has a "type," and these types are represented in the event data itself by integers. In order to perform a lookup by name, use the event_types dictionary to retrieve the integer type associated with a name. For a reverse lookup of a name by integer type, use the event_names dictionary:
+There are two dictionary lookups to assist in filtering the PTT event data in a human-readable way. Every PaRSEC trace event has a "type," and these types are represented in the event data itself by integers. In order to perform a lookup by name, use the event_types dictionary to retrieve the integer type associated with a name. For a reverse lookup of a name by integer type, use the event_names dictionary:
 
 
 ```
