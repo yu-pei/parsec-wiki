@@ -219,13 +219,13 @@ There are two dictionary lookups to assist in filtering the PTT event data in a 
 #!Python
 # we already have loaded a trace...
 
-GEMM_type_int = trace.event_types['GEMM']
+GEMM_type_int = my_trace.event_types['GEMM']
 # now filter the events to view only the GEMM events
-gemm_events = trace.events[:][trace.events.type == GEMM_type_int]
+gemm_events = my_trace.events[:][my_trace.events.type == GEMM_type_int]
 
 # now we lookup the type name of a randomly-selected event
-random_event = trace.events.iloc[3435]
-event_type_name = trace.event_names[random_event.type]
+random_event = my_trace.events.iloc[3435]
+event_type_name = my_trace.event_names[random_event.type]
 
 ```
 
@@ -237,16 +237,16 @@ For further information about each part of the PaRSEC Trace Tables object, you c
 ```
 #!Python
 
-print(trace.events.dtypes)
-print(trace.nodes.dtypes)
-print(trace.information.dtypes)
+print(my_trace.events.dtypes)
+print(my_trace.nodes.dtypes)
+print(my_trace.information.dtypes)
 # etc
 
 # -- and --
 
-print(trace.events.describe())
-print(trace.threads.describe())
-print(trace.event_types.describe())
+print(my_trace.events.describe())
+print(my_trace.threads.describe())
+print(my_trace.event_types.describe())
 # etc
 
 ```
