@@ -6,9 +6,9 @@ For PaRSEC Binary Trace (PBT) files that fit comfortably within the limits of yo
 
 There are two fundamental components to the Trace Tables system - a converter library, **pbt2ptt**, written in Cython that interfaces directly with the C-level dbpreader library, and a Python-only library, **parsec_trace_tables.py**, designed for interfacing with the converted traces. It will commonly be necessary to use both of these libraries, first to convert a binary trace file to the Trace Tables format, and then to access the data.
 
-## software requirements as of January 2014 ##
+## software requirements as of February 2014 ##
 
-* PaRSEC Trace Tables is based on pandas, and requires version 0.12 or higher.
+* PaRSEC Trace Tables is based on pandas, and requires version **0.13** or higher.
 * Cython 0.18+ is required for the compilation of the pbt2ptt library and all conversion-related routines.
 
 **Note:** all command line instructions on this page assume that you have the Python scripts in your PATH environment variable. You may *source* the Bash script found in your PaRSEC build directory at **tools/profiling/python/utilities/bash.env** to automatically set up your environment.
@@ -153,7 +153,7 @@ ptt_utils.py --compress *.h5 other_dir/testing_dpotrf-59mfcH.h5 other_dir/testin
 
 # **Usage** #
 
-## PTT **is** pandas ###
+## PTT **is** multiple pandas :) ###
 
 The PaRSEC Trace Tables Python class is a relatively simple container for multiple [pandas](http://pandas.pydata.org) DataFrames (or tables) and multiple pandas Series (or dictionaries). It is highly recommended that you refer to the [pandas documentation](http://pandas.pydata.org/pandas-docs/stable/) for specifics on how to interact with the data. 
 
