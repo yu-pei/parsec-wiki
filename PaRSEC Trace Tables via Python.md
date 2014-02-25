@@ -8,8 +8,15 @@ There are two fundamental components to the Trace Tables system - a converter li
 
 ## software requirements as of February 2014 ##
 
-* PaRSEC Trace Tables is based on pandas, and requires version **0.13** or higher.
-* Cython 0.18+ is required for the compilation of the pbt2ptt library and all conversion-related routines.
+PaRSEC Trace Tables is based on pandas, and requires the use of a number of other common Python libraries to compile and function.
+
+* Cython 0.18+ is required for the compilation of the pbt2ptt library, which reads and converts the binary trace files.
+* pandas 0.13+ is required for Python-side interface. See http://pandas.pydata.org/pandas-docs/stable/install.html for specific dependencies of pandas, including NumPy.
+* PyTables 2.4+ is required for the converted HDF5 trace files.
+
+* Matplotlib 1.3+ is necessary for many of the example scripts, which use it to plot the data, but is not required to use the basic PTT functionality in your own scripts.
+
+Probably the easiest way to satisfy all of these dependencies at once is to install Continuum Analytics' "Anaconda" Python distribution (https://store.continuum.io/cshop/anaconda/), which is free and comes with all of the dependencies preinstalled.
 
 **Note:** all command line instructions on this page assume that you have the Python scripts in your PATH environment variable. You may *source* the Bash script found in your PaRSEC build directory at **tools/profiling/python/utilities/bash.env** to automatically set up your environment.
 
