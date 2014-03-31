@@ -1,3 +1,5 @@
+Running PaRSEC on Intel Xeon Phi is almost the same as [[https://bitbucket.org/bosilca/dplasma/wiki/compileandrun |running on other platforms]]. But there are some differences in the following sections:
+
 == Install required softwares ==
 
 To compile PaRSEC/DPLASMA in Intel Xeon Phi,you will need the following software of Intel Xeon Phi version:
