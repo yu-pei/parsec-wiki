@@ -27,7 +27,7 @@ Once configuration is done, type {{{ccmake .}}} in your PaRSEC root folder. Plea
 
 If the configuration was good, compilation should be as simple and fancy as 'make'.
 
-== Running DPLASMA ==
+== Running DPLASMA on Intel Xeon Phi==
 All testing programs are compiled in {{{dplasma/testing}}}. Copy your executable testing file to Intel Xeon Phi. Then run it with the following command:
 {{{env MKL_NUM_THREADS=4 MKL_DYNAMIC=false OMP_DYNAMIC=false ./testing_dgemm -N 12000 -t 480 -c 60}}},
 {{{-c 60}}} means using 60 cores. Usually, each PaRSEC thread manages 1 physical core. Since there are 4 hyper thread per core, please use {{{MKL_NUM_THREADS=4}}}
