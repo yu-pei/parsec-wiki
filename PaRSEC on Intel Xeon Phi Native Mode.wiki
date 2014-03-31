@@ -3,8 +3,8 @@ Running PaRSEC on Intel Xeon Phi is almost the same as [[https://bitbucket.org/b
 == Install required softwares ==
 
 To compile PaRSEC/DPLASMA in Intel Xeon Phi,you will need the following software of Intel Xeon Phi version:
-* a BLAS library excitable on Intel Xeon Phi, usually is MKL.
-* [[http://icl.cs.utk.edu/plasma/software/index.html |PLASMA]]. To get a Intel Xeon Phi version, please use x86_64-k1om-linux-gcc or icc with flags -mmic as C compiler, and x86_64-k1om-linux-gfortran or ifort with flags -mmic as Fortran compiler (x86_64-k1om-linux-gcc and x86_64-k1om-linux-gfortran are usually in {{{/usr/linux-k1om-4.7/bin}}} of your system) . Since PLASMA requires LAPACK and LAPACKE, make sure you LAPACK and LAPACKE are also compiled with the above compilers.
+* a BLAS library excitable on Intel Xeon Phi, usually is MKL. When using MKL, please use multi-thread version since there are 4 hyper threads per physical core.
+* [[http://icl.cs.utk.edu/plasma/software/index.html |PLASMA]]. To get a Intel Xeon Phi version, please use x86_64-k1om-linux-gcc or icc with flags -mmic as C compiler, and x86_64-k1om-linux-gfortran or ifort with flags -mmic as Fortran compiler (x86_64-k1om-linux-gcc and x86_64-k1om-linux-gfortran are usually in {{{/usr/linux-k1om-4.7/bin}}} of your system). **Regular version of PLASMA use sequential MKL, but the Xeon Phi version requires multi-thread version.** Since PLASMA requires LAPACK and LAPACKE, make sure you LAPACK and LAPACKE are also compiled with the above compilers.
 
 == Configuring and compiling PaRSEC for Intel Xeon Phi == 
 
@@ -29,4 +29,3 @@ If the configuration was good, compilation should be as simple and fancy as 'mak
 == Running DPLASMA ==
 All testing programs are compiled in {{{dplasma/testing}}}. Copy your executable testing file to Intel Xeon Phi. Then run it with the following command:
 {{{env MKL_NUM_THREADS=4 MKL_DYNAMIC=false OMP_DYNAMIC=false ./testing_dgemm -N 12000 -t 480 -c 60}}}
-
