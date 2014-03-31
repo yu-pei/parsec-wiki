@@ -29,9 +29,9 @@ If the configuration was good, compilation should be as simple and fancy as 'mak
 
 == Running DPLASMA ==
 All testing programs are compiled in {{{dplasma/testing}}}. Copy your executable testing file to Intel Xeon Phi. Then run it with the following command:
-{{{env MKL_NUM_THREADS=4 MKL_DYNAMIC=false OMP_DYNAMIC=false ./testing_dgemm -N 12000 -t 480 -c 60}}}
+{{{env MKL_NUM_THREADS=4 MKL_DYNAMIC=false OMP_DYNAMIC=false ./testing_dgemm -N 12000 -t 480 -c 60}}},
 {{{-c 60}}} means using 60 cores. Usually, each PaRSEC thread manages 1 physical core. Since there are 4 hyper thread per core, please use {{{MKL_NUM_THREADS=4}}}
 
 Intel Xeon Phi contains 61 physical cores (1 is reserved for OS, so 60 cores are available for users), so it requires problems to have enough parallelism to get really good performance. Therefore, we introduce virtual core. Each virtual core contains multiple physical cores, and we let each PaRSEC thread manages each virtual core. Inside virtual core is taken care of by multi-thread BLAS. So you can run testing like this:
 {{{env MKL_NUM_THREADS=4*k MKL_DYNAMIC=false OMP_DYNAMIC=false ./testing_dgemm -N 12000 -t 480 -c 240/4k}}}
-k is the number of hyper thread per virtual core. 
+k is the number of physical cores per virtual core. You can tune k to get a good performance. 
