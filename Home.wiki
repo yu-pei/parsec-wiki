@@ -12,6 +12,7 @@ Two moderated mailing-lists are available, one for the users and the other for t
 ** [[Profiling%20DAGuE-based%20applications|How to profile DAGuE applications]]
 ** [[PINS|How to instrument DAGuE applications with PINS]]
 ** [[PaRSEC%20Trace%20Tables%20via%20Python|How to use the Python PaRSEC Trace Tables interface]]
+** [[PaRSEC%20in%20Intel%20Xeon%20Phi|How to run PaRSEC in Intel Xeon Phi (native mode)]]
 * [[PaRSEC%20based%20tricks%20for%20fun%20or%20profit|Bonus tricks (mainly for developers)]]
 
 == HPL over PARSEC ==
