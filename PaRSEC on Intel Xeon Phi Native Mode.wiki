@@ -5,3 +5,19 @@ Running PaRSEC on Intel Xeon Phi is almost the same as [[https://bitbucket.org/b
 To compile PaRSEC/DPLASMA in Intel Xeon Phi,you will need the following software of Intel Xeon Phi version:
 * a BLAS library excitable on Intel Xeon Phi, usually is MKL.
 * [[http://icl.cs.utk.edu/plasma/software/index.html |PLASMA]]. To get a Intel Xeon Phi version, please use x86_64-k1om-linux-gcc or icc with flags -mmic as C compiler, and x86_64-k1om-linux-gfortran or ifort with flags -mmic as Fortran compiler . Since PLASMA requires LAPACK and LAPACKE, make sure you LAPACK and LAPACKE are also compiled with the above compilers.
+
+== Configuring and compiling PaRSEC for Intel Xeon Phi == 
+
+**PaRSEC is able to use cross platform compilation, so compiling is always done in CPU, then executable program is copied to Intel Xeon Phi and run**
+First, update to the branch native-mic-all-about-data. This is a branch especially for Intel Xeon Phi, inherited from all-about-data. There is an example invocation of cmake {{{contrib/platforms/config.mic}}}. Please start from this file and tweak it for your system. The same as compiling PLASMA, set compilers as follows:
+{{{
+CC=${CC:="icc -mmic"}
+CXX=${CXX:="icpc -mmic"}
+FC=${FC:="ifort -mmic"}
+}}}
+or
+{{{
+CC=${CC:="x86_64-k1om-linux-gcc"}
+CXX=${CXX:="x86_64-k1om-linux-g++"}
+FC=${FC:="x86_64-k1om-linux-gfortran"}
+}}} 
