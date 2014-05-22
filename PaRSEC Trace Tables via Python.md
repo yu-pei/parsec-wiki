@@ -18,6 +18,8 @@ PaRSEC Trace Tables is based on pandas, and requires the use of a number of othe
 
 Probably the easiest way to satisfy all of these dependencies at once is to install Continuum Analytics' "Anaconda" Python distribution (https://store.continuum.io/cshop/anaconda/), which is free and comes with all of the dependencies preinstalled.
 
+On Mac OS, macports contains all the necessary software. 
+
 **Note:** all command line instructions on this page assume that you have the Python scripts in your PATH environment variable. You may *source* the Bash script found in your PaRSEC build directory at **tools/profiling/python/utilities/bash.env** to automatically set up your environment.
 
 # **Rudimentary Conversion and Load** #
