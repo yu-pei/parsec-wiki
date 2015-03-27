@@ -58,11 +58,11 @@ Generated: ./demo-hostname--4-3000-180-lfq-6NdC2R.h5
 The generated file name features the hostname, some information about the run, and a random number. It is an HDF5 file that you can process with the tool of your choice. Pandas / NUMPY are excellent tools to handle this data.
 
 Visual traces can be obtained with the tools/profiling/python/h5totrace.py: In its simplest call, one can simply issue:
-...
+```
 #!shell
 >  python2.7 tools/profiling/python/h5totrace.py --h5 demo-hostname-4-3000-180-lfq-6NdC2R.h5 --out demo.trace
 Closing remaining open files:demo-hostname-4-3000-180-lfq-6NdC2R.h5...done
-...
+```
 
 And the demo.trace file can be opened with any PAJe file format tool (e.g. VITE).
 
