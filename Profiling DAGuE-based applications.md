@@ -16,7 +16,7 @@ Once the desired options have been set, a complete rebuild of the software is ne
 ```
 #!shell
 
-mpirun -np 2 dplasma/testing/testing_dpotrf -c 2 -t 200 -N 4000
+mpirun -np 2 dplasma/testing/testing_dpotrf -c 2 -t 200 -N 4000 -- --mca profile_filename demo
 
 ```
 
@@ -29,13 +29,52 @@ The result will look something like
 
 ```
 
-Two files (one per process) are generated in the current directory (<app_name>.rank.profile). As you have compiled with support for the profiling, under tools/profiling you will find a conversion tool dbp2paje, which convert our internal profiling traces into a more standard format. Executing
+Two files (one per process) are generated in the current directory (demo-0.prof-<random number>, and demo-1.prof-<random number> -- NB: if you used another name for the profile_filename argument above, that name, and not demo will be used. Similarly, the rank will go from 0 to NP-1). 
+
+These files follow an internal binary format that contains realtime timestamps in the architecture of the local machine. As such, they are probably unsuitable to be transferred and analyzed at a remote place and must be converted. There are two alternatives to do so:
+
+* directly convert from profile to PAJe [(external website)](http://paje.sourceforge.net/) / VITE [(external website)](http://vite.gforge.inria.fr/) traces using the dbp2paje converter in tools/profiling. This method is obsolete and is not recommended anymore
+* convert the profile files to HDF5 files, and use python tools to analyze and convert this portable trace on other machines. This requires python and cython to work on the target machine, and is explained in more details below:
+
+First, check that python is supported by your PaRSEC compilation from the output of CMake. It should not complain about python or cython not working. If it does, you need to upgrade your python / cython installation.
+
+Second, load tools/profiling/python/utilities/bash.env (or fish.env if you use fish) in your shell environment to define the appropriate PYTHONPATH
 
 ```
 #!shell
-tools/profiling/dbp2paje testing_dpotrf.?.profile -o dpotrf
+. tools/profiling/python/bash.env
 ```
 
-will write in the current directory the global trace file dpotrf.trace, file you can use with different visualizers to see the execution trace. The picture below is the trace corresponding to the above mentioned execution as showed using [Vite](http://vite.gforge.inria.fr/). Don't worry a normal trace will look much better, in this trace I kept the MPI event support, but removed the MPI events. If you want to play with Vite locally, I attached the trace used in this example [here](files/dpotrf.trace).
+Then, convert the profile files in the HDF5 file with the python script tools/profiling/python/profile2h5:
+
+```
+#!shell
+> python2.7 tools/profiling/python/profile2h5 demo-0.prof-6NdC2R demo-1.prof-6NdC2R 
+Processing ['demo-0.prof-6NdC2R', 'demo-1.prof-6NdC2R']
+Generated: ./demo-hostname--4-3000-180-lfq-6NdC2R.h5
+>
+```
+
+The generated file name features the hostname, some information about the run, and a random number. It is an HDF5 file that you can process with the tool of your choice. Pandas / NUMPY are excellent tools to handle this data.
+
+Visual traces can be obtained with the tools/profiling/python/h5totrace.py: In its simplest call, one can simply issue:
+...
+#!shell
+>  python2.7 tools/profiling/python/h5totrace.py --h5 demo-hostname-4-3000-180-lfq-6NdC2R.h5 --out demo.trace
+Closing remaining open files:demo-hostname-4-3000-180-lfq-6NdC2R.h5...done
+...
+
+And the demo.trace file can be opened with any PAJe file format tool (e.g. VITE).
+
+The h5totrace.py script allows also to
+* filter events (remove events following a pattern or specific names)
+* filter threads (avoid to display events that happened on threads that are not desired in the final output)
+* extract human-readable names of tasks, using the DOT file (see how a DOT file can be generated here). This functionality allows to have better task names in the visual tools; without a DOT file to compute these names, a unique task id is provided, but connecting it to the original task name can be hard.
+* summarize specific events (e.g. memory consumption related events) as counters.
+* list event types names and simple statistics on the trace
+
+See the help of the script to understand how these can be achieved.
+
+The picture below is the trace corresponding to the above mentioned execution as showed using [Vite](http://vite.gforge.inria.fr/). Don't worry a normal trace will look much better, in this trace I kept the MPI event support, but removed the MPI events and threads. 
 
 ![Vite Trace](files/dpotrf.trace.png)
