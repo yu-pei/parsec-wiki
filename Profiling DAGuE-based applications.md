@@ -42,7 +42,7 @@ Second, load tools/profiling/python/utilities/bash.env (or fish.env if you use f
 
 ```
 #!shell
-. tools/profiling/python/bash.env
+. tools/profiling/python/utilities/bash.env
 ```
 
 Then, convert the profile files in the HDF5 file with the python script tools/profiling/python/profile2h5:
