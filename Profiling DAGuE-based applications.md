@@ -1,4 +1,4 @@
-In many instances it might be interesting to extract and use information about the task cost and performance. This allows the analysis of the scheduling quality, the maintained memory locality and the time wasted due to scheduling decisions. Achieving this requires a complete recompilation of the DAGuE source after enabling the DAGUE_PROF_TRACE CMake option.
+In many instances it might be interesting to extract and use information about the task cost and performance. This allows analysis of the scheduling quality, the maintained memory locality and the time wasted due to scheduling decisions. Achieving this requires a complete recompilation of the DAGuE source after enabling the DAGUE_PROF_TRACE CMake option.
 
 In case you are on a system with accelerators and you need to be able to extract profiling information from the execution of tasks on these accelerators you have to hand edit the src/gpu_data.c file and add the information you want to profile to the dague_cuda_trackable_events variable. Here is a quick description of the available values:
 
