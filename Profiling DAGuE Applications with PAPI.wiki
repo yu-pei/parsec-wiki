@@ -15,4 +15,54 @@ Once all of these things have been set, you must specify which PAPI events you w
 cd ~
 mkdir .dague
 }}}
+Now, we need to navigate to the .dague directory and create an MCA parameters config file called 'mca-params.conf' in which we will be putting our specifications.  So, use your favorite editor (mine's emacs) to create and edit this file:
+{{{
+#!bash
+cd ~/.dague
+emacs mca-params.conf
+}}}
+For this demo, we will name our profile file 'demo', and we will be monitoring L1 instruction cache misses on all cores and sockets after each task and L1 data cache misses on Socket 0's first core every .01 seconds.  So, our mca-params.conf file will look like:
+{{{
+#!bash
+profile_filename = demo
+mca_pins = papi
+pins_papi = 1
+pins_papi_event = S*:C*:F1:PAPI_L1_ICM,S0:C0:F.01s:PAPI_L1_DCM
+}}}
+The profile_filename field indicates the base file name for the profiling file(s) that are outputted, the mca_pins field specifies that we are using the papi PINS module, the pins_papi field specifies that we would like to enable the papi PINS component, and the pins_papi_event field specifies the PAPI events along with their socket, core, and frequency.  The pins_papi_event field is of the form:
+{{{
+#!bash
+S[socket number]:C[core number]:F[frequency]:[PAPI event name],
+}}}
+This essentially means that the aspects of an event's configuration are delimited by a ':' character and the events themselves are delimited with a ',' character.  Note that the socket, core, and frequency specifications must be preceded by 'S', 'C', and 'F' characters respectively.  The socket and core numbers are the same as the number returned by hwloc for the socket or core you are interested in.  The frequency specification can take on two different formats: task-based and time-based.  For a task-based frequency, you merely specify the integer number of tasks after which you would like measurements to take place, so specifying "F1" would yield measurements after every task.  For a time-based frequency, you must specify a number of time units (potentially a decimal number) followed by the short name for that time unit.  Accepted short names are 's' for seconds, 'ms' for miliseconds, 'us' for microseconds, and 'ns' for nanoseconds.  Note that no matter what units you specify for the time, the number you entered is converted to the default time units for your system (in my case this is nanoseconds).
 
+To figure out what PAPI events are supported on your system along with their names and descriptions, you can navigate to your PAPI installation's bin directory and run the papi_native_avail utility.  You can get a less detailed listing with the papi_avail utility.
+
+Now that we've set up our config file, we can run our application to see how it works.  For this demo, we'll use the testing_dpotrf file in your build directory at /dplasma/testing/testing_dpotrf.  So, after navigating to this directory we use the following command:
+{{{
+#!bash
+./testing_dpotrf -t 100 -N 2000
+}}}
+
+The output will look something like this:
+{{{
+#!bash
+[dancer.icl.utk.edu:30386] Using PAPI version 5040000
+[dancer.icl.utk.edu:30386] Could not find a proposed time unit equivalent for nanosecond. Fall back to nanosecond
+[dancer.icl.utk.edu:30386] No units found.  Assuming task-based frequency: 1
+[dancer.icl.utk.edu:30386] Valid PAPI event PAPI_L1_ICM on socket -1 (-1 for all), core -1 (-1 for all) with frequency 1 tasks
+[dancer.icl.utk.edu:30386] Valid PAPI event PAPI_L1_DCM on socket 0 (-1 for all), core 0 (-1 for all) with frequency 10000000.000000 nanosecond
+Found 1 components, activated 1
+[dancer.icl.utk.edu:30386] PAPI event PAPI_L1_ICM{int64_t}; core -1 socket -1 frequency 1 tasks enabled
+[dancer.icl.utk.edu:30386] PAPI event PAPI_L1_ICM{int64_t}; core -1 socket -1 frequency 1 tasks enabled
+[dancer.icl.utk.edu:30386] PAPI event PAPI_L1_DCM{int64_t}; core 0 socket 0 frequency 10000000.000000 ns enabled
+[dancer.icl.utk.edu:30386] PAPI event PAPI_L1_ICM{int64_t}; core -1 socket -1 frequency 1 tasks enabled
+[dancer.icl.utk.edu:30386] PAPI event PAPI_L1_ICM{int64_t}; core -1 socket -1 frequency 1 tasks enabled
+[dancer.icl.utk.edu:30386] PAPI event PAPI_L1_ICM{int64_t}; core -1 socket -1 frequency 1 tasks enabled
+[dancer.icl.utk.edu:30386] PAPI event PAPI_L1_ICM{int64_t}; core -1 socket -1 frequency 1 tasks enabled
+[dancer.icl.utk.edu:30386] PAPI event PAPI_L1_ICM{int64_t}; core -1 socket -1 frequency 1 tasks enabled
+[dancer.icl.utk.edu:30386] PAPI event PAPI_L1_ICM{int64_t}; core -1 socket -1 frequency 1 tasks enabled
+[****] TIME(s)      0.06466 : dpotrf    PxQ=   1 1   NB=  100 N=    2000 :      41.271038 gflops
+}}}
+
+Now that you have completed your run, there will be a file in your current directory with a name that looks like: demo-0.prof-[random characters].  You can extract the information from this file by following the instructions [[PaRSEC%20Trace%20Tables%20via%20Python|here]].
