@@ -10,7 +10,7 @@ In case you are on a system with accelerators and you need to be able to extract
 
 * DAGUE_PROFILE_CUDA_TRACK_OWN show the threads that own the accelerator, in the sense that it will manage the tasks submission and data movements.
 
-Once the desired options have been set, a complete rebuild of the software is necessary. You're now ready to use the profiling. Let's suppose you want to profile the dplasma/testing/testing_dpotrf test in a heterogeneous distributed environment. I'll take a small example so I will limit the number of processes to 2, the number of cores per process to 2 as well, the size of a tile to 200 and the size of the matrix to 4000. The command like will look similar to the following:
+Once the desired options have been set, a complete rebuild of the software is necessary. You're now ready to use the profiling. Let's suppose you want to profile the dplasma/testing/testing_dpotrf test in a heterogeneous distributed environment. I'll take a small example so I will limit the number of processes to 2, the number of cores per process to 2 as well, the size of a tile to 200 and the size of the matrix to 4000. The command will look similar to the following:
 
 
 ```
