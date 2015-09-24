@@ -1,6 +1,6 @@
 == How to Write a Performance Instrumentation module ==
 
-This page will explain how to write a new module for the Performance INStrumentation (PINS) system to instrument the operation of PaRSEC. It uses the existing {{{print_steals}}} module (source code available in the {{{src/mca/pins/print_steals}}} directory) as an example of a bare-bones PINS module that does not require the use of the PaRSEC profiling system for the collection of its data, and does not use PAPI for hardware measurement purposes. For help with using PAPI and the profiling system in PaRSEC to perform low-impact hardware-provided event measurements, refer to the built-in {{{papi_exec}}} and {{{papi_select}}} modules once you understand the architecture of the PINS system.
+This page will explain how to write a new module for the Performance INStrumentation (PINS) system to instrument the operation of PaRSEC. It uses the existing {{{print_steals}}} module (source code available in the {{{src/mca/pins/print_steals}}} directory) as an example of a bare-bones PINS module that does not require the use of the PaRSEC profiling system for the collection of its data, and does not use PAPI for hardware measurement purposes. For help with using PAPI and the profiling system in PaRSEC to perform low-impact hardware-provided event measurements, refer to the built-in {{{papi}}} module once you understand the architecture of the PINS system.
 
 PINS is implemented as an extension to the Modular Component Architecture, originally of OpenMPI. This provides very simple integration with the PaRSEC build process and PaRSEC runtime, at the cost of some extra 'markup' code in a {{{pins_<module name>_component.c}}} file for each module. You are encouraged to use any existing PINS module as a reference for how to write the code necessary for MCA to understand your PINS module. //Please note// that the naming scheme of <directory with module's name>, e.g. {{{print_steals/}}}, containing a bare minimum of {{{pins_<module name>_component.c}}} and {{{pins_<module name>_module.c}}} (e.g., {{{pins_print_steals_component.c}}}) is **absolutely mandatory** for the PaRSEC MCA compilation and initialization process to function at all.
 
@@ -17,7 +17,7 @@ There are 3 pairs of initialization and finalization routines - each invoked by 
 * {{{pins_thread_init}}}
 * {{{pins_thread_fini}}}
 
-It is customary to name the init/fini routines {{{pins_<init/fini type>_<module name>}}} in order to maintain a level of consistency that will be helpful to other module developers. This naming convention is fully demonstrated in the {{{papi_exec}}}, {{{print_steals}}}, {{{papi_select}}}, and {{{papi_socket}}} modules.
+It is customary to name the init/fini routines {{{pins_<init/fini type>_<module name>}}} in order to maintain a level of consistency that will be helpful to other module developers. This naming convention is fully demonstrated in the {{{papi}}} and {{{print_steals}}} modules.
 
 Any of these 6 routines may be provided by your module, and they will be invoked automatically by the PaRSEC runtime if they exist. You **must** specify which of the init/fini routines are provided, using a {{{dague_pins_module_t}}} struct similar to the one in {{{print_steals}}}'s {{{pins_print_steals_module.c}}} file:
 
@@ -35,7 +35,7 @@ const dague_pins_module_t dague_pins_print_steals_module = {
 };
 }}}
 
-**{{{pins_init}}}** is invoked a single time, during {{{dague_init()}}}, before the PaRSEC profiling system is active, and before the entirety of the {{{dague_context_t}}} structure (particularlly including all virtual process and thread structures) is instantiated, but after the initialization of the PaRSEC profiling system (if built).  This is the right place to perform any custom initialization, such as global memory allocation, that does not depend on anything thread or handle-related. 
+**{{{pins_init}}}** is invoked a single time, during {{{dague_init()}}}, before the PaRSEC profiling system is active, and before the entirety of the {{{dague_context_t}}} structure (particularly including all virtual process and thread structures) is instantiated, but after the initialization of the PaRSEC profiling system (if built).  This is the right place to perform any custom initialization, such as global memory allocation, that does not depend on anything thread or handle-related. 
 
 {{{pins_init}}} is also the usual place to make calls to {{{PINS_REGISTER()}}}, the macro which will register your custom callback code with whichever callbacks your module requires. It is customary, in order to provide callback-overloading, that you store the return value of {{{PINS_REGISTER}}} (a {{{parsec_pins_callback function}}} pointer) so that it can be called before your callback returns -- this will be demonstrated in the section on Callback functions.
 {{{
@@ -101,7 +101,7 @@ Most modules will likely use the built-in callback types. The most up-to-date li
 * {{{THREAD_INIT}}} - //special//. Provided as an option for modules to do work during thread init without using the MCA module registration system.
 * {{{THREAD_FINI}}} - //special//. Similar to above, for thread finalization.
 * {{{HANDLE_INIT}}} - //special//. Similar to {{{THREAD_INIT}}}, for handle initialization.
-* {{{HANDLE_FINI}}} - //special//. Similar to {{{THREAD_FINI}}}, for handle finalialization.
+* {{{HANDLE_FINI}}} - //special//. Similar to {{{THREAD_FINI}}}, for handle finalization.
 
 {{{print_steals}}} uses only one type - {{{SELECT_END}}}, which is called at the end of task selection by the scheduler. It receives an execution unit, an execution context, and, by the particular implementation of the {{{SELECT_END}}} callback type in the schedulers that come included with PaRSEC, an integer (in the guise of a {{{void *}}}) representing the number of the core from which the execution context was stolen. These three items are used to increment one of the steal counters for the provided execution unit. Then, as previously mentioned, the callback is chained to the next registered callback (if any) with a simple invocation of the function pointer returned by the original call to {{{PINS_REGISTER()}}} in the {{{pins_init_print_steals}}} initialization routine.
 
@@ -134,6 +134,4 @@ Therefore, there is also a built-in capability to limit activated modules by nam
 
 It is not necessary to use this function at all - by default, all modules are **//enabled//**. If you //do// wish to use the function, you must call it **before** calling {{{dague_init()}}}, as the function will have no effect after {{{pins_init()}}} is run. 
 
-However, the DPLASMA testing executables provided with PaRSEC automatically invoke this function with the contents of the {{{--mca-pins}}} runtime flag. As a result, all PINS modules are **//disabled//** by default in DPLASMA tests, as the default 'content' of the flag is null. To enable the use of any PINS module(s) when testing with a provided DPLASMA testing executable, you must use the {{{--mca-pins}}} command line flag with a list of comma-separated PINS module names, e.g. {{{./testing_dpotrf -N 10000 --mca-pins=print_steals}}}, or {{{./testing_dgeqrf -N 10000 --mca-pins=papi_socket,papi_select}}}.
-
-//A future version of PINS and the DPLASMA testing executables will support the use of MCA-style configuration files and expanded command-line flags and arguments.//
+However, the DPLASMA testing executables provided with PaRSEC automatically invoke this function with the contents of the {{{--mca-pins}}} runtime flag. As a result, all PINS modules are **//disabled//** by default in DPLASMA tests, as the default 'content' of the flag is null. To enable the use of any PINS module(s) when testing with a provided DPLASMA testing executable, you must use the {{{--mca-pins}}} command line flag with a list of comma-separated PINS module names, e.g. {{{./testing_dpotrf -N 10000 --mca-pins=print_steals}}}, or {{{./testing_dgeqrf -N 10000 --mca-pins=papi}}}
