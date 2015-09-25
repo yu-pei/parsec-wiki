@@ -253,7 +253,7 @@ print(my_trace.information.dtypes)
 # -- and --
 
 print(my_trace.events.describe())
-print(my_trace.threads.describe())
+print(my_trace.streams.describe())
 print(my_trace.event_types.describe())
 # etc
 
