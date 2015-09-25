@@ -103,7 +103,7 @@ my_trace = pbt2ptt.from_hdf(ptt_filename)
 print(my_trace.sched)
 ```
 
-**HOWEVER...** It will be better if you **ignore all of the above options for conversion and loading**, and skipp straight to the section below about ptt_utils.py!
+**HOWEVER...** It will be better if you **ignore all of the above options for conversion and loading**, and skip straight to the section below about ptt_utils.py!
 
 # **ptt_utils.py** - the *Preferred* Method for Conversion and Load #
 
