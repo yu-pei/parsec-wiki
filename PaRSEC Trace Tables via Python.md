@@ -190,15 +190,14 @@ and the dictionary/Series names are:
 
 The events table is the most important, as it contains one row for every event in the trace. Not all events have all the same elements (i.e., not all rows have a non-null datum for every column), but all PaRSEC trace events currently have at least the following data elements:
 
-* id
-* node_id
-* thread_id
-* handle_id
-* type
 * begin
 * end
-* duration
 * flags
+* handle_id
+* id
+* node_id
+* stream_id
+* type
 
 Depending on the event, there may be additional data elements (columns), such as "kernel_type".
 
