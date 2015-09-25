@@ -16,7 +16,7 @@ PaRSEC Trace Tables is based on pandas, and requires the use of a number of othe
 
 * Matplotlib 1.3+ is necessary for many of the example scripts, which use it to plot the data, but is not required to use the basic PTT functionality in your own scripts.
 
-Probably the easiest way to satisfy all of these dependencies at once is to install Continuum Analytics' "Anaconda" Python distribution (https://store.continuum.io/cshop/anaconda/), which is free and comes with all of the dependencies preinstalled.
+Probably the easiest way to satisfy all of these dependencies at once is to install Continuum Analytics' "Anaconda" Python distribution (https://store.continuum.io/cshop/anaconda/), which is free and comes with all of the dependencies pre-installed.
 
 On Mac OS, macports contains all the necessary software. 
 
@@ -176,7 +176,7 @@ The current table and dictionary types can be easily referenced from the **parse
 
 * events
 * nodes
-* threads
+* streams
 * errors
 
 and the dictionary/Series names are:
