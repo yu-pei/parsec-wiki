@@ -199,7 +199,7 @@ The events table is the most important, as it contains one row for every event i
 * stream_id
 * type
 
-Depending on the event, there may be additional data elements (columns), such as "kernel_type".
+Depending on the event, there may be additional data elements (columns).
 
 These event data can be accessed, like any other data element belonging to a given event, with the following common Python syntax:
 
