@@ -138,7 +138,14 @@ By default, autoload_traces converts all supplied PBTs to PTTs before loading. B
 
 ## Conversion and Filename Enhance at the Command Line ##
 
-You may also convert PBTs to PTTs by providing a mixed type list to the ptt_utils.py script at the command line. The command line interface **DOES enhance filenames by default**, unlike autoload_traces().
+You may also convert PBTs to PTTs by providing a mixed type list to the ptt_utils.py script at the command line. The command line interface **DOES enhance filenames by default**, unlike autoload_traces().  The format for the command line interface is:
+
+```
+#!Bash
+ptt_utils.py [output_filenime].h5 [input_file_1] [input_file_2] ...
+
+```
+In this way, we can convert the traces from the command line like so:
 
 ```
 #!Bash
