@@ -65,7 +65,7 @@ Found 1 components, activated 1
 [****] TIME(s)      0.06466 : dpotrf    PxQ=   1 1   NB=  100 N=    2000 :      41.271038 gflops
 }}}
 
-Now that you have completed your run, there will be a file in your current directory with a name that looks like: demo-0.prof-[random characters].  You can extract the information from this file by following the instructions [[PaRSEC%20Trace%20Tables%20via%20Python|here]].
+Now that you have completed your run, there will be a file in your current directory with a name that looks like: demo-0.prof-[random characters].  You write a python module to extract the information from this file by following the instructions [[PaRSEC%20Trace%20Tables%20via%20Python|here]].  There is also a section below that describes the use of a simple python module that you can use to get some simple plots of the PAPI counter values over time.
 
 = Virtual Process Mapping =
 
@@ -83,7 +83,7 @@ When you specify 'n' cores, the first 'n' cores on the current compute node base
 [etc...]
 }}}
 
-For our example with 4 cores, let's assume we have a compute node with two sockets each with an 8 core processor.  Let's also assume that the cores of these processors are assigned the ids of 0 to 7 for the one processor and 8 to 15 for the second processor.  So, lets say that we want to use the two lowest id cores on each processor for our sample run, which would be cores 0, 1, 8, and 9.  If we group all of these cores into one virtual process, our virtual process file, called //pmap// for this example, would look like this:
+For our example with 4 cores, let's assume we have a compute node with two sockets each with an 8 core processor.  Let's also assume that the cores of these processors are assigned the ids of 0 to 7 for the one processor and 8 to 15 for the second processor.  So, let's say that we want to use the two lowest id cores on each processor for our sample run, which would be cores 0, 1, 8, and 9.  If we group all of these cores into one virtual process, our virtual process file, called //pmap// for this example, would look like this:
 {{{
 #!bash
 :4:0,1,8,9
@@ -101,3 +101,94 @@ Now that we have specified our virtual process map file, we can change our comma
 #!bash
 ./testing_dpotrf -c 4 -t 100 -N 2000 -- -V file:pmap
 }}}
+
+= plot_scatter_papi.py =
+
+This python module can be found in [path_to_PaRSEC_home_directory]/tools/profiling/python/examples, and is a simple module that will take a binary profile file, multiple binary profile files from the same run in the case of a distributed run, or a converted HDF5 file as input and output a combined graph of all of the PAPI counter values for each counter over time, and a separate graph of each counter broken down by the socket, core, and frequency that each counter was counting.  All of these graphs will be .png images made with the matplotlib python library.
+
+Usage of this module is extremely simple with only two optional command line flags in addition to the list of file names.  The two flags are -t and -u.  The -t option specifies the time units used by PaRSEC on your system, which could be nanoseconds, microseconds, or cycles.  To specify these time units, you use the -t switch followed by 'ns', 'us', or 'c' for each of the options respectively.  The -u option specifies the time units you wish to use for the output plots, which could be nanoseconds, microseconds, milliseconds, or seconds.  To specify these time units, you use the -u switch followed by 'ns', 'us', 'ms', or 's' for each of the options respectively.
+
+So, if you want to use this module for the example above, you could rename your binary file from demo-0.prof-[random characters] to something easier to write like demo.prof, though this isn't required.  Also to make your life easier, you can copy the binary file to the same directory as the python module.  Let's assume that the system we are working on uses nanoseconds as its time units on this system (as seen in the sample output above) and we want our plots to use seconds for their outputs.  In this case, we would use the following command line:
+{{{
+#!bash
+python plot_scatter_papi.py -t ns -u s demo.prof
+}}}
+
+This would produce output like the following on the command line:
+{{{
+#!bash
+Found units: 'ns'
+Graphs will display time in seconds.
+Conversion Factor: 1e-09
+
+Importing matplotlib took 0.34679889679 seconds.
+
+Converting binary trace to the ParSEC Trace Tables format...
+Converting ['demo.prof']
+Event TASK_MEMORY conv <size{int64_t}> length 8
+
+Event Device delegate conv <> length 0
+
+Event PINS_PAPI_S0_C1_F1t_0 conv <PAPI_L1_ICM{int64_t};> length 8
+
+Event PINS_PAPI_S1_C8_F1t_0 conv <PAPI_L1_ICM{int64_t};> length 8
+
+Event PINS_PAPI_S1_C9_F1t_0 conv <PAPI_L1_ICM{int64_t};> length 8
+
+Event PINS_PAPI_S0_C0_F1t_0 conv <PAPI_L1_ICM{int64_t};> length 8
+
+Event PINS_PAPI_S0_C0_F10000000.000000ns_0 conv <PAPI_L1_DCM{int64_t};> length 8
+
+Event MPI_ACTIVATE conv <src{int32_t};dst{int32_t};tid{int64_t};hid{int32_t};fid{int8_t};pad{char[3]}> length 24
+
+Event MPI_DATA_CTL conv <src{int32_t};dst{int32_t};tid{int64_t};hid{int32_t};fid{int8_t};pad{char[3]}> length 24
+
+Event MPI_DATA_PLD_SND conv <src{int32_t};dst{int32_t};tid{int64_t};hid{int32_t};fid{int8_t};pad{char[3]}> length 24
+
+Event MPI_DATA_PLD_RCV conv <src{int32_t};dst{int32_t};tid{int64_t};hid{int32_t};fid{int8_t};pad{char[3]}> length 24
+
+Event potrf_dgemm conv <ddesc_unique_key{uint64_t};ddesc_data_id{uint32_t};ddessc_padding{uint32_t};k{int32_t};m{int32_t};n{int32_t}> length 28
+
+Event potrf_dsyrk conv <ddesc_unique_key{uint64_t};ddesc_data_id{uint32_t};ddessc_padding{uint32_t};k{int32_t};n{int32_t}> length 24
+
+Event potrf_dtrsm conv <ddesc_unique_key{uint64_t};ddesc_data_id{uint32_t};ddessc_padding{uint32_t};k{int32_t};n{int32_t}> length 24
+
+Event potrf_dpotrf conv <ddesc_unique_key{uint64_t};ddesc_data_id{uint32_t};ddessc_padding{uint32_t};k{int32_t}> length 20
+
+....<<<<
+Parsing the PBT files took 0.122670888901 seconds, which is 0.0306677222252 seconds per thread.
+Then we concatenate the event DataFrames....
+   events DataFrame concatenation time: 0.00572299957275
+Constructed additional structures in 0.00748085975647 seconds.
+Generate trace to HDF5 format in 1.19245505333 seconds.
+Loading the HDFed trace...
+The load took 2.32339406013 seconds.
+
+Populating user-defined lists...
+Populating the lists took 0.00188398361206 seconds.
+
+Colors Needed: 5
+Plotting all PAPI counters together...
+Saving plot as all_papi_counters.png...
+Plotting and saving took 0.246990919113 seconds.
+Plotting data for: PAPI_L1_DCM...
+Saving plot as PAPI_L1_DCM.png...
+Plotting and saving took 0.307183027267 seconds.
+Plotting data for: PAPI_L1_ICM...
+Saving plot as PAPI_L1_ICM.png...
+Plotting and saving took 0.438541173935 seconds.
+Total Time: 3.93275809288 seconds
+}}}
+
+The python module will also produce three image files of the plots listed as all_papi_counters.png, PAPI_L1_DCM.png, and PAPI_L1_ICM.png.  These plots can be seen below.
+
+all_papi_counters.png
+{{https://bitbucket.org/repo/o88d/images/2999008417-all_papi_counters.png|all_papi_counters.png}}
+
+PAPI_L1_DCM.png
+{{https://bitbucket.org/repo/o88d/images/923361157-PAPI_L1_DCM.png|PAPI_L1_DCM.png}}
+
+PAPI_L1_ICM.png
+{{https://bitbucket.org/repo/o88d/images/182546376-PAPI_L1_ICM.png|PAPI_L1_ICM.png}}
+
+You may notice that the PAPI_L1_DCM counter is not counting exactly every .01 seconds as we specified, and the PAPI_L1_ICM counters for some of the cores have a break period in them even though they are supposed to happen after every task.  These are artefacts of the scheduling of the tasks and the length of the execution.  This is an extremely short test and as such scheduling issues become much more pronounced.  You may also notice that the gap for core 0 is much larger than the other cores, which is due to the fact that the control flow is handled by that core.  This explains why the PAPI_L1_DCM values aren't happening every .01 seconds because there aren't always tasks scheduled on that core.
