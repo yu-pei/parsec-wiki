@@ -38,13 +38,13 @@ This essentially means that the aspects of an event's configuration are delimite
 
 To figure out what PAPI events are supported on your system along with their names and descriptions, you can navigate to your PAPI installation's bin directory and run the papi_native_avail utility.  You can get a less detailed listing with the papi_avail utility.
 
-Now that we've set up our config file, we can run our application to see how it works.  For this demo, we'll use the testing_dpotrf file in your build directory at /dplasma/testing/testing_dpotrf.  So, after navigating to this directory we use the following command:
+Now that we've set up our config file, we can run our application to see how it works.  For this demo, we'll use the testing_dpotrf (Cholesky Factorization) file in your build directory at /dplasma/testing/testing_dpotrf.  So, after navigating to this directory we use the following command:
 {{{
 #!bash
 ./testing_dpotrf -t 100 -N 2000
 }}}
 
-The output will look something like this:
+This command will run a Cholesky factorization using all available cores on the current compute node with a tile size of 100 and using a random 2000X2000 matrix.  The output will look something like this:
 {{{
 #!bash
 [dancer.icl.utk.edu:30386] Using PAPI version 5040000
@@ -66,3 +66,38 @@ Found 1 components, activated 1
 }}}
 
 Now that you have completed your run, there will be a file in your current directory with a name that looks like: demo-0.prof-[random characters].  You can extract the information from this file by following the instructions [[PaRSEC%20Trace%20Tables%20via%20Python|here]].
+
+= Virtual Process Mapping =
+
+In some cases you may want to perform your execution on fewer cores than the maximum available on a node.  To do this, you simply need to use the -c option for your run to specify the number of cores, so if you wanted to perform the same example as above, but with 4 cores, you would use the following command line:
+{{{
+#!bash
+./testing_dpotrf -c 4 -t 100 -N 2000
+}}}
+
+When you specify 'n' cores, the first 'n' cores on the current compute node based on hwloc will be chosen as the cores used.  In some instances you may want to specify the specific cores that you want to use for this run, in which case you will need to define a virtual process map file.  This file will specify a series of //virtual processes// in which you can have multiple cores per virtual process and these cores will be the ones used for the execution instead of the first 'n' cores.  So, to create one of these files, you merely have to define each virtual process on its own line in the file with the line specifying the number of cores in the virtual process and the core ids (as reported by hwloc) of the cores you want to use separated by commas.  The format looks like this:
+{{{
+#!bash
+:[number_of_cores]:[first_core_id],[second_core_id],[etc...]
+:[number_of_cores]:[first_core_id],[second_core_id],[etc...]
+[etc...]
+}}}
+
+For our example with 4 cores, let's assume we have a compute node with two sockets each with an 8 core processor.  Let's also assume that the cores of these processors are assigned the ids of 0 to 7 for the one processor and 8 to 15 for the second processor.  So, lets say that we want to use the two lowest id cores on each processor for our sample run, which would be cores 0, 1, 8, and 9.  If we group all of these cores into one virtual process, our virtual process file, called //pmap// for this example, would look like this:
+{{{
+#!bash
+:4:0,1,8,9
+}}}
+
+If we decided that we want the cores from each processor to be in their own virtual processes, we could change our //pmap// file to look like this:
+{{{
+#!bash
+:2:0,1
+:2:8,9
+}}}
+
+Now that we have specified our virtual process map file, we can change our command line and run our test with the 4 cores that we want it to be run on.  Assuming our //pmap// file is in the same directory as our test file, our command line would look like this:
+{{{
+#!bash
+./testing_dpotrf -c 4 -t 100 -N 2000 -- -V file:pmap
+}}}
