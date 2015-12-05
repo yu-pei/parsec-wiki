@@ -39,3 +39,9 @@ Don't
 * commit any large binaries to the repository, this will rapidly increase the storage space required for everybody's clones
 * use `git filter-branch` unless you *really* know what you are doing, and especially don't use it on published history
 * use `git pull` instead of `git pull --rebase` for normal local work that will be pushed up to `ompi/master` (see "Do" above)
+
+# ABSOLUTELY Critical to read (and understand [this](http://justinhileman.info/article/git-pretty/)) #
+
+# Another git [ruby](https://github.com/blog/2019-how-to-undo-almost-anything-with-git) #
+
+For any other issue related to creating and managing Pull Requests (PR) I strongly encourage you to visit the Open MPI git [webpage](https://github.com/open-mpi/ompi/wiki)
