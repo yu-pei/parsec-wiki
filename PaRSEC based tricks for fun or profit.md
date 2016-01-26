@@ -51,7 +51,7 @@ For any other issue related to creating and managing Pull Requests (PR) I strong
 Get the patch from the pull request
 ```
 #!shell
-curl https://bitbucket.org/api/2.0/repositories/icldistcomp/parsec/pullrequests/{#PR}/patch > pr{#PR}.patch
+curl https://bitbucket.org/api/2.0/repositories/icldistcomp/parsec/pullrequests/#PR/patch > pr#PR.patch
 ```
 
 Than apply the patch on your local copy
@@ -59,6 +59,6 @@ Than apply the patch on your local copy
 ```
 #!shell
 
-git apply pr{#PR}.patch
+git apply pr#PR.patch
 ```
 
