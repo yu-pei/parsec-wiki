@@ -45,3 +45,20 @@ Don't
 # Another git [ruby](https://github.com/blog/2019-how-to-undo-almost-anything-with-git) #
 
 For any other issue related to creating and managing Pull Requests (PR) I strongly encourage you to visit the Open MPI git [webpage](https://github.com/open-mpi/ompi/wiki)
+
+# To review locally a private pull request
+
+Get the patch from the pull request
+```
+#!shell
+curl https://bitbucket.org/api/2.0/repositories/icldistcomp/parsec/pullrequests/{#PR}/patch > pr{#PR}.patch
+```
+
+Than apply the patch on your local copy
+
+```
+#!shell
+
+git apply pr{#PR}.patch
+```
+
