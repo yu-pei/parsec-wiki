@@ -14,17 +14,17 @@ Two moderated mailing-lists are available, one for the users and the other for t
 ** [[PINS|How to write a PINS Module to instrument DAGuE applications]]
 ** [[PaRSEC%20Trace%20Tables%20via%20Python|How to use the Python PaRSEC Trace Tables interface]]
 ** [[PaRSEC%20on%20Intel%20Xeon%20Phi%20Native%20Mode.wiki|How to run PaRSEC in Intel Xeon Phi (native mode)]]
-* [[PaRSEC%20based%20tricks%20for%20fun%20or%20profit|Bonus tricks (mainly for developers)]]
 
 == How to contribute to PaRSEC ==
 
- * [[PaRSEC_Git_Main|Tips for using the git repository and contributing to the project]]
- * [[PaRSEC_Git_Other|Additional Git information that is recommended to read before contributing to the project]]
-
+ * [[PaRSEC_Git_Other|Git Best practices]]
+ * [[PaRSEC_Git_Main|Git basics to generate and review a pull request]]
+ 
 == Extras ==
 
  * [[PaRSEC_Extras_HPL|Memo on HPL over PaRSEC]]
- 
+ * [[PaRSEC%20based%20tricks%20for%20fun%20or%20profit|Memory errors detectors]]
+
  ---- 
 
 [[wikiediting|Hints on the wiki editing]] (the previous welcome page)
