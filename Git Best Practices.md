@@ -1,5 +1,3 @@
-# Git Best Practices #
-
 This is a local copy of the Open MPI best practices page https://github.com/open-mpi/ompi/wiki/GitBestPractices.
 
 For a nice, relatively brief overview of Git's basic usage, please see [the Pro Git book by Scott Chacon, available for free online](http://git-scm.com/book).  If you want to understand the nitty-gritty, check out [Git From the Bottom Up](http://ftp.newartisans.com/pub/git.from.bottom.up.pdf).  There's also a fantastic blog post at Github entitled [How to undo almost anything in Git](https://github.com/blog/2019-how-to-undo-almost-anything-with-git) -- this is required reading.
