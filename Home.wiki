@@ -19,6 +19,7 @@ Two moderated mailing-lists are available, one for the users and the other for t
 == How to contribute to PaRSEC ==
 
  * [[PaRSEC_Git_Main|Tips for using the git repository and contributing to the project]]
+ * [[PaRSEC_Git_Other|Additional Git information that is recommended to read before contributing to the project]]
 
 == Extras ==
 
