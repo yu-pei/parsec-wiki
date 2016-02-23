@@ -20,7 +20,9 @@ Two moderated mailing-lists are available, one for the users and the other for t
 
  * [[PaRSEC_Git_Main|Tips for using the git repository and contributing to the project]]
 
-== HPL over PARSEC ==
+== Extras ==
+
+ * [[PaRSEC_Extras_HPL|Memo on HPL over PaRSEC]]
  
  * V0: First version numerically correct with dynamic creation of workspaces, (9f2b7ee1366d+ 5304+ zenati)
  ** In zenati branch, zgetrf_fusion.jdf
