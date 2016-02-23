@@ -1,6 +1,6 @@
-== How to get more information on DPLASMA ==
+== How to get more information on PaRSEC and/or DPLASMA ==
 
-Two moderated mailing-lists are available, one for the users and the other for the developers involved in the project. The user mailinglist subscriptions are handled via [[https://lists.eecs.utk.edu/mailman/listinfo/dplasma-users|the user mailing-list]], while the developpers via [[https://lists.eecs.utk.edu/mailman/listinfo/dplasma-devel|the developers mailing-list]]. Please feel free to join us.
+Two moderated mailing-lists are available, one for the users and the other for the developers involved in the project. The user mailing list subscriptions are handled via [[https://lists.eecs.utk.edu/mailman/listinfo/dplasma-users|the user mailing-list]], while the developers via [[https://lists.eecs.utk.edu/mailman/listinfo/dplasma-devel|the developers mailing-list]]. Please feel free to join us.
 
 == How to Compile and Run DPLASMA ==
 
@@ -15,6 +15,10 @@ Two moderated mailing-lists are available, one for the users and the other for t
 ** [[PaRSEC%20Trace%20Tables%20via%20Python|How to use the Python PaRSEC Trace Tables interface]]
 ** [[PaRSEC%20on%20Intel%20Xeon%20Phi%20Native%20Mode.wiki|How to run PaRSEC in Intel Xeon Phi (native mode)]]
 * [[PaRSEC%20based%20tricks%20for%20fun%20or%20profit|Bonus tricks (mainly for developers)]]
+
+== How to contribute to PaRSEC ==
+
+ * [[PaRSEC_Git_Main|Tips for using the git repository and contributing to the project]]
 
 == HPL over PARSEC ==
  
