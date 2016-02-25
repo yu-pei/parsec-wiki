@@ -17,7 +17,7 @@ Two moderated mailing-lists are available, one for the users and the other for t
 
 == How to contribute to PaRSEC ==
 
- * [[PaRSEC_Git_Other|Git Best practices]]
+ * [[PaRSEC_Git_Other|Git Best practices]][[Git Best Practices|Git Best Practices]]
  * [[PaRSEC_Git_Main|Git basics to generate and review a pull request]]
  
 == Extras ==
