@@ -17,13 +17,13 @@ Two moderated mailing-lists are available, one for the users and the other for t
 
 == How to contribute to PaRSEC ==
 
- * [[PaRSEC_Git_Other|Git Best practices]][[Git Best Practices|Git Best Practices]]
- * [[PaRSEC_Git_Main|Git basics to generate and review a pull request]]
+ * [[Git Best Practices|Git Best Practices]]
+ * [[Git tips to contribute to the project|Git basics to generate and review a pull request]]
  
 == Extras ==
 
- * [[PaRSEC_Extras_HPL|Memo on HPL over PaRSEC]]
- * [[PaRSEC%20based%20tricks%20for%20fun%20or%20profit|Memory errors detectors]]
+ * [[Status of HPL over PaRSEC|Memo on HPL over PaRSEC]]
+ * [[Memory error detectors|Memory errors detectors]]
 
  ---- 
 
