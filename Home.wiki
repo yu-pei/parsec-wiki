@@ -1,6 +1,6 @@
 == How to get more information on PaRSEC and/or DPLASMA ==
 
-Two moderated mailing-lists are available, one for the users and the other for the developers involved in the project. The user mailing list subscriptions are handled via [[https://lists.eecs.utk.edu/mailman/listinfo/dplasma-users|the user mailing-list]], while the developers via [[https://lists.eecs.utk.edu/mailman/listinfo/dplasma-devel|the developers mailing-list]]. Please feel free to join us.
+Two moderated mailing-lists are available, one for the users and the other for the developers involved in the project. The user mailing list subscriptions are handled via [[https://groups.google.com/a/icl.utk.edu/d/forum/dplasma-users|the user mailing-list]], while the developers via [[https://groups.google.com/a/icl.utk.edu/d/forum/dplasma-devel|the developers mailing-list]]. Please feel free to join us.
 
 == How to Compile and Run DPLASMA ==
 
