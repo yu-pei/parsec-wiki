@@ -3,7 +3,7 @@ Things we want to do by Jan 30 in PaRSEC / DPLASMA:
 - Code: Includes cleanup (all)
 - Code: PR of DTD (Reazul) — PR 67
 - Code: Integration tests for DTD (Reazul) - PR ??
-- Code: Interruption meta-handle (Sawn) — PR ??
+- Code: Interruption meta-handle (Shawn) — PR ??
 - Code: DPLASMA examples (Thomas — Pending on MPI removal acceptance, dependence on collectives) — PR 74, PR 71
 - Code: Update DPLASMA with recent algorithms (Thomas) — PR 55
 - Code: Add support for C11 atomics (George) — PR 60
