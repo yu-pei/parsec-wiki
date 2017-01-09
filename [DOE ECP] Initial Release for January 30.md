@@ -15,4 +15,5 @@ Things we want to do by Jan 30 in PaRSEC / DPLASMA:
 - Wiki: Update PTG documentation (Thomas)
 - Wiki: Update Q2J documentation
 - Wiki: Update Install / Compiling documentation
+- Wiki: Update Tracing documentation
 - Continuous Testing: Re-enable Jenkins
