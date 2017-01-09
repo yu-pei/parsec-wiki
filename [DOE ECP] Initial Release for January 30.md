@@ -10,6 +10,7 @@ Things we want to do by Jan 30 in PaRSEC / DPLASMA:
 - Code: Collectives in PaRSEC (Shi, needed for MPI removal) — PR ??
 - Code: UCX remote communication driver (Stephen) — PR 59
 - Code: Fix fairness in scheduling (George -- it's not ready for merge today) - PR 35
+- Code: Priority of the communication thread (Aurélien) -- PR ??
 - Code & Wiki: Examples of DTD and Wiki documentation (Reazul)
 - Wiki: Update PTG documentation (Thomas)
 - Wiki: Update Q2J documentation
