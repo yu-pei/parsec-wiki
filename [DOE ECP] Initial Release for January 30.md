@@ -7,7 +7,7 @@ Things we want to do by Jan 30 in PaRSEC / DPLASMA:
 - Code: DPLASMA examples (Thomas — Pending on MPI removal acceptance, dependence on collectives) — PR 74, PR 71
 - Code: Update DPLASMA with recent algorithms (Thomas) — PR 55
 - Code: Add support for C11 atomics (George) — PR 60
-- Code: Collectives in PaRSEC (Shi, needed for MPI removal) — PR ??
+- Code: Collectives in PaRSEC (Xi, needed for MPI removal) — PR ??
 - Code: UCX remote communication driver (Stephen) — PR 59
 - Code: Fix fairness in scheduling (George -- it's not ready for merge today) - PR 35
 - Code: Priority of the communication thread (Aurélien) -- PR ??
