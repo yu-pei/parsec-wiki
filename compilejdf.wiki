@@ -1,17 +1,17 @@
-== How to Write a DAGuE-Enabled Operation by using the DAGuE Compiler ==
+== How to Write a PaRSEC-Enabled Operation by using the PaRSEC Compiler ==
 
 See [[understanding|Understanding the Compilation process]] to get a big picture. 
 
-If you didn't compile the compiler yet (it is an optional step, with additional tools dependences), see Compiling the DAGuE Compiler below.
+If you didn't compile the compiler yet (it is an optional step, with additional tools dependences), see Compiling the PaRSEC Compiler below.
 
 === Input Format ===
 
-=== Calling the DAGuE Compiler ===
+=== Calling the PaRSEC Compiler ===
 
 
 ==== Now What? ====
 
-You should have a look at the generated JDF, maybe tune it, to add priorities, or change the data affinity. And then, proceed to the translation of the JDF into a C file, and a dague opaque object. See the [[writejdf|Calling the JDF Translator]] section of How to Write a DAGuE-Enabled Operation by editing the JDF file directly.
+You should have a look at the generated JDF, maybe tune it, to add priorities, or change the data affinity. And then, proceed to the translation of the JDF into a C file, and a parsec opaque object. See the [[writejdf|Calling the JDF Translator]] section of How to Write a PaRSEC-Enabled Operation by editing the JDF file directly.
 
-=== Compiling the DAGuE Compiler ===
+=== Compiling the PaRSEC Compiler ===
 

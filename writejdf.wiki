@@ -1,4 +1,4 @@
-== How to Write a DAGuE-Enabled Operation by editing the JDF file directly ==
+== How to Write a PaRSEC-Enabled Operation by editing the JDF file directly ==
 
 See [[understanding|Understanding the Compilation process]] to get a big picture. 
 
@@ -11,7 +11,7 @@ extern "C" %{
 #include <plasma.h>
 #include <core_blas.h>
 
-#include "dague.h"
+#include "parsec.h"
 #include "data_distribution.h"
 %}
 
@@ -134,7 +134,7 @@ BODY
 END
 }}}
 
-It is a simplified version of the Cholesky Factorization in DAGuE. Simplifications consisted in removing GPU-related code, hints on scheduling, and benchmarking options, to measure the overheads of scheduling of the engine.
+It is a simplified version of the Cholesky Factorization in PaRSEC. Simplifications consisted in removing GPU-related code, hints on scheduling, and benchmarking options, to measure the overheads of scheduling of the engine.
 
 First, the JDF begins with a preamble in C:
 {{{
@@ -142,11 +142,11 @@ extern "C" %{
 #include <plasma.h>
 #include <core_blas.h>
 
-#include "dague.h"
+#include "parsec.h"
 #include "data_distribution.h"
 %}
 }}}
-In this preamble, we add the includes that define the protoype of the functions that each task will call, when executed. We also include the dague.h and data_distribution.h files. Functions definitions, or global variables, can be added here, but caution should be used, since this code will be dumped at the beginning of the generated C file.
+In this preamble, we add the includes that define the protoype of the functions that each task will call, when executed. We also include the parsec.h and data_distribution.h files. Functions definitions, or global variables, can be added here, but caution should be used, since this code will be dumped at the beginning of the generated C file.
 
 Then, we define a set of objects that are used in the tasks below. These objects are recognized by the JDF translator, and thus they must follow a non-C syntax:
 {{{
@@ -156,7 +156,7 @@ SIZE         [type = int]
 uplo         [type = PLASMA_enum]
 INFO         [type = "int*"]
 }}}
-Here, we define for example the general type of the object A as a C structure of type tiled_matrix_desc_t* (later about that on the data distribution page). NB is the size of a tile, SIZE, the number of tiles in the matrix A (A must be square), uplo and INFO, LAPACK parameters, used by the kernels. The generator function that is going to be created by the JDF compiler will take all these objects as parameters, each one of the specified type (hence, the generator function prototype will be //dague_object_t *function(tiled_matrix_desc_t *A, int NB, int SIZE, PLASMA_enum uplo, int *INFO)// See more explanations on [[datadistribution|How to Write a program that uses a DAGuE-Enabled Operation]]).
+Here, we define for example the general type of the object A as a C structure of type tiled_matrix_desc_t* (later about that on the data distribution page). NB is the size of a tile, SIZE, the number of tiles in the matrix A (A must be square), uplo and INFO, LAPACK parameters, used by the kernels. The generator function that is going to be created by the JDF compiler will take all these objects as parameters, each one of the specified type (hence, the generator function prototype will be //parsec_object_t *function(tiled_matrix_desc_t *A, int NB, int SIZE, PLASMA_enum uplo, int *INFO)// See more explanations on [[datadistribution|How to Write a program that uses a PaRSEC-Enabled Operation]]).
 
 A Cholesky factorization contains four kernels, called POTRF, HERK, TRSM, and GEMM. For each of these kernels, the JDF holds a parameterized task. Let us look closely at the first one, POTRF:
 {{{
@@ -179,7 +179,7 @@ END
 }}}
 The task is defined with a single parameter, k. This parameter must have an execution space that is entirely defined by the list of global objects that were defined in the beginning of the JDF. In this case, k is between 0 and SIZE-1, and since SIZE is a parameter of the generator function, k is entirely defined. As you can see with GEMM, for example, multiple parameters can be used, and parameters can depend on the value of preceding parameters (in GEMM, k is defined by SIZE, m is defined by the possible values of k and by SIZE, n is defined by the possible values of k and m). This definition must be restrictive: if the task POTRF(0) exists by its parameters (i.e. k can be equal to 0), it will be scheduled by the runtime system.
 
-Then, the task defines its data affinity: task POTRF(k) will run on the node that holds the part of the matrix pointed by A(k, k). Each task must define a single data point as its affinity. The entry is a reference on a dague_ddesc_t object, with the appropriate number of parameters. See more on [[datadistribution|Write a program that uses a DAGuE-Enabled Operation]] about data distributions.
+Then, the task defines its data affinity: task POTRF(k) will run on the node that holds the part of the matrix pointed by A(k, k). Each task must define a single data point as its affinity. The entry is a reference on a parsec_ddesc_t object, with the appropriate number of parameters. See more on [[datadistribution|Write a program that uses a PaRSEC-Enabled Operation]] about data distributions.
 
 After the data affinity, comes the data flow of the task. 
 {{{
@@ -190,7 +190,7 @@ RW T <- (k == 0) ? A(k, k) : T HERK(k-1, k)
 }}}
 This data flow defines a single data element, T, that flows inside POTRF(k) with the first line, and after T has been processed by the task, it flows out of it, towards tasks or memory, as specified by the two last lines. Because the data element is accessed in read and write by the task, it is specified so using the keyword RW in front of it. Each data element that is so defined must have a single input flow (although multiple input flows are acceptable syntaxically, they must be mutually exclusive, to ensure the data element is defined by a single mean). The first line reads as "T comes from the memory if k is equal to 0, and then it is the tile A(k, k); otherwise, T comes from the data element called T in the task HERK(k-1, k)". The second line reads as "T flows to the data element called T in the task TRSM(k, k+1), and to the data element called T in the task TRSM(k, k+1), and so on until the data element called T in the task TRSM(k, SIZE-1)". If this set reduces to the empty set, T will not flow out of this task. The last line reads as "one this data element has been processed by this task, no other task of the same operation will modify its value, and it should be copied back into memory, at the location A(k, k)". 
 
-The DAGuE runtime engine does not guarantee that T will always be located in A(k, k) during the whole execution: it can be copied in a temporary memory, for communications or optmiziations purposes. Nor does it guarantees that T will not point to A(k, k) if this is at all possible. That is the reason why the developper should always specify when the data should be safely written back in memory, and never access the memory directly, but only through the data flow.
+The PaRSEC runtime engine does not guarantee that T will always be located in A(k, k) during the whole execution: it can be copied in a temporary memory, for communications or optmiziations purposes. Nor does it guarantees that T will not point to A(k, k) if this is at all possible. That is the reason why the developper should always specify when the data should be safely written back in memory, and never access the memory directly, but only through the data flow.
 
 Data flows in the JDF must be symmetric: if POTRF writes that it receives data from HERK, HERK must write that it sends data to POTRF. The inversion of parameters must match.
 
@@ -210,9 +210,9 @@ The JDF translator will create a piece of code that defines T as a function of t
 
 === Calling the JDF Translator ===
 
-When a JDF is completely written, the DAGuE-Enabled Operation Developper needs to call the JDF translator to get a c-file and a h-file. 
+When a JDF is completely written, the PaRSEC-Enabled Operation Developper needs to call the JDF translator to get a c-file and a h-file. 
 
-This translator is called **daguepp** and is located in the tools/dague-compiler/ sub-directory. It is always generated with the dplasma code.
+This translator is called **parsecpp** and is located in the tools/parsec-compiler/ sub-directory. It is always generated with the dplasma code.
 
 It takes the following options:
 *  --debug|-d         Enable bison debug output
@@ -223,7 +223,7 @@ It takes the following options:
 *  --output-c|-C      Set the name of the .c output file (default 'a.c' or BASE.c)
 *  --output-h|-H      Set the name of the .h output file (default 'a.h' or BASE.h)
 *  --function-name|-f Set the unique identifier of the generated function
-                     The generated function will be called DAGuE_<ID>_new
+                     The generated function will be called PaRSEC_<ID>_new
                      (default a)
 *  --noline           Do not dump the JDF line number in the .c output file
 
@@ -234,9 +234,9 @@ And some warning-related options (by default, all warnings are printed). You can
                      input flows
 *  --Wremoteref       Do NOT print warnings for potential remote memory references
 
-All warnings should be carefully investigated by the DAGuE-Enabled Operation developper who wants to get a working JDF, because most of them are fatal to a correct behavior in a distributed runtime.
+All warnings should be carefully investigated by the PaRSEC-Enabled Operation developper who wants to get a working JDF, because most of them are fatal to a correct behavior in a distributed runtime.
 
 === Now What? ===
 
-Your DAGuE-Enabled operation is ready! To test it, you should [[datadistribution|Write a program that uses a DAGuE-Enabled Operation]].
+Your PaRSEC-Enabled operation is ready! To test it, you should [[datadistribution|Write a program that uses a PaRSEC-Enabled Operation]].
 

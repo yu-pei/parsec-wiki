@@ -1,24 +1,24 @@
-While running your DAGuE-based application, you may be interested in measuring hardware performance information to identify potential improvements to your code or to gather some benchmarks to assess your program's performance.  Within PaRSEC, there is a PINS module that utilizes the Performance Application Programming Interface (PAPI) to do just that.  PAPI is a great tool for getting hardware counter information during a program's execution and incurs minimal overhead.
+While running your PaRSEC-based application, you may be interested in measuring hardware performance information to identify potential improvements to your code or to gather some benchmarks to assess your program's performance.  Within PaRSEC, there is a PINS module that utilizes the Performance Application Programming Interface (PAPI) to do just that.  PAPI is a great tool for getting hardware counter information during a program's execution and incurs minimal overhead.
 
 In order to use this feature you must install PAPI, which can be found [[http://icl.eecs.utk.edu/papi/|here]], and you need to set the following CMAKE parameters:
 
- * DAGUE_PROF_TRACE=ON
+ * PARSEC_PROF_TRACE=ON
  * PINS_ENABLE=ON
  * PAPI_INCLUDE_DIR=[path/to/papi/include]
  ** Note: The brackets are not included in the actual input.  A sample path would look like: /opt/include/
  * PAPI_LIBRARY=[/path/to/papi/lib/libpapi.a]
  ** Note: The brackets are not included in the actual input.  A sample path would look like: /opt/lib/libpapi.a or /opt/lib/libpapi.so depending on whether you want to link papi statically or dynamically.
 
-Once all of these things have been set, you must specify which PAPI events you would like to monitor and under what scheme you would like them to be monitored.  To do this, go to your home directory and create a .dague directory like so:
+Once all of these things have been set, you must specify which PAPI events you would like to monitor and under what scheme you would like them to be monitored.  To do this, go to your home directory and create a .parsec directory like so:
 {{{
 #!bash
 cd ~
-mkdir .dague
+mkdir .parsec
 }}}
-Now, we need to navigate to the .dague directory and create an MCA parameters config file called 'mca-params.conf' in which we will be putting our specifications.  So, use your favorite editor (mine's emacs) to create and edit this file:
+Now, we need to navigate to the .parsec directory and create an MCA parameters config file called 'mca-params.conf' in which we will be putting our specifications.  So, use your favorite editor (mine's emacs) to create and edit this file:
 {{{
 #!bash
-cd ~/.dague
+cd ~/.parsec
 emacs mca-params.conf
 }}}
 For this demo, we will name our profile file 'demo', and we will be monitoring L1 instruction cache misses on all cores and sockets after each task and L1 data cache misses on Socket 0's first core every .01 seconds.  So, our mca-params.conf file will look like:

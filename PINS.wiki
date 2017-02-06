@@ -19,11 +19,11 @@ There are 3 pairs of initialization and finalization routines - each invoked by 
 
 It is customary to name the init/fini routines {{{pins_<init/fini type>_<module name>}}} in order to maintain a level of consistency that will be helpful to other module developers. This naming convention is fully demonstrated in the {{{papi}}} and {{{print_steals}}} modules.
 
-Any of these 6 routines may be provided by your module, and they will be invoked automatically by the PaRSEC runtime if they exist. You **must** specify which of the init/fini routines are provided, using a {{{dague_pins_module_t}}} struct similar to the one in {{{print_steals}}}'s {{{pins_print_steals_module.c}}} file:
+Any of these 6 routines may be provided by your module, and they will be invoked automatically by the PaRSEC runtime if they exist. You **must** specify which of the init/fini routines are provided, using a {{{parsec_pins_module_t}}} struct similar to the one in {{{print_steals}}}'s {{{pins_print_steals_module.c}}} file:
 
 {{{
-const dague_pins_module_t dague_pins_print_steals_module = {
-    &dague_pins_print_steals_component,
+const parsec_pins_module_t parsec_pins_print_steals_module = {
+    &parsec_pins_print_steals_component,
     {
 	    pins_init_print_steals,
 	    pins_fini_print_steals,
@@ -35,14 +35,14 @@ const dague_pins_module_t dague_pins_print_steals_module = {
 };
 }}}
 
-**{{{pins_init}}}** is invoked a single time, during {{{dague_init()}}}, before the PaRSEC profiling system is active, and before the entirety of the {{{dague_context_t}}} structure (particularly including all virtual process and thread structures) is instantiated, but after the initialization of the PaRSEC profiling system (if built).  This is the right place to perform any custom initialization, such as global memory allocation, that does not depend on anything thread or handle-related. 
+**{{{pins_init}}}** is invoked a single time, during {{{parsec_init()}}}, before the PaRSEC profiling system is active, and before the entirety of the {{{parsec_context_t}}} structure (particularly including all virtual process and thread structures) is instantiated, but after the initialization of the PaRSEC profiling system (if built).  This is the right place to perform any custom initialization, such as global memory allocation, that does not depend on anything thread or handle-related. 
 
 {{{pins_init}}} is also the usual place to make calls to {{{PINS_REGISTER()}}}, the macro which will register your custom callback code with whichever callbacks your module requires. It is customary, in order to provide callback-overloading, that you store the return value of {{{PINS_REGISTER}}} (a {{{parsec_pins_callback function}}} pointer) so that it can be called before your callback returns -- this will be demonstrated in the section on Callback functions.
 {{{
 static parsec_pins_callback * select_end_prev; // courtesy call to previously-registered callback
 static int total_cores;
 
-static void pins_init_print_steals(dague_context_t * master) {
+static void pins_init_print_steals(parsec_context_t * master) {
 	select_end_prev   = PINS_REGISTER(SELECT_END,   stop_print_steals_count);
 	total_cores = master->nb_vp * master->virtual_processes[0]->nb_cores;
 }
@@ -51,25 +51,25 @@ static void pins_init_print_steals(dague_context_t * master) {
 **{{{pins_fini}}}** is the companion routine for {{{pins_init}}}. It is invoked a single time per PaRSEC runtime, after all processing has been completed, after the virtual process and thread structures have been destroyed, but before the PaRSEC profiling subsystem is flushed and removed. It is generally used to undo everything done by the corresponding initialization routine, which should also generally include the re-registration of previously stored callback pointers returned by {{{PINS_REGISTER()}}}, in order to cleanly allow for future use cases in which callbacks may continue to occur throughout PaRSEC system shutdown and cleanup. {{{PINS_REGISTER}}} is guaranteed to return a valid callback function pointer unless a malicious or otherwise broken module has already submitted an invalid function pointer for registration.
 
 {{{
-static void pins_fini_print_steals(dague_context_t * master) {
+static void pins_fini_print_steals(parsec_context_t * master) {
 	PINS_REGISTER(SELECT_END,   select_end_prev);
 }
 }}}
 
 The {{{pins_fini}}} routine may also be used to perform final operations with items stored in self-allocated or otherwise safe global memory.
 
-**{{{pins_handle_init}}}** is invoked a single time per instantiated {{{dague_handle_t}}}. It is called after most of the handle information has been created, so initialization that is dependent on the handle's aspects should generally function as desired. 
+**{{{pins_handle_init}}}** is invoked a single time per instantiated {{{parsec_handle_t}}}. It is called after most of the handle information has been created, so initialization that is dependent on the handle's aspects should generally function as desired. 
 
-Currently, this method is not commonly used, as the initialization process for the {{{dague_handle_t}}} itself does not lend itself to the reliable use of the corresponding {{{pins_handle_fini}}} routine, and the PINS system itself does not allow for separate callbacks per handle. //In the future, it is expected that instrumentation relating to the performance of most tasks would be best initialized and finalized per handle, as opposed to per overall PaRSEC process// ({{{pins_init}}}), //so as to provide the full flexibility of the PaRSEC runtime as it potentially runs many separate DAG graphs in parallel.//
+Currently, this method is not commonly used, as the initialization process for the {{{parsec_handle_t}}} itself does not lend itself to the reliable use of the corresponding {{{pins_handle_fini}}} routine, and the PINS system itself does not allow for separate callbacks per handle. //In the future, it is expected that instrumentation relating to the performance of most tasks would be best initialized and finalized per handle, as opposed to per overall PaRSEC process// ({{{pins_init}}}), //so as to provide the full flexibility of the PaRSEC runtime as it potentially runs many separate DAG graphs in parallel.//
 
 **{{{pins_handle_fini}}}** is not currently provided by the PINS system, though it will soon be implemented and will provide a functionality mirroring that of {{{pins_handle_init}}}, and resembling that of {{{pins_fini}}}, but per handle instead of per PaRSEC runtime.
 
-**{{{pins_thread_init}}}** is invoked once per thread created by the PaRSEC runtime, very close to the beginning of that thread's lifetime, but, crucially, **after** the initialization of the PaRSEC profiling system and the registration of the thread with PAPI. This allows for the full and safe use of both the profiling system and PAPI calls, e.g. {{{PAPI_create_eventset()}}}. In PaRSEC, each thread is associated with one and only one {{{dague_execution_unit_t}}} for its entire lifetime, and these objects will have been fully initialized before the call to the module thread_init routine. However, the order of these per-thread invocations is //**undefined**//.
+**{{{pins_thread_init}}}** is invoked once per thread created by the PaRSEC runtime, very close to the beginning of that thread's lifetime, but, crucially, **after** the initialization of the PaRSEC profiling system and the registration of the thread with PAPI. This allows for the full and safe use of both the profiling system and PAPI calls, e.g. {{{PAPI_create_eventset()}}}. In PaRSEC, each thread is associated with one and only one {{{parsec_execution_unit_t}}} for its entire lifetime, and these objects will have been fully initialized before the call to the module thread_init routine. However, the order of these per-thread invocations is //**undefined**//.
 
 In {{{print_steals}}}, the thread_init routine simply allocates per-execution unit data counters.
 
 {{{
-static void pins_thread_init_print_steals(dague_execution_unit_t * exec_unit) {
+static void pins_thread_init_print_steals(parsec_execution_unit_t * exec_unit) {
     exec_unit->steal_counters = calloc(sizeof(long), total_cores + 2);
 }
 }}}
@@ -77,7 +77,7 @@ static void pins_thread_init_print_steals(dague_execution_unit_t * exec_unit) {
 **{{{pins_thread_fini}}}** is invoked once per thread very near the end of the thread's lifetime, but before the destruction of the profiling system. The order of **these** invocations //**is**// defined: the master thread (thread 0) will be fini'd first, and the rest of the threads will be fini'd in counting order of which core they were bound to, e.g.: 0, 1, 2, 3, ..., 46, 47, 48. This is particularly useful for the {{{print_steals}}} module, as it allows an elegant, in-order, row-by-row print of the task-stealing matrix that would otherwise have to be accomplished by nested {{{for}}} loops in the {{{pins_fini}}} call.
 
 {{{
-static void pins_thread_fini_print_steals(dague_execution_unit_t * exec_unit) {
+static void pins_thread_fini_print_steals(parsec_execution_unit_t * exec_unit) {
     for (int k = 0; k < total_cores + 2; k++)
         printf("%7ld ", exec_unit->steal_counters[k]);
     printf("\n");
@@ -90,7 +90,7 @@ static void pins_thread_fini_print_steals(dague_execution_unit_t * exec_unit) {
 
 The callback functions are the core of most PINS modules. Various callback types are built in to PaRSEC, and new callback types can be added easily by modifying a single enum in the {{{src/mca/pins/pins.h}}} file and by inserting corresponding uses of the {{{PINS()}}} macro where the instrumentation is required. 
 
-PINS callbacks are functions with a very specific function prototype - the callbacks receive a pointer to a {{{dague_execution_unit_t}}} (the thread-specific data structure), a pointer to a {{{dague_execution_context_t}}} (the data structure encapsulating a single task in the DAG), and a {{{void}}} pointer, which may or may not be a pointer to some sort of data specific to a particular callback type. Most callback types will provide valid pointers for at least the first two. However, any of these 3 pointers may be NULL depending on whether it makes sense and is possible to provide each of the items for the given callback type. 
+PINS callbacks are functions with a very specific function prototype - the callbacks receive a pointer to a {{{parsec_execution_unit_t}}} (the thread-specific data structure), a pointer to a {{{parsec_execution_context_t}}} (the data structure encapsulating a single task in the DAG), and a {{{void}}} pointer, which may or may not be a pointer to some sort of data specific to a particular callback type. Most callback types will provide valid pointers for at least the first two. However, any of these 3 pointers may be NULL depending on whether it makes sense and is possible to provide each of the items for the given callback type. 
 
 Most modules will likely use the built-in callback types. The most up-to-date list of callback types can be found in the source file {{{pins.h}}}, but as of this writing, the provided and working callback types are: 
 
@@ -106,11 +106,11 @@ Most modules will likely use the built-in callback types. The most up-to-date li
 {{{print_steals}}} uses only one type - {{{SELECT_END}}}, which is called at the end of task selection by the scheduler. It receives an execution unit, an execution context, and, by the particular implementation of the {{{SELECT_END}}} callback type in the schedulers that come included with PaRSEC, an integer (in the guise of a {{{void *}}}) representing the number of the core from which the execution context was stolen. These three items are used to increment one of the steal counters for the provided execution unit. Then, as previously mentioned, the callback is chained to the next registered callback (if any) with a simple invocation of the function pointer returned by the original call to {{{PINS_REGISTER()}}} in the {{{pins_init_print_steals}}} initialization routine.
 
 {{{
-static void stop_print_steals_count(dague_execution_unit_t * exec_unit, 
-                                   dague_execution_context_t * exec_context, 
+static void stop_print_steals_count(parsec_execution_unit_t * exec_unit, 
+                                   parsec_execution_context_t * exec_context, 
                                    void * data) {
 	unsigned long long victim_core_num = (unsigned long long)data;
-	unsigned int num_threads = (exec_unit->virtual_process->dague_context->nb_vp 
+	unsigned int num_threads = (exec_unit->virtual_process->parsec_context->nb_vp 
 	                            * exec_unit->virtual_process->nb_cores);
 
 	if (exec_context != NULL)
@@ -132,6 +132,6 @@ By default, PaRSEC compiles (via MCA) all modules present in the {{{src/mca/pins
 
 Therefore, there is also a built-in capability to limit activated modules by name during runtime. The function **{{{set_allowable_pins_modules()}}}** is a once-per-runtime invocation that receives an array of {{{char *}}} names corresponding to the module names (recall that the module name is also the name of the directory inside the PINS source directory that contains the module code) that you wish to allow for activation during runtime. 
 
-It is not necessary to use this function at all - by default, all modules are **//enabled//**. If you //do// wish to use the function, you must call it **before** calling {{{dague_init()}}}, as the function will have no effect after {{{pins_init()}}} is run. 
+It is not necessary to use this function at all - by default, all modules are **//enabled//**. If you //do// wish to use the function, you must call it **before** calling {{{parsec_init()}}}, as the function will have no effect after {{{pins_init()}}} is run. 
 
 However, the DPLASMA testing executables provided with PaRSEC automatically invoke this function with the contents of the {{{--mca-pins}}} runtime flag. As a result, all PINS modules are **//disabled//** by default in DPLASMA tests, as the default 'content' of the flag is null. To enable the use of any PINS module(s) when testing with a provided DPLASMA testing executable, you must use the {{{--mca-pins}}} command line flag with a list of comma-separated PINS module names, e.g. {{{./testing_dpotrf -N 10000 --mca-pins=print_steals}}}, or {{{./testing_dgeqrf -N 10000 --mca-pins=papi}}}

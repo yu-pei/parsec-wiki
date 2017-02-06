@@ -23,7 +23,7 @@ CXX=${CXX:="x86_64-k1om-linux-g++"}
 FC=${FC:="x86_64-k1om-linux-gfortran"}
 }}} 
 
-Once configuration is done, type {{{ccmake .}}} in your PaRSEC root folder. Please double check DAGUE_GPU_WITH_CUDA is set to OFF, -openmp is in CFLAGS, CXXFLAGS and FFLAGS. When you have set all the options you want in ccmake, type 'c' to configure again, and 'g' to generate the files. If you entered wrong values in some fields, ccmake will complain at 'c' time. If no changes are made, type 'q' to quit without configure again.
+Once configuration is done, type {{{ccmake .}}} in your PaRSEC root folder. Please double check PARSEC_GPU_WITH_CUDA is set to OFF, -openmp is in CFLAGS, CXXFLAGS and FFLAGS. When you have set all the options you want in ccmake, type 'c' to configure again, and 'g' to generate the files. If you entered wrong values in some fields, ccmake will complain at 'c' time. If no changes are made, type 'q' to quit without configure again.
 
 If the configuration was good, compilation should be as simple and fancy as 'make'.
 

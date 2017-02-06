@@ -1,14 +1,14 @@
-In many instances it might be interesting to extract and use information about the task cost and performance. This allows analysis of the scheduling quality, the maintained memory locality and the time wasted due to scheduling decisions. Achieving this requires a complete recompilation of the DAGuE source after enabling the DAGUE_PROF_TRACE CMake option.
+In many instances it might be interesting to extract and use information about the task cost and performance. This allows analysis of the scheduling quality, the maintained memory locality and the time wasted due to scheduling decisions. Achieving this requires a complete recompilation of the PaRSEC source after enabling the PARSEC_PROF_TRACE CMake option.
 
-In case you are on a system with accelerators and you need to be able to extract profiling information from the execution of tasks on these accelerators you have to hand edit the src/gpu_data.c file and add the information you want to profile to the dague_cuda_trackable_events variable. Here is a quick description of the available values:
+In case you are on a system with accelerators and you need to be able to extract profiling information from the execution of tasks on these accelerators you have to hand edit the src/gpu_data.c file and add the information you want to profile to the parsec_cuda_trackable_events variable. Here is a quick description of the available values:
 
-* DAGUE_PROFILE_CUDA_TRACK_EXEC show the task submission and retrieval time. This does not include the time required to move the data to and from the accelerator.
+* PARSEC_PROFILE_CUDA_TRACK_EXEC show the task submission and retrieval time. This does not include the time required to move the data to and from the accelerator.
 
-* DAGUE_PROFILE_CUDA_TRACK_DATA_IN track the movement of data from the main memory to the accelerator memory. This operation can be skipped if the data is already available on the accelerator memory due to a previous operation.
+* PARSEC_PROFILE_CUDA_TRACK_DATA_IN track the movement of data from the main memory to the accelerator memory. This operation can be skipped if the data is already available on the accelerator memory due to a previous operation.
 
-* DAGUE_PROFILE_CUDA_TRACK_DATA_OUT track the data movement from the accelerator memory back to the main memory after the completion of a task. This operation can be delayed until the data is needed by a task that will execute on the CPU.
+* PARSEC_PROFILE_CUDA_TRACK_DATA_OUT track the data movement from the accelerator memory back to the main memory after the completion of a task. This operation can be delayed until the data is needed by a task that will execute on the CPU.
 
-* DAGUE_PROFILE_CUDA_TRACK_OWN show the threads that own the accelerator, in the sense that it will manage the tasks submission and data movements.
+* PARSEC_PROFILE_CUDA_TRACK_OWN show the threads that own the accelerator, in the sense that it will manage the tasks submission and data movements.
 
 Once the desired options have been set, a complete rebuild of the software is necessary. You're now ready to use the profiling. Let's suppose you want to profile the dplasma/testing/testing_dpotrf test in a heterogeneous distributed environment. I'll take a small example so I will limit the number of processes to 2, the number of cores per process to 2 as well, the size of a tile to 200 and the size of the matrix to 4000. The command will look similar to the following:
 
