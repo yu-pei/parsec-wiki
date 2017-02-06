@@ -4,7 +4,7 @@ See [[understanding|Understanding the Compilation process]] to get a big picture
 
 === Input Format ===
 
-Let's start with a simple example:
+The syntax is presented with a simple example that is commented below:
 
 {{{
 extern "C" %{
