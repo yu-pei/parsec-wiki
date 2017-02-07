@@ -371,7 +371,7 @@ static int32_t vpid_of_key(parsec_ddesc_t *desc, parsec_data_key_t key)
 {{{vpid_of}}}/{{{vpid_of_key}}} returns the identifier of the Virtual Process
 that "owns" a data identified by its multidimensional index or its flat key.
 These functions must be defined only on the rank that hosts the data. The VPID
-is a number between 0 and {{{vp_map_get_nb_vp()-1}}.
+is a number between 0 and {{{vp_map_get_nb_vp()-1}}}.
 
 {{{
 static parsec_data_t* data_of(parsec_ddesc_t *desc, ...)
