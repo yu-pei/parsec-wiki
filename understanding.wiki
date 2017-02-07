@@ -10,6 +10,6 @@ The compilation process starts either with a JDF, or with a Serial code.
 
 Using the PaRSEC compiler, the developper of a PaRSEC-Enabled operation can generate the JDF for a Serial Code. This process is described in [[compilejdf|How to write a PaRSEC-Enabled operation using the PaRSEC compiler]].
 
-One a JDF is obtained, it can be edited by the PaRSEC-Enabled Operation Developper, and it passes through the JDF translator to build a C file, see [[compilejdf| How to write a PaRSEC enabled operation by editing the JDF file directly]], section "Compiling the JDF".
+Once a JDF is obtained, it can be edited by the PaRSEC-Enabled Operation Developper, and it passes through the JDF translator to build a C file, see [[compilejdf| How to write a PaRSEC enabled operation by editing the JDF file directly]], section "Compiling the JDF".
 
 This C file defines a set of functions. The PaRSEC-Enabled Operation User links her code with the PaRSEC runtime library and the compiled version of this file, to be enable to call the PaRSEC-Enabled Operation. See [[datadistribution|How to write a program that uses a PaRSEC-Enabled Operation]] to study this is part is done.
