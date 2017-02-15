@@ -253,3 +253,9 @@ mpirun -np 8 ./testing_spotrf -c 8 -g 0 -p 4 -q 2 -t 120 -T 120 -N 1000
 Meaning that we'll run Cholesky factorization on 8 nodes, 8 computing threads per node, nodes being arranged in a 4x2 grid, with a distributed generation of the matrix of size 1000x1000 singles, with tiles of size 120x120.
 
 Each test can dump the list of options with -h. Some tests have specific options (like -I to tune the inner block size in QR and LU, and -M in LU or QR to have non-square matrices).
+
+==== Modular Component Architecture ====
+
+In addition to the parameters usually accepted by DPLASMA (see {{{mpirun -np 1 ./testing_dpotrf --help}}} for a full list), the PaRSEC runime engine can be tuned through its MCA. MCA parameters can be passed to the runtime engine after the DPLASMA arguments, by separating the DPLASMA arguments from the PaRSEC arguments with {{{--}}} (e.g. {{{mpirun -np 8 ./testing_dpotrf -c 8 -N 1000 -- --mca mca_sched ap}}} would tell DPLASMA to use 8 cores, and PaRSEC to use the AP (Absolute Priority) scheduling heuristic).
+
+A complete list of MCA parameters can be found by passing {{{--help}}} to the PaRSEC runtime engine (e.g. {{{mpirun -np 1 ./testing_dpotrf -c 1 -N 100 -- --help}}}).
