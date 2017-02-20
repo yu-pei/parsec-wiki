@@ -67,10 +67,15 @@ Closing remaining open files:demo-hostname-4-3000-180-lfq-6NdC2R.h5...done
 And the demo.trace file can be opened with any PAJe file format tool (e.g. VITE).
 
 The h5totrace.py script allows also to
+
  * filter events (remove events following a pattern or specific names)
+
  * filter threads (avoid to display events that happened on threads that are not desired in the final output)
+
  * extract human-readable names of tasks, using the DOT file (see how a DOT file can be generated here). This functionality allows to have better task names in the visual tools; without a DOT file to compute these names, a unique task id is provided, but connecting it to the original task name can be hard.
+
  * summarize specific events (e.g. memory consumption related events) as counters.
+
  * list event types names and simple statistics on the trace
 
 See the help of the script to understand how these can be achieved.
