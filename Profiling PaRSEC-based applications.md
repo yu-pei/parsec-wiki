@@ -1,6 +1,6 @@
 In many instances it might be interesting to extract and use information about the task cost and performance. This allows analysis of the scheduling quality, the maintained memory locality and the time wasted due to scheduling decisions. Achieving this requires a complete recompilation of the PaRSEC source after enabling the PARSEC_PROF_TRACE CMake option.
 
-In case you are on a system with accelerators and you need to be able to extract profiling information from the execution of tasks on these accelerators you have to hand edit the src/gpu_data.c file and add the information you want to profile to the {{{parsec_cuda_trackable_events}}} variable. Here is a quick description of the available values:
+In case you are on a system with accelerators and you need to be able to extract profiling information from the execution of tasks on these accelerators you have to hand edit the src/gpu_data.c file and add the information you want to profile to the ```parsec_cuda_trackable_events``` variable. Here is a quick description of the available values:
 
 * PARSEC_PROFILE_CUDA_TRACK_EXEC show the task submission and retrieval time. This does not include the time required to move the data to and from the accelerator.
 
@@ -10,7 +10,7 @@ In case you are on a system with accelerators and you need to be able to extract
 
 * PARSEC_PROFILE_CUDA_TRACK_OWN show the threads that own the accelerator, in the sense that it will manage the tasks submission and data movements.
 
-Once the desired options have been set, a complete rebuild of the software is necessary. You're now ready to use the profiling. Let's suppose you want to profile the {{{dplasma/testing/testing_dpotrf}}} test in a heterogeneous distributed environment. I'll take a small example so I will limit the number of processes to 2, the number of cores per process to 2 as well, the size of a tile to 200 and the size of the matrix to 4000. The command will look similar to the following:
+Once the desired options have been set, a complete rebuild of the software is necessary. You're now ready to use the profiling. Let's suppose you want to profile the ```dplasma/testing/testing_dpotrf``` test in a heterogeneous distributed environment. I'll take a small example so I will limit the number of processes to 2, the number of cores per process to 2 as well, the size of a tile to 200 and the size of the matrix to 4000. The command will look similar to the following:
 
 
 ```
@@ -29,7 +29,7 @@ The result will look something like
 
 ```
 
-Two files (one per process) are generated in the current directory ({{{demo-0.prof-<random number>}}}, and {{{demo-1.prof-<random number>}}} -- NB: if you used another name for the profile_filename argument above, that name, and not demo will be used. Similarly, the rank will go from 0 to NP-1). 
+Two files (one per process) are generated in the current directory (```demo-0.prof-<random number>```, and ```demo-1.prof-<random number>``` -- NB: if you used another name for the profile_filename argument above, that name, and not demo will be used. Similarly, the rank will go from 0 to NP-1). 
 
 These files follow an internal binary format that contains realtime timestamps in the architecture of the local machine. As such, they are probably unsuitable to be transferred and analyzed at a remote place and must be converted. There are two alternatives to do so:
 
