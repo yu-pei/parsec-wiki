@@ -5,6 +5,9 @@ Two moderated mailing-lists are available, one for the users and the other for t
 == How to Compile and Run DPLASMA ==
 
 * [[compileandrun|How to compile and run dplasma]]
+
+== Understanding the compilation and runtime process of PaRSEC ==
+
 * [[understanding|Understanding the compilation and runtime process of PaRSEC]]
 ** [[compilejdf|How to write a PaRSEC enabled operation by using the PaRSEC compiler]]
 ** [[writejdf|How to write a PaRSEC enabled operation by editing the JDF file directly]]
