@@ -25,7 +25,7 @@ Two moderated mailing-lists are available, one for the users and the other for t
 
 == Tutorials about PaRSEC / DPLASMA ==
 The PaRSEC / DPLASMA community has put together tutorials to explain how to use PaRSEC in a distributed heterogeneous setting, how to implement your own Domain Specific Language on top of PaRSEC, and how to improve the efficiency of your algorithms by using a dataflow-like task-based programming environment. These tutorials are targetted toward the user community, but potential developers of PaRSEC might find some interesting information as well. 
-[[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-1.pdf| Tutorial 1]] and [[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-2.pdf|| Tutorial 2]].
+[[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-1.pdf|Tutorial 1]] and [[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-2.pdf|Tutorial 2]].
 
 
 == Extras ==
