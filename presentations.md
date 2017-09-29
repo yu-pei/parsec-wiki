@@ -1,1 +1,1 @@
-[[CCDSC Lyon|https://bytebucket.org/icldistcomp/parsec/wiki/files/PaRSEC_Lyon_2012.pdf]]
+[CCDSC Lyon](https://bytebucket.org/icldistcomp/parsec/wiki/files/PaRSEC_Lyon_2012.pdf)
