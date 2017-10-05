@@ -1,3 +1,27 @@
+Among the many system architecture changes that the climb to exascale will enforce, it is widely agreed that the unprecedented increase in concurrency—at least three orders of magnitude—is among the most formidable. Programming models that cannot expose and exploit such vast amounts of parallelism, even as it dynamically varies in response to ongoing system conditions, will not reach exascale, or even near-exascale. Moreover, the fact that the amount of available parallelism will vary dynamically means that it is problematic to rely on known techniques, such as MPI+X, to exploit all the potential concurrency. In the project described below, we focus instead on developing a programming paradigm, already implemented in preproduction form in the Parallel Runtime Scheduling and Execution Controller (PARSEC) environment, that can both expose and dynamically manage exascale levels of parallelism, and also deliver performance portability across different systems, so as to facilitate the transition of existing software to this revolutionized environment. 
+ 
+The limitations of current programming paradigms relative to the new concurrency landscape are well known, and the search for alternative approaches has demonstrated proof-of-concept impacts in application scalability and efficiency. Notably, all of the “ready for exascale” applications that have been admitted to the ECP application’s call are proposing to make a wrenching development shift in order to transition their applications toward modern programming paradigms. 
+ 
+The corresponding problems that application developers will face are also intimidating. As the number of nodes increases, so does the architectural complexity of each node, so that efficiently programming the target architecture becomes even more challenging. To aggregate a collection of computing elements that is growing exponentially, new system architectures rely on hierarchical composition: the memory hierarchy deepens, increasing non-uniform memory access effects; network interconnects use high dimension tori, or other scalable structures; and manycore CPUs are embedded in the computing nodes, either through the use of separate or self-hosted accelerators. Extracting performance from such hardware, where the level of parallelism is increased 1,000 fold, requires that one exploit an even larger degree of parallelism from the application. Applications ready for exascale feature such potential for parallelism, but once exposed, decisions must be taken at runtime for the efficient placement of work. Synchronous programming models make such decisions exceedingly difficult, if not impossible. 
+ 
+ 
+Consequently, a programming paradigm built around a far less synchronous approach is needed. Task- based programming has proven to be both efficient and productive in this regard. In task-based programming, the algorithm is as a set of interdependent fine-grain tasks (a set of instructions that access and modify an explicit and bounded amount of data), and a runtime system is responsible of scheduling these tasks while satisfying the data dependencies between the tasks, in order to maximize resource utilization and absorb system noise and communication delays (delays due to system noise introduce significant slack in large scale synchronous applications). DOE investment has already delivered a solid implementation of this paradigm: the PARSEC framework, a runtime system capable of efficiently executing large task-based application on distributed heterogeneous resources. 
+ 
+In the work proposed below, we will focus our work on two sides of this exascale challenge, namely, both the management of extreme-scale parallelism and the reasonableness of the programming model. Specifically, we propose to transition the PARSEC framework to exascale supercomputers, and extend it to facilitate application programmability and increase scientific productivity. In this context, we define programability as the capacity to extract performance from complex architectures, and scientific productivity, as the capacity to create efficient executables for hybrid exascale computers, from a source code easily maintainable by a domain scientist. Both these topics are part of the Top Ten Technical Challenges for Exascale defined by the Advanced Scientific Computing Advisory Committee Findings. 
+To reach the goals of programmability, scientific productivity, and scalability, the work proposed in the PARSEC task environment will have to take into account the technical challenges we briefly highlight below. 
+ 
+Domain Specific Languages: A major effort will extend PARSEC support for compiler integration, to enable Domain Specific Languages (DSL) to be easily designed and integrated with the runtime. Outside the task-based approach, no programming model will be mandated, but the delivered runtime will provide interoperability and execution support for a combination of OpenMP, dataflow and sequential task flow. 
+ 
+Scalable System Software: The design of the PARSEC runtime system focused on scalability. Tasks are known only on processes responsible for their execution, scheduling is entirely distributed, correctness does not require control synchronization, and the execution avoids collective synchronization. Particular emphasis was put on reducing the memory consumption of the runtime itself, and on providing a scalable version of all distributed constructs. However, exascale environments will pose new challenges, and the implementation must be tested at the largest scale, bottlenecks identified if they appear, and removed. 
+ 
+Evolving Technology: For portability, PARSEC comes with a default MPI driver, but access to lower-level network features (such as active message and asynchronous communications) will have a positive impact on performance. More variety of accelerators, self-hosted accelerators and relaxed memory model are also disrupting traditional technologies, and the PARSEC runtime will evolve to aggregate these challenging systems in a manageable, yet efficient, abstraction. 
+ 
+Energy Efficiency: The hardware trend (e.g., Haswell processors, Knights Landing, Knights Hill) to control power consumption provides the capacity to turn on and off cores as work demand evolves. A task runtime system that dynamically decides where tasks execute can take advantage of these hardware capabilities and adapt to a dynamically evolving set of computing resources. 
+ 
+Resilience: As the data that tasks require and produce are explicit for the runtime system, general strategies of data replication or incremental checkpoint/restart can be embedded in the runtime, and provide support for soft error detection and process failure. 
+ 
+As a low-level infrastructure, the PARSEC runtime can serve to spotlight sensitive OS/hardware features that have a notable impact on the efficiency of asynchronous applications, and co-design the prerequisite features of exascale systems. The PARSEC runtime can be used to test which hardware/OS innovations lead into technological dead-ends, or are too challenging to effectively exploit in practice. Moreover, it can be used to validate key technical alternatives (e.g., which relaxed hypothesis on memory coherency, which accelerator technology, what network capabilities are effective) while hiding the additional complexity in a middleware layer, so that applications continue to experience a comprehensible machine abstraction. 
+
 ##  Modular Architecture
 
 PaRSEC is designed following a Modular Component Architecture that enables final users and application developers to select specific features at run time to adapt the task system to distinct behaviors.  As an example, the node-level task scheduler is provided as a component, which allows users to select dynamically what implementation of the scheduler is used for the current set of tasks. The runtime system comes with a predefined set of schedulers (favoring cache reuse for NUMA machines, or the user-defined priority, or many flavors between the two), but through the use of dynamic library loaders, the user may provide her own scheduler, following the API of the module.
@@ -37,103 +61,29 @@ This separation of concerns ensures first, user's productivity by providing an a
 OVERVIEW
 ========
 
-PaRSEC (Parallel Runtime Scheduler and Execution Controller) is an
-environment that proposes to simplify the design and accelerate the
-execution of High Performance applications on leadership systems. PaRSEC
-helps the application programmer in expressing parallelism without requiring
-the intricacies of explicit parallelism programming models. In PaRSEC,
-algorithms are expressed as a set of elementary tasks, which can then
-execute efficiently at a massively parallel scale, as well as being
-automatically delegated to accelerators. These tasks operate on explicit 
-input data and produce (possibly in-place) output data, and the PaRSEC
-runtime considers that data flow for 1) ensuring that tasks using the same
-data execute in a correct order, and 2) automating data movement across 
-node and between accelerators and hosts. Unlike most dataflow systems, PaRSEC
-is designed from the get-go to execute on massively parallel and heterogeneous
-(i.e. accelerated) systems, while at the same time being able to execute 
-fine-grain tasks.
+PaRSEC (Parallel Runtime Scheduler and Execution Controller) is an environment that proposes to simplify the design and accelerate the execution of High Performance applications on leadership systems. PaRSEC helps the application programmer in expressing parallelism without requiring the intricacies of explicit parallelism programming models. In PaRSEC, algorithms are expressed as a set of elementary tasks, which can then execute efficiently at a massively parallel scale, as well as being automatically delegated to accelerators. These tasks operate on explicit input data and produce (possibly in-place) output data, and the PaRSEC runtime considers that data flow for 1) ensuring that tasks using the same data execute in a correct order, and 2) automating data movement across node and between accelerators and hosts. Unlike most dataflow systems, PaRSEC is designed from the get-go to execute on massively parallel and heterogeneous (i.e. accelerated) systems, while at the same time being able to execute fine-grain tasks.
 
 PROGRAMMING PARSEC
 ==================
 
-PaRSEC is interoperable with legacy technologies (e.g. MPI, CUDA, etc.) which 
-permits the incremental upgrade existing applications. Typically, a 
-programmer will start from an existing SPMD application, and transform 
-some particularly costly computational routine with PaRSEC, while leaving the 
-rest of the application unchanged. The PaRSEC accelerated routine will 
-typically look like and behave like an SPMD routine when viewed from the 
-outside, while internally, it will unleash the full parallelism permissible 
-from the dataflow. 
+PaRSEC is interoperable with legacy technologies (e.g. MPI, CUDA, etc.) which permits the incremental upgrade existing applications. Typically, a programmer will start from an existing SPMD application, and transform some particularly costly computational routine with PaRSEC, while leaving the rest of the application unchanged. The PaRSEC accelerated routine will typically look like and behave like an SPMD routine when viewed from the outside, while internally, it will unleash the full parallelism permissible from the dataflow. 
 
-A PaRSEC routine is a set of task classes, representing elementary operations 
-applied to blocks of data. Each task class describe the inputs, the output,
-and the operator applied to the input data to produce the output data. Tasks
-are pure and read or modify only input and output data. During the execution
-all task instances are scheduled on the resources in parallel. 
+A PaRSEC routine is a set of task classes, representing elementary operations applied to blocks of data. Each task class describe the inputs, the output, and the operator applied to the input data to produce the output data. Tasks are pure and read or modify only input and output data. During the execution all task instances are scheduled on the resources in parallel. 
 
-The PaRSEC environment provides multiple front-ends, or **Domain Specific 
-Languages** (DSL) tailored for the particular use case (chemistry, CFD, 
-linear algebra, etc.) to write these task classes. High level DSLs input 
-either C, C++, Fortran, depending upon 
-the customs and preferences of the particular users community, and can 
-produce the dependency between tasks automatically. The low level DSLs 
-permit expressing task classes and their data dependency explicitly in 
-a C-like language. PaRSEC tasks operate on data blocks, which can be sparse,
-irregular, or have a datatype to represent complex memory layout. Data blocks
-are assembled in distributed collections, which represent the distribution 
-of the dataset on the machine. PaRSEC provides a rich toolbox of data 
-collections to distribute data according to common or fully customized 
-patterns, as well as common parallel operators (like maps, broadcasts, 
-reductions) that operate on such collections. 
+The PaRSEC environment provides multiple front-ends, or **Domain Specific Languages** (DSL) tailored for the particular use case (chemistry, CFD, linear algebra, etc.) to write these task classes. High level DSLs input either C, C++, Fortran, depending upon the customs and preferences of the particular users community, and can produce the dependency between tasks automatically. The low level DSLs permit expressing task classes and their data dependency explicitly in a C-like language. PaRSEC tasks operate on data blocks, which can be sparse, irregular, or have a datatype to represent complex memory layout. Data blocks are assembled in distributed collections, which represent the distribution of the dataset on the machine. PaRSEC provides a rich toolbox of data collections to distribute data according to common or fully customized patterns, as well as common parallel operators (like maps, broadcasts, reductions) that operate on such collections. 
 
 MACHINE ABSTRACTION
 ===================
 
-The PaRSEC Runtime presents the hardware resources through an abstract 
-machine comprised of multiple nodes. Each node contains multiple streams 
-of execution, that each execute tasks serially. Streams can access any 
-data in the node-local memory, so that the scheduler may select the most 
-appropriate stream to execute ready tasks while optimizing at the same 
-time data-reuse, NUMA access cost, and load balancing between streams. 
-The end-user can specify how many streams will be 
-used in a PaRSEC machine, their placement on physical cores, and may 
-specify that a stream spans multiple cores (e.g. when the task kernel 
-creates an OpenMP region). 
+The PaRSEC Runtime presents the hardware resources through an abstract machine comprised of multiple nodes. Each node contains multiple streams of execution, that each execute tasks serially. Streams can access any data in the node-local memory, so that the scheduler may select the most appropriate stream to execute ready tasks while optimizing at the same time data-reuse, NUMA access cost, and load balancing between streams. The end-user can specify how many streams will be used in a PaRSEC machine, their placement on physical cores, and may specify that a stream spans multiple cores (e.g. when the task kernel creates an OpenMP region). 
 
-A node may also feature accelerator resources. An accelerator is represented
-by a supplementary set of execution streams. For each task class, 
-the programmer provides the CPU stream operator, and can optionally provide 
-an accelerator operator (e.g. a CUDA function) as well as hints regarding 
-the computational load of the operator. The PaRSEC runtime automatically 
-copies the data between the host memory and the accelerators. Versioned data 
-copies remain cached in the accelerator memory; coherency and version management 
-of copies, as well as their transfer back-and-forth accelerators is handled 
-by the PaRSEC runtime. Similarly, the selection of a CPU execution stream 
-or a GPU execution stream is delegated to the scheduler.
+A node may also feature accelerator resources. An accelerator is represented by a supplementary set of execution streams. For each task class, the programmer provides the CPU stream operator, and can optionally provide an accelerator operator (e.g. a CUDA function) as well as hints regarding the computational load of the operator. The PaRSEC runtime automatically copies the data between the host memory and the accelerators. Versioned data copies remain cached in the accelerator memory; coherency and version management of copies, as well as their transfer back-and-forth accelerators is handled by the PaRSEC runtime. Similarly, the selection of a CPU execution stream or a GPU execution stream is delegated to the scheduler.
 
-The data collection describes the distribution of data blocks across multiple 
-nodes. The end-user is in charge of selecting both the data distribution of 
-the collections, and the affinity of tasks with nodes. Provided with this
-information and the dataflow unfolding from the node-local scheduler, the 
-runtime schedules asynchronously the necessary data transfer to move inputs 
-to ready tasks execution sites. All communication operation are implicit 
-in the program, yet the communication volume can be finely controlled by 
-an expert programmer by setting the data collection distribution and 
-task affinity.
+The data collection describes the distribution of data blocks across multiple nodes. The end-user is in charge of selecting both the data distribution of the collections, and the affinity of tasks with nodes. Provided with this information and the dataflow unfolding from the node-local scheduler, the runtime schedules asynchronously the necessary data transfer to move inputs to ready tasks execution sites. All communication operation are implicit in the program, yet the communication volume can be finely controlled by an expert programmer by setting the data collection distribution and task affinity.
 
 RESULTS
 =======
 
-Some impressive results have been achieved using PaRSEC. PaRSEC greatly
-simplify writing optimized linear algebra operations. In the Hierarchical QR
-factorization (fig. x), the flexibility of PaRSEC permits expressing an
-algorithm-tailored reduction tree that reduces the communication delay in
-the performance critical panel, yet operates on a flexible distribution of
-the data, and can thereby adapt to a variety of architectures and problem
-sizes. This is an important feature of the dataflow programming approach in
-which the depiction of the algorithm is independent of the data distribution
-and resource mapping, thereby improving performance portability of optimized
-codes.
+Some impressive results have been achieved using PaRSEC. PaRSEC greatly simplify writing optimized linear algebra operations. In the Hierarchical QR factorization (fig. x), the flexibility of PaRSEC permits expressing an algorithm-tailored reduction tree that reduces the communication delay in the performance critical panel, yet operates on a flexible distribution of the data, and can thereby adapt to a variety of architectures and problem sizes. This is an important feature of the dataflow programming approach in which the depiction of the algorithm is independent of the data distribution and resource mapping, thereby improving performance portability of optimized codes.
 
-We also have some chemistry doing water molecules and stuff, cool stuff
-really.
+We also have some chemistry doing water molecules and stuff, cool stuff really.
