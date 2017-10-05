@@ -26,6 +26,13 @@ This naturally enables execution over heterogeneous architectures for a very sma
 
 As not all parts of the application need to be written using the PaRSEC Interfaces, different levels of composition (coarse or fine) are available to expose the data consumed by a PaRSEC algorithm as they are produced, or to extract the data produced by a PaRSEC algorithm and provide them to another programming paradigm. This approach, that was tested for complex applications like NWChem, allows to transition from an imperative parallel programming approach to a dynamic task system approach step by step, without requiring the entire rewrite of a large set of the application.
 
+## Damien
+
+Large-scale applications for the exascale supercomputers and for the following generation will have to embed a lot of smartness to be able to manage the complexity of the nodes, the complexity of the memory, the heterogeneity of the hardware, and the increasing number number of nodes. Excepting each application to provide an implementation performing on any supercomputer is not realistic. One know for a long time that the old BSP is not fit for the upcoming machines, synchronization in the application will cripple the performance. In order to achieve performance, one has to abandon the old habits of always being in control and let the runtime navigate the dataflows of the algorithm and exploit the intrinsic parallelism.
+
+The Distributed Tasking @ Exascale project (DTE) will provide an efficient framework where scientists will be able to develop algorithms agnostic of the underlying hardware. The focus will be on describing numerical methods as a set of task with data dependencies. The implementation of each task will be provided by hardware manufacturers which will ensure that each task, or kernel, will achieve the practical peak performance for a given hardware. The runtime in the middle will orchestrate data communication between the different memory region and work on achieving the maximum performance of the supercomputer.
+
+This separation of concerns ensures first, user's productivity by providing an algorithm hardware agnostic, and second performance portability by relying on highly optimized libraries provided by hardware manufacturers. The modularity of the runtime system enables the user to implement his own scheduling heuristics.
 
 OVERVIEW
 ========
