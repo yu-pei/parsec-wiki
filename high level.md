@@ -82,7 +82,7 @@ PaRSEC features multiple programming interfaces, and is designed to be extended 
 
 **Parameterized Task Graph** is less common. A PTG is a synthetic and abstract representation of the entire directed acyclic graph of tasks. Leveraging on the parameterization, the representation is compact and does not depend on the problem size. Although this Interface demands from the application developer a deeper understanding of the dataflow of her algorithm, the benefits of improved scalability and reduced management overheads make PTG the Interface of choice for the DPLASMA library that is built on top of PaRSEC.
 
-**Tensor Task Graph**
+**Tensor Task Graph** is an ongoing effort to define a set of flexible C++ template for describing data-dependent algorithms, with a focus on programmer productivity and portable performance. Most details are still worked out at this point, but this DSL will soon join the others in the software releases.
 
 
 ### Data Management, Heterogeneous Architectures, and Interface with Other Paradigms
@@ -101,6 +101,4 @@ Another example of modular component used in PaRSEC is the PaRSEC Instrumentatio
 
 ## SCIENTIFIC OUTCOME
 
-Some impressive results have been achieved using PaRSEC. PaRSEC greatly simplify writing optimized linear algebra operations. In the Hierarchical QR factorization (fig. x), the flexibility of PaRSEC permits expressing an algorithm-tailored reduction tree that reduces the communication delay in the performance critical panel, yet operates on a flexible distribution of the data, and can thereby adapt to a variety of architectures and problem sizes. This is an important feature of the dataflow programming approach in which the depiction of the algorithm is independent of the data distribution and resource mapping, thereby improving performance portability of optimized codes.
-
-We also have some chemistry doing water molecules and stuff, cool stuff really.
+Promising results have been achieved using PaRSEC, over a varied based of application: dense and sparse linear algebra, highly irregular domain science code, domain decomposition and many more. In different papers we have shown that PaRSEC greatly simplify writing highly efficient linear algebra operations where the flexibility of PaRSEC permits expressing algorithm-tailored behaviors (such as reduction tree that reduces the communication delay in the performance critical panel), yet operates on a flexible distribution of the data, and can thereby adapt to a variety of architectures and problem sizes. In addition to performance gain, this highlights one of the most important feature of the dataflow programming approach exposed in PaRSEWC, in which the depiction of the algorithm is independent of the data distribution and resource mapping, thereby improving performance portability of optimized codes.
