@@ -17,20 +17,20 @@ With PaRSEC, we focus our work on two sides of this challenge: (1) the managemen
 
 To reach these goals of programmability, scientific productivity, and scalability, the PARSEC task environment simultaneously addresses the technical challenges associated with domain-specific languages, scalable system software, evolving technology, energy efficiency, and resilience. More details about how PaRSEC addresses each challenge are provided below.
  
-#### Domain Specific Languages:
+#### Domain-Specific Languages:
  A major effort will extend PaRSEC support for compiler integration, to enable domain-specific languages (DSL) to be easily designed and integrated with the runtime. Outside of a task-based approach, no programming model will be mandated, but the delivered runtime will provide interoperability and execution support for a combination of OpenMP, dataflow, sequential task flow, and other---yet-to-be-discovered---task-based programming approaches.
  
 #### Scalable System Software:
  The design of the PARSEC runtime system focuses on scalability. Task knowledge should be limited to processes that are responsible for their execution, scheduling decisions must be entirely distributed, algorithmic correctness should not require control synchronization, and synchronous collective synchronization should be avoided. From a technical perspective, particular emphasis was placed on reducing the memory consumption of the runtime itself and on providing a scalable version of all distributed constructs. Despite these design and implementation efforts, as larger environments become available they will pose new challenges, and the implementation will need to be continuously tested at larger scales, and bottlenecks will need to be identified and removed if they appear.
  
 #### Evolving Technology:
- For portability, PARSEC comes with a default MPI driver, but access to lower-level network features (such as active message, DMA engines and hardware-supported asynchronous communications) will have a positive impact on performance. More variety of accelerators, self-hosted accelerators and relaxed memory model are also disrupting traditional technologies, and the PARSEC runtime provide a flexible framework capable of evolving to integrate these challenging systems in a manageable, yet efficient, abstraction.
+ For portability, PARSEC comes with a default MPI driver, but access to lower-level network features (e.g., active messages, direct memory access engines, and hardware-supported asynchronous communications) will have a positive impact on performance. A bigger variety of accelerators, self-hosted accelerators, and relaxed memory models are also disrupting traditional technologies, and the PARSEC runtime provides a flexible framework capable of integrating these challenging systems into a manageable and efficient abstraction.
  
 #### Energy Efficiency:
- The hardware trend (e.g., Haswell processors, Knights Landing, Knights Hill) to expose finer-grain control power consumption provides the capacity to turn on and off cores as work demand evolves. A task runtime system that dynamically decides where tasks execute can take advantage of these hardware capabilities and adapt to a dynamically evolving set of computing resources, based on local and global factors. With it's knowledge about the tasks to be executed, it's understanding of the hardware capabilities and it's flexible and modules scheduling capabilities, PaRSEC is the ideal software level to address applications' dynamic energy needs.
+ The hardware trend (e.g., Haswell, Knights Landing, Knights Hill) to expose finer-grain control over power consumption provides the capacity to turn cores on and off as work/demand dictates. A task runtime system that decides dynamically where tasks execute can take advantage of these hardware capabilities and adapt to a dynamically evolving set of computing resources. With it's knowledge about the tasks to be executed, it's understanding of the hardware capabilities, and it's flexible module scheduling capabilities, PaRSEC is the ideal software to address an application's dynamic energy needs.
  
 #### Resilience:
- As the data that tasks require and produce are explicit for the runtime system, general strategies of data replication or incremental checkpoint/restart can be embedded in the runtime, and provide automatic support for soft error detection and process failure.  **what else?**
+ As the data that tasks require and produce are explicit for the runtime system, general strategies of data replication or incremental checkpoint/restart can be embedded in the runtime and provide automatic support for soft error detection and process failure.
 
 
 ## OVERVIEW
