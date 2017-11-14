@@ -59,7 +59,7 @@ The PaRSEC environment provides multiple front-ends or DSLs that are tailored fo
 
 ### Interoperability with legacy applications
 
-PaRSEC is interoperable with legacy technologies (e.g. MPI, CUDA, etc.) which permits the incremental upgrade existing applications. Typically, a programmer will start from an existing SPMD application, and transform some particularly costly computational routine with PaRSEC, while leaving the rest of the application unchanged. The PaRSEC accelerated routine will typically look like and behave like an SPMD routine when viewed from the outside, while internally, it will unleash the full parallelism permissible from the dataflow.
+PaRSEC is interoperable with legacy technologies (e.g., MPI, CUDA), which permits an incremental upgrade of existing applications. Typically, a programmer will start from an existing single program, multiple data (SPMD) application and transform some particularly costly computational routine with PaRSEC, while leaving the rest of the application unchanged. The PaRSEC-accelerated routine will typically look like and behave like an SPMD routine when viewed from the outside, while internally, it will unleash the full parallelism permissible from the dataflow.
 
 
 ## SOFTWARE INFRASTRUCTURE
