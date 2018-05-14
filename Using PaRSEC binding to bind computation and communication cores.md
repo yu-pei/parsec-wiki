@@ -4,6 +4,7 @@ To bind computation thread of PaRSEC to actual core, users need to use the parse
 
 We will explain all the options available through examples and we will start by explaining the machine we will use as example.
 
+------
 Machine configuration: ("*lscpu*")  
 - Model name:            Intel(R) Xeon(R) CPU E5-2650 v3 @ 2.30GHz  
 - Socket(s):             2  
@@ -20,6 +21,7 @@ After performing a "*htop*" on the node we see this:
 
 Here, The section inside green box represents the actual cores and the one inside red box represents the hyper-threaded cores. We will only bind computation threads on actual cores.
 
+------
 ## Binding 2 cores on same Socket ##
 
 According to what "*hwloc-ls*" showed us, ids in the range "*0-9*" belongs to first socket and ids "*10-19*" belongs to second socket.
@@ -65,9 +67,10 @@ We see the following after we run the above command:
 
 
 
+------
 ## Binding 2 cores on different Socket ##
 
-We will populate the binding file with the needed information and execute a computation on two cores, binding on the first core of each.
+We will populate the binding file with the needed information and execute a computation on two cores, binding on the first core of each socket.
 
 Binding file content:
 
@@ -96,10 +99,11 @@ We see the following after we run the above command:
 
 
 
-## Spawning 2 MPI process with 2 cores each on same Socket ##
+------
+## Spawning 2 MPI process with 2 cores each, on the same Socket ##
 
 
-We will usr Open MPI to spawn mpi-process and will use the following rankfile to bind mpi-process.
+We will use Open MPI to spawn MPI processes and will use the following rankfile to bind each MPI process.
 
 Rankfile:
 
@@ -109,7 +113,7 @@ rank 0=+n0 slot=0:0
 rank 1=+n0 slot=0:4
 ```
 
-This translates to spawn two mpi-processes on core 0 and core 3.
+This rankfile will instruct Open MPI to spawn two MPI processes on core 0 and core 3.
 
 The parsec binding file looks like below:
 
@@ -118,7 +122,7 @@ The parsec binding file looks like below:
 0,1
 4,5
 ```
-Here, the line number represents the rank we are trying to provide the binding information for. In this example, line 1 represents binding information for rank 0 and line 2 represents information for rank 1.
+Here, the line number represents the rank for which we are trying to provide the binding information. In this example, line 1 represents binding information for rank 0 and line 2 represents information for rank 1.
 
 We will execute the following:  
 ```sh
@@ -126,7 +130,7 @@ mpirun --np 2 --rf mpirankfile ./testing_dpotrf -N 15000 -t 320 -c 2 --
        --parsec_bind file:binding.parsec
 ```
 
-Here, we are running dpotrf test in two MPI process, where, the mpi process binding is defined in the rank file named "mpirankfile" and PaRSEC binding information in "binding.parsec"
+Here, we are running dpotrf test in two MPI processes, where, the MPI process binding is defined in the rank file named "mpirankfile" and PaRSEC binding information in "binding.parsec"
 
 We see this when we execute the above command:
 
@@ -148,7 +152,8 @@ After we run the same command again we see the following:
 
 
 
-## Spawning 2 MPI process with 2 cores each on different Socket ##
+------
+## Spawning 2 MPI process with 2 cores each, on different Socket ##
 
 The rankfile for Open MPI:
 
@@ -178,12 +183,13 @@ We see:
 ![Screen Shot 2018-05-03 at 3.05.43 PM.png](files/bindings-htop-mpirankfile-3.png)
 
 
-## How to check binding if I do not have *htop*  ##
+------
+## How to check binding if *htop* is not available  ##
 
 To check binding in PaRSEC users will need to:
 
 - Turn debug_verbose **ON**:
-* Type "ccmake ." in PaRSEC build directory and change the option PARSEC_DEBUG_NOISIER to **ON**. If the option is not visible on the default option screen, you can explore the advanced options by pressing "t"
+* Type "ccmake ." in PaRSEC's build directory and change the option PARSEC_DEBUG_NOISIER to **ON**. If the option is not visible on the default option screen, you can explore the advanced options by pressing "t"
 ![Screen Shot 2018-05-03 at 3.35.45 PM.png](files/bindings-cmake-options.png)    
 * Recompile PaRSEC.  
 * Pass the following option to PaRSEC while running a test: "*--mca debug_verbose 10*".  
@@ -202,6 +208,6 @@ We get a bunch of output among which are the binding information that PaRSEC use
 
 ![Screen Shot 2018-05-03 at 3.29.13 PM.png](files/bindings-parsec-output.png)
 
-In the above picture, we see the output we are interested in. The red and green box indicates the rank. If we notice the blue highlighted part of each box we will see how to know the rank this information belongs to.
+In the above picture, we see the output we are interested in. The red and green box indicates the rank. If we notice the blue highlighted part of each box, we will see how to know the rank this information belongs to.
 
 The red box have binding information for rank 0 and the green box have it for rank 1. The core id is given at the end and we get as many lines as computation cores we have requested to PaRSEC (2 in this case). We can see that, the binding of the computation thread happened according to what was described in the binding file.
