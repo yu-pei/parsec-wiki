@@ -3,9 +3,9 @@
 This document presents an overview on how to migrate legacy
 applications over the PaRSEC runtime. It complements the information
 accessible in published papers
-[1](https://ieeexplore.ieee.org/document/7101660/),
-[2](https://ieeexplore.ieee.org/document/7307597/),
-[3](https://dl.acm.org/citation.cfm?id=3148233), and the API
+[[1]](https://ieeexplore.ieee.org/document/7101660/),
+[[2]](https://ieeexplore.ieee.org/document/7307597/),
+[[3]](https://dl.acm.org/citation.cfm?id=3148233), and the API
 documentation available inside the PaRSEC source code. 
 
 ##Basics: Initializing PaRSEC
@@ -145,14 +145,15 @@ runtime system.
 > and Pong are task classes, Ping(i) and Pong(i) are tasks, and they
 > will all belong to the ```ping_pong_tp``` taskpool. We first
 > create the taskpool:
-> 
-> ```
-> #!c
-> 
-> parsec_taskpool_t *ping_pong_tp = parsec_dtd_taskpool_new(  );
-> parsec_context_add_taskpool( parsec, dtd_tp );
-> parsec_context_start(parsec);
-> ```
+
+```
+#!c
+ 
+ parsec_taskpool_t *ping_pong_tp = parsec_dtd_taskpool_new(  );
+ parsec_context_add_taskpool( parsec, dtd_tp );
+ parsec_context_start(parsec);
+```
+ 
 > As it is a DTD taskpool, we use the ```parsec_dtd_taskpool_new``` to 
 > create it. The taskpool is then added to the PaRSEC context, making it
 > accessible to run on these resources, and it is started, so any task
@@ -184,14 +185,16 @@ taskpool.
 > that will answer with the same shape of data, so a single arena needs to
 > be defined. In the DTD paradigm, that arena is added to the 
 > ```parsec_dtd_arneas``` array:
-> 
-> ```
-> #!c
-> 
-> parsec_matrix_add2arena_rect(parsec_dtd_arenas[TILE_FULL],
->                              parsec_datatype_double_t,
->                              2, 1, 2);
->```
+>
+
+```
+#!c
+ 
+parsec_matrix_add2arena_rect(parsec_dtd_arenas[TILE_FULL],
+                             parsec_datatype_double_t,
+                             2, 1, 2);
+```
+
 > We use ```parsec_matrix_add2arena_rect```, which is a helper function
 > defined in ```parsec/data_dist/matrix/matrix.h```. It creates a matrix of
 > 2x1 consecutive doubles. Arbitrary data types can be defined using the MPI
@@ -206,25 +209,26 @@ covers how to define additional data collections.
 > In our example, there will be only 2 data elements: one stored on rank 0, 
 > and the other stored on rank 1. We can use a 2D Block-cyclic distribution 
 > to allocate and distribute the data:
-> 
-> ```
-> #!c
-> 
-> two_dim_block_cyclic_t *dcA = malloc(sizeof(two_dim_block_cyclic_t));
-> parsec_data_collection_t *dA = (parsec_data_collection_t)dcA;
-> two_dim_block_cyclic_init(dcA, matrix_RealDouble, matrix_Tile,
->                           worldsize, rank,
->                           2, 1,
->                           2*2, 1,
->                           0, 0,
->                           2*2, 1,
->                           1, 1,
->                           MPI_COMM_WORLD);
->
-> m->mat = parsec_data_allocate((size_t)m->super.nb_local_tiles *
->                               (size_t)m->super.bsiz *
->                               sizeof(double));
->```
+
+```
+#!c
+
+two_dim_block_cyclic_t *dcA = malloc(sizeof(two_dim_block_cyclic_t));
+parsec_data_collection_t *dA = (parsec_data_collection_t)dcA;
+two_dim_block_cyclic_init(dcA, matrix_RealDouble, matrix_Tile,
+                          worldsize, rank,
+                          2, 1,
+                          2*2, 1,
+                          0, 0,
+                          2*2, 1,
+                          1, 1,
+                          MPI_COMM_WORLD);
+
+m->mat = parsec_data_allocate((size_t)m->super.nb_local_tiles *
+                              (size_t)m->super.bsiz *
+                              sizeof(double));
+```
+
 > ```two_dim_block_cyclic_init``` takes many parameters, to describe the
 > size, stride and location of each block of data. It is fully documented in 
 > the manual of PaRSEC. To simplify the explanation, this creates a "matrix"
@@ -239,12 +243,12 @@ covers how to define additional data collections.
 Once the data has been allocated, distributed and described to PaRSEC, it
 must be exposed to the DTD paradigm.
 
-> ```
-> #!C
-> 
->  parsec_data_collection_set_key(dA, "A");
->  parsec_dtd_data_collection_init(dA);
-> ```
+```
+#!c
+
+ parsec_data_collection_set_key(dA, "A");
+ parsec_dtd_data_collection_init(dA);
+```
 
 A task class is associated to a body. A body is a native-language
 function that executes some code on the data. The runtime system is
@@ -267,42 +271,44 @@ programmer can access these informations using ```parsec_dtd_unpack_args```.
 > In the context of the example, we need two bodies: one for the ping tasks,
 > and one for the pong tasks. A body is defined as follows:
 > 
-> ```
-> #!c
-> int ping( parsec_execution_stream_t  *es,
->           parsec_task_t *this_task )
-> {
->     (void)es;
->     int task_id;
->     double *data_in, *data_out;
-> 
->     parsec_dtd_unpack_args(this_task, &task_id, &data_in, &data_out);
->     if( task_id == 0 ) {
->       data_out[0] = 1.0;
->       data_out[1] = 1.0;
->     } else {
->       data_out[0] = data_in[0] + 1.0;
->       data_out[1] = data_in[1] + 1.0;
->     }
-> 
->     return PARSEC_HOOK_RETURN_DONE;
-> }
->
-> int pong( parsec_execution_stream_t  *es,
->           parsec_task_t *this_task )
-> {
->     (void)es;
->     int task_id;
->     double *data_in;
->     double *data_out;
-> 
->     parsec_dtd_unpack_args(this_task, &task_id, &data_in, &data_out);
->     data_out[0] = 2.0 * data_in[0];
->     data_out[1] = 2.0 * data_in[1];
-> 
->     return PARSEC_HOOK_RETURN_DONE;
-> }
->```
+
+```
+#!c
+int ping( parsec_execution_stream_t  *es,
+          parsec_task_t *this_task )
+{
+    (void)es;
+    int task_id;
+    double *data_in, *data_out;
+
+    parsec_dtd_unpack_args(this_task, &task_id, &data_in, &data_out);
+    if( task_id == 0 ) {
+      data_out[0] = 1.0;
+      data_out[1] = 1.0;
+    } else {
+      data_out[0] = data_in[0] + 1.0;
+      data_out[1] = data_in[1] + 1.0;
+    }
+
+    return PARSEC_HOOK_RETURN_DONE;
+}
+
+int pong( parsec_execution_stream_t  *es,
+          parsec_task_t *this_task )
+{
+    (void)es;
+    int task_id;
+    double *data_in;
+    double *data_out;
+
+    parsec_dtd_unpack_args(this_task, &task_id, &data_in, &data_out);
+    data_out[0] = 2.0 * data_in[0];
+    data_out[1] = 2.0 * data_in[1];
+
+    return PARSEC_HOOK_RETURN_DONE;
+}
+```
+
 > Ping checks the task identifier (which is a parameter that the programmer
 > will pass to the task when discovering it), and if it is 0, it initializes
 > the data to 1.0. Otherwise, there is nothing to do to the data in this
@@ -313,23 +319,23 @@ The bodies are defined symmetrically to the way they are used. The programmer
 uses them by 'discovering' the tasks in a sequential order, and inserting
 them into the taskpool.
 
->```
->#!c
->
-> for(int i = 0; i < N; i++) {
->   parsec_dtd_taskpool_insert_task(ping_pong_tp, ping, 0, "ping",
->        sizeof(int),    &i,                VALUE,
->        PASSED_BY_REF,  TILE_OF_KEY(dA, 0), INOUT | TILE_FULL | AFFINITY,
->        PASSED_BY_REF,  TILE_OF_KEY(dA, 1), IN    | TILE_FULL,
->        PARSEC_DTD_ARG_END);
->   parsec_dtd_taskpool_insert_task(ping_pong_tp, pong, 0, "pong",
->        sizeof(int),    &i,  VALUE,
->        PASSED_BY_REF,  TILE_OF_KEY(dA, 0), IN    | TILE_FULL,
->        PASSED_BY_REF,  TILE_OF_KEY(dA, 1), INOUT | TILE_FULL | AFFINITY,
->        PARSEC_DTD_ARG_END);
-> }
->```
-> 
+```
+#!c
+
+ for(int i = 0; i < N; i++) {
+   parsec_dtd_taskpool_insert_task(ping_pong_tp, ping, 0, "ping",
+        sizeof(int),    &i,                VALUE,
+        PASSED_BY_REF,  TILE_OF_KEY(dA, 0), INOUT | TILE_FULL | AFFINITY,
+        PASSED_BY_REF,  TILE_OF_KEY(dA, 1), IN    | TILE_FULL,
+        PARSEC_DTD_ARG_END);
+   parsec_dtd_taskpool_insert_task(ping_pong_tp, pong, 0, "pong",
+        sizeof(int),    &i,  VALUE,
+        PASSED_BY_REF,  TILE_OF_KEY(dA, 0), IN    | TILE_FULL,
+        PASSED_BY_REF,  TILE_OF_KEY(dA, 1), INOUT | TILE_FULL | AFFINITY,
+        PARSEC_DTD_ARG_END);
+ }
+```
+ 
 > ```parsec_dtd_taskpool_insert_task``` is a variadic argument function
 > that discovers a task and inserts it into the corresponding taskpool.
 > It also connects the body to the task, and to the data that the task
@@ -349,12 +355,12 @@ for this taskpool. Once this is done, the thread that was used to discover
 the tasks and build the DAG can join the computation with the other threads,
 and wait for the completion of the taskpool.
 
-> ```
-> #!c
-> 
->     parsec_dtd_data_flush_all( ping_pong_tp, dA );
->     parsec_context_wait(parsec_ctx);
-> ```
+```
+#!c
+
+    parsec_dtd_data_flush_all( ping_pong_tp, dA );
+    parsec_context_wait(parsec_ctx);
+```
 
 Once the function ```parsec_context_wait``` completes, all tasks that
 were discovered and inserted in the ```ping_pong_tp``` task pool are
@@ -362,11 +368,11 @@ completed, and the data that was exposed to the DAG contains the
 result of the operation. All that remain is to cleanup the resource
 that was allocated.
 
-> ```
-> #!c
-> 
-> parsec_arena_destruct(parsec_dtd_arenas[TILE_FULL]);
-> parsec_dtd_data_collection_fini( dA );
-> free_data(dcA);
-> parsec_taskpool_free( ping_pong_tp );
-> ```
+```
+#!c
+
+parsec_arena_destruct(parsec_dtd_arenas[TILE_FULL]);
+parsec_dtd_data_collection_fini( dA );
+free_data(dcA);
+parsec_taskpool_free( ping_pong_tp );
+```
