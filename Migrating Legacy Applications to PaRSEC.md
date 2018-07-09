@@ -150,7 +150,7 @@ runtime system.
 #!c
  
  parsec_taskpool_t *ping_pong_tp = parsec_dtd_taskpool_new(  );
- parsec_context_add_taskpool( parsec, dtd_tp );
+ parsec_context_add_taskpool( parsec, ping_pong_tp );
  parsec_context_start(parsec);
 ```
  
@@ -326,11 +326,11 @@ them into the taskpool.
    parsec_dtd_taskpool_insert_task(ping_pong_tp, ping, 0, "ping",
         sizeof(int),    &i,                VALUE,
         PASSED_BY_REF,  TILE_OF_KEY(dA, 0), INOUT | TILE_FULL | AFFINITY,
-        PASSED_BY_REF,  TILE_OF_KEY(dA, 1), IN    | TILE_FULL,
+        PASSED_BY_REF,  TILE_OF_KEY(dA, 1), INPUT | TILE_FULL,
         PARSEC_DTD_ARG_END);
    parsec_dtd_taskpool_insert_task(ping_pong_tp, pong, 0, "pong",
         sizeof(int),    &i,  VALUE,
-        PASSED_BY_REF,  TILE_OF_KEY(dA, 0), IN    | TILE_FULL,
+        PASSED_BY_REF,  TILE_OF_KEY(dA, 0), INPUT | TILE_FULL,
         PASSED_BY_REF,  TILE_OF_KEY(dA, 1), INOUT | TILE_FULL | AFFINITY,
         PARSEC_DTD_ARG_END);
  }
