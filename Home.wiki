@@ -36,6 +36,7 @@ The PaRSEC / DPLASMA community has put together tutorials to explain how to use 
  * [[Status of HPL over PaRSEC|Memo on HPL over PaRSEC]]
  * [[Memory error detectors|Memory errors detectors]]
  * [[high level|A high level description of the PaRSEC runtime]]
+ * [[https://bitbucket.org/icldistcomp/parsec/wiki/Collective%20Design|Memo on proposal for Collective Design]]
 
  ---- 
 
