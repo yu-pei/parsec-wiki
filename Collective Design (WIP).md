@@ -1,11 +1,13 @@
-This is WIP, this is a draft of how collective can be implemented in the runtime system and how they can be exposed to the DSLs.
+This is the initial draft of the data-driven collective design in PaRSEC, that describe how collectives can be described and implemented in the runtime system and how they can be exposed to DSLs.
 
 The goals for the reduction are:
-* Different datatype t_1, t_2,... t_n sharing the same "packed" datatype can be reduced into a final type t_0 also sharing that same "packed" datatype.
+* Different datatype t_1, t_2,... t_n sharing the same _typemap_ can be reduced into a final type t_0, type that obviously share the same _typemap_. As a possible extension, we can imagine a map-reduce type of operation, where the original _typemap_ can be dynamically changed during the initial stage of the collective.
 * Processors in charge of doing the reduction are not necessarily the ones producing the data.
+* Depending on the properties of the operator (commutative and/or associative) the order in which the operation is applied between the data (d_i) can be altered or not. If the order is altered then all local operations should be done first, so that each process minimize its participation to the global exchanges necessary for the internode part of the collective. Moreover, the knowledge about the architecture extracted from HWLOC, should be used to imilarly to what is going on in EVOLVE.
 
 Challenges:
-* Number of contribution is unknown and has to be specified to the DSL for terminaison detection.
+* Number of contribution is unknown and has to be specified to the DSL for termination detection.
+* We might need the neutral element for the operation.
 
 ![ReductionDesign.png](https://bitbucket.org/repo/aX9b8L/images/666644334-ReductionDesign.png "Reduction in PTG")
 
