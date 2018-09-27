@@ -1,4 +1,4 @@
-This is WIP, this is a draft of how collective can be implmented in the runtime system and how they can be exposed to the DSLs.
+This is WIP, this is a draft of how collective can be implemented in the runtime system and how they can be exposed to the DSLs.
 
 The goals for the reduction are:
 * Different datatype t_1, t_2,... t_n sharing the same "packed" datatype can be reduced into a final type t_0 also sharing that same "packed" datatype.
