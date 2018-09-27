@@ -7,7 +7,7 @@ The goals for the reduction are:
 Challenges:
 * Number of contribution is unknown and has to be specified to the DSL for terminaison detection.
 
-[ReductionDesign.png](https://bitbucket.org/repo/aX9b8L/images/666644334-ReductionDesign.png "Reduction in PTG")
+![ReductionDesign.png](https://bitbucket.org/repo/aX9b8L/images/666644334-ReductionDesign.png "Reduction in PTG")
 
 > T(k)
 
