@@ -1,28 +1,33 @@
-The following will work given the MPI binding is done correctly and hwloc is installed in the system.
+___Beware:___ The following will work given the MPI binding is done correctly and [HWLOC](https://www.open-mpi.org/projects/hwloc/) is installed on the system.
 
-To bind computation thread of PaRSEC to actual core, users need to use the parsec_bind option. The easiest way to express binding is through a file.
+This documentation explains how to realize the binding at the process/thread level. Additional section will be added to build over this binding and highlight how to realize more complex and integrated binding with between PaRSEC and other programming paradigms.
+
+Before moving forward let's define the hardware environment of the testing platform used in the rest of our examples.
+
+Machine configuration: ("*lscpu*")
+- Model name:            Intel(R) Xeon(R) CPU E5-2650 v3 @ 2.30GHz
+- Socket(s):             2
+- Thread(s) per core:    2
+- Core(s) per socket:    10
+
+By performing "*hwloc-ls*" we get this:
+![Screen Shot 2018-05-03 at 12.00.05 PM.png](files/bindings-hwloc-ls.png)
+
+The black box on the left represents _socket 1_ and the box on the right represents _socket 2_. The red box marks the id of the actual physical core on each socket. Thus, according to *hwloc-ls* the id of first core of _socket 1_ is 0 and id of the first core of second socket (_socket 2_) is 10.
+
+After performing a "*htop*" on the node we see this:
+![Screen Shot 2018-05-03 at 12.05.53 PM.png](files/bindings-htop.png)
+
+The section inside green box represents the actual cores and the one inside red box represents the hyper-threaded cores. In the rest of this article we will only bind computation threads on actual cores, but allowing PaRSEC to use hyper-threads is simply done by adding the option _-ht_.
+
+
+### Binding PaRSEC processes and threads
+There are several ways to bind PaRSEC's computation threads to actual core, either using regular patterns via command line or MCA options or using the more flexible parsec_bind option. The most flexible way, the one that provides the most options to users, is to express the binding through a binding file.
 
 We will explain all the options available through examples and we will start by explaining the machine we will use as example.
 
 ------
-Machine configuration: ("*lscpu*")  
-- Model name:            Intel(R) Xeon(R) CPU E5-2650 v3 @ 2.30GHz  
-- Socket(s):             2  
-- Thread(s) per core:    2  
-- Core(s) per socket:    10  
-
-By performing "*hwloc-ls*" we get this:  
-![Screen Shot 2018-05-03 at 12.00.05 PM.png](files/bindings-hwloc-ls.png)
-
-Here, the black box on the left represents socket-1 and the one on the left represents socket-2. The red box marks the id of the actual physical core on each socket. So, according to *hwloc-ls* the id of first core of socket-1 is 0 and id of the first core of second-socket is 10.
-
-After performing a "*htop*" on the node we see this:  
-![Screen Shot 2018-05-03 at 12.05.53 PM.png](files/bindings-htop.png)
-
-Here, The section inside green box represents the actual cores and the one inside red box represents the hyper-threaded cores. We will only bind computation threads on actual cores.
-
-------
-## Binding 2 cores on same Socket ##
+#### Binding 2 cores on same Socket
 
 According to what "*hwloc-ls*" showed us, ids in the range "*0-9*" belongs to first socket and ids "*10-19*" belongs to second socket.
 
@@ -40,13 +45,13 @@ Binding file content:
 Here, the line number represents the rank we are trying to provide the binding information for. In this example, we are running shared-memory execution so the rank is 0 and the information needs to reside in the first line. Putting the information in any other line in the file **will not work**.
 
 
-The binding information is given in comma separated list, where:    
-- The first computation thread will be assigned to core with id *0*. (first core of socket 1)  
+The binding information is given in comma separated list, where:
+- The first computation thread will be assigned to core with id *0*. (first core of socket 1)
 - The second computation thread will be assigned to core with id *1*. (second core of socket 1)
 
-We will run Cholesky factorization of DPLASMA to demonstrate how to provide the binding information to PaRSEC:  
+We will run Cholesky factorization of DPLASMA to demonstrate how to provide the binding information to PaRSEC:
 
-We will execute:   
+We will execute:
 ```sh
 ./testing_dpotrf -N 10000 -t 320 -c 2 --
        --parsec_bind file:binding.parsec
@@ -55,20 +60,20 @@ We will execute:
 Here, we are running testing_dpotrf and "-N 10000 -t 320 -c 2" are the arguments for the test where, *-N* is the size of the matrix, *-t* is the size of the tile and ***-c*** determines the number of computation threads we want.
 
 
-To pass the binding information to PaRSEC we need to use the latter part of the above example "*-- --parsec_bind file:binding.parsec*" where,  
-"*-- --parsec_bind*" tells PaRSEC we are passing binding information,  
+To pass the binding information to PaRSEC we need to use the latter part of the above example "*-- --parsec_bind file:binding.parsec*" where,
+"*-- --parsec_bind*" tells PaRSEC we are passing binding information,
 "*file:binding.parsec*" tells PaRSEC we are passing that information through a file  and the name of the file is "*binding.parsec*".
 
-The file binding.parsec contains the content we have shown earlier in this section.  
+The file binding.parsec contains the content we have shown earlier in this section.
 
-We see the following after we run the above command:  
+We see the following after we run the above command:
 ![Screen Shot 2018-05-03 at 1.07.08 PM.png](files/bindings-htop-same-socket.png)
 
 
 
 
 ------
-## Binding 2 cores on different Socket ##
+#### Binding 2 cores on different Socket
 
 We will populate the binding file with the needed information and execute a computation on two cores, binding on the first core of each socket.
 
@@ -79,28 +84,28 @@ Binding file content:
 0,10
 ```
 
-The binding information is given in comma separated list, where:    
-- The first computation thread will be assigned to core with id *0*. (first core of socket 1)  
-- The second computation thread will be assigned to core with id *10*. (first core of socket 2)  
+The binding information is given in comma separated list, where:
+- The first computation thread will be assigned to core with id *0*. (first core of socket 1)
+- The second computation thread will be assigned to core with id *10*. (first core of socket 2)
 
-We will run Cholesky factorization of DPLASMA to demonstrate how to provide the binding information to PaRSEC:  
+We will run Cholesky factorization of DPLASMA to demonstrate how to provide the binding information to PaRSEC:
 
-We will execute:   
+We will execute:
 ```sh
 ./testing_dpotrf -N 10000 -t 320 -c 2 --
         --parsec_bind file:binding.parsec
 ```
 
 
-We see the following after we run the above command:  
-![Screen Shot 2018-05-03 at 12.51.33 PM.png](files/bindings-htop-different-sockets.png)  
+We see the following after we run the above command:
+![Screen Shot 2018-05-03 at 12.51.33 PM.png](files/bindings-htop-different-sockets.png)
 
 
 
 
 
 ------
-## Spawning 2 MPI process with 2 cores each, on the same Socket ##
+#### Spawning 2 MPI process with 2 cores each, on the same Socket ##
 
 
 We will use Open MPI to spawn MPI processes and will use the following rankfile to bind each MPI process.
@@ -109,7 +114,7 @@ Rankfile:
 
 ```
 #!c
-rank 0=+n0 slot=0:0                                                                
+rank 0=+n0 slot=0:0
 rank 1=+n0 slot=0:4
 ```
 
@@ -124,7 +129,7 @@ The parsec binding file looks like below:
 ```
 Here, the line number represents the rank for which we are trying to provide the binding information. In this example, line 1 represents binding information for rank 0 and line 2 represents information for rank 1.
 
-We will execute the following:  
+We will execute the following:
 ```sh
 mpirun --np 2 --rf mpirankfile ./testing_dpotrf -N 15000 -t 320 -c 2 --
        --parsec_bind file:binding.parsec
@@ -153,13 +158,13 @@ After we run the same command again we see the following:
 
 
 ------
-## Spawning 2 MPI process with 2 cores each, on different Socket ##
+#### Spawning 2 MPI process with 2 cores each, on different Socket ##
 
 The rankfile for Open MPI:
 
 ```
 #!c
-rank 0=+n0 slot=0:0                                                                
+rank 0=+n0 slot=0:0
 rank 1=+n0 slot=1:0
 ```
 
@@ -182,17 +187,18 @@ We see:
 
 ![Screen Shot 2018-05-03 at 3.05.43 PM.png](files/bindings-htop-mpirankfile-3.png)
 
+### Combining PaRSEC threads with OpenMP threads
 
 ------
-## How to check binding if *htop* is not available  ##
+## How to check binding if *htop* is not available
 
 To check binding in PaRSEC users will need to:
 
 - Turn debug_verbose **ON**:
 * Type "ccmake ." in PaRSEC's build directory and change the option PARSEC_DEBUG_NOISIER to **ON**. If the option is not visible on the default option screen, you can explore the advanced options by pressing "t"
-![Screen Shot 2018-05-03 at 3.35.45 PM.png](files/bindings-cmake-options.png)    
-* Recompile PaRSEC.  
-* Pass the following option to PaRSEC while running a test: "*--mca debug_verbose 10*".  
+![Screen Shot 2018-05-03 at 3.35.45 PM.png](files/bindings-cmake-options.png)
+* Recompile PaRSEC.
+* Pass the following option to PaRSEC while running a test: "*--mca debug_verbose 10*".
 
 Running the following command:
 
