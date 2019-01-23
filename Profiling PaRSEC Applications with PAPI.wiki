@@ -67,6 +67,27 @@ Found 1 components, activated 1
 
 Now that you have completed your run, there will be a file in your current directory with a name that looks like: demo-0.prof-[random characters].  You write a python module to extract the information from this file by following the instructions [[PaRSEC%20Trace%20Tables%20via%20Python|here]].  There is also a section below that describes the use of a simple python module that you can use to get some simple plots of the PAPI counter values over time.
 
+= PAPI and SDE (Software Defined Events) =
+
+PaRSEC exposes a series of internal counters as PAPI events using the Software Defined Events architecture.
+
+To access these counters, the final program needs to be linked with a recent version of libpapi, that features the SDE interface.
+
+These PAPI events appear with the prefix ```sde:::PARSEC```.
+
+If ```papi_native_avail``` is linked with libparsec, it will show all available events. Alternatively, an application that links both parsec and papi (with SDE enabled) can list the events iterating on ```PAPI_get_event_info```.
+
+To access these events inside a PINS tracing, one just needs to declare the event as one of them in the ```pins_papi_event``` MCA parameter. For example:
+
+```
+$shell > cat ~/.parsec/mca-params.conf
+pins_papi_event = sde:::PARSEC::SCHEDULER::PENDING_TASKS
+mca_pins = papi
+pins_papi = 1
+$shell >
+```
+Will trace the number of pending tasks in all schedulers, at the entry and termination of the execution of each task.
+
 = Virtual Process Mapping =
 
 In some cases you may want to perform your execution on fewer cores than the maximum available on a node.  To do this, you simply need to use the -c option for your run to specify the number of cores, so if you wanted to perform the same example as above, but with 4 cores, you would use the following command line:
