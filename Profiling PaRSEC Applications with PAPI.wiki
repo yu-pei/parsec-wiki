@@ -88,7 +88,7 @@ pins_papi = 1
 $shell >
 }}}
 
-Will trace the number of pending tasks in all schedulers, at the entry and termination of the execution of each task.
+Will trace the number of pending tasks (tasks ready to execute, but waiting in one of the queues defined by the scheduler for this node), at the entry and termination of the execution of each task.
 
 = Virtual Process Mapping =
 
