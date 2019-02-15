@@ -1,3 +1,5 @@
+# Basic Profiling #
+
 In many instances it might be interesting to extract and use information about the task cost and performance. This allows analysis of the scheduling quality, the maintained memory locality and the time wasted due to scheduling decisions. Achieving this requires a complete recompilation of the PaRSEC source after enabling the PARSEC_PROF_TRACE CMake option.
 
 In case you are on a system with accelerators and you need to be able to extract profiling information from the execution of tasks on these accelerators you have to hand edit the src/gpu_data.c file and add the information you want to profile to the ```parsec_cuda_trackable_events``` variable. Here is a quick description of the available values:
@@ -83,3 +85,62 @@ See the help of the script to understand how these can be achieved.
 The picture below is the trace corresponding to the above mentioned execution as showed using [Vite](http://vite.gforge.inria.fr/). Don't worry a normal trace will look much better, in this trace I kept the MPI event support, but removed the MPI events and threads. 
 
 ![Vite Trace](files/dpotrf.trace.png)
+
+# Deep Exploration of the Profile for Network Events #
+
+It is sometimes necessary to connect network events to task events, and track the data flow inside the profiling to measure distributed timings. For example, if one want to compute the average time it takes for a data to be produced on one node and consumed on another, one need to connect the task termination, network activation and payload emission, and remote task execution events.
+
+It is possible to achieve this using the profiling information complemented by the DAG Graphing information. We recommend that the DAG graphing generation is executed in a separate run, if possible (i.e. if the DAG is deterministic), in order to reduce the overheads due to instrumentation on the profiled run. To generate the DAG graphing information, compile with the option ```PARSEC_PROF_GRAPH``` ```ON```, and pass the argument ```-. <dot-filename>``` to the PaRSEC command line. For example:
+
+```
+#!shell
+
+mpirun -np 2 dplasma/testing/testing_dpotrf -c 2 -t 200 -N 4000 -- -. dpotrf
+
+```
+
+This will generate 2 (one per rank) DOT files, named ```dpotrf-0.dot``` and ```dpotrf-1.dot```. These files are in the Graphviz DOT format, and can be used to graph the DAG of tasks.
+
+We will use them to connect events in the HDF5 file.
+
+Tasks in the DOT files can be uniquely mapped to payload send and payload receive events of the HDF5 Profiling files through the following association: ```tpid -> tpid```, ```tid -> tid```, and ```fid -> tname```and ```did -> type```. For example:
+
+```
+#!shell
+
+$> python
+Python 2.7.15 (default, Oct 10 2018, 17:53:56) 
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-28)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import pandas as pd
+>>> t = pd.HDFStore('dpotrf.h5')
+>>> t.events[ t.events.type == t.event_types['MPI_DATA_PLD_RCV'] ][['begin', 'end', 'src' ,'dst', 'tpid', 'did', 'tid']]
+      begin       end  src  dst  tpid   did  tid
+2  54829493  55167839  1.0  0.0   2.0  10.0  4.0
+3  54863972  55167839  1.0  0.0   2.0  10.0  1.0
+6  45964530  46325381  0.0  1.0   2.0  10.0  0.0
+7  46007558  46325381  0.0  1.0   2.0  10.0  6.0
+8  46515282  46671406  0.0  1.0   2.0  10.0  3.0
+9  57474746  57530395  0.0  1.0   2.0  10.0  2.0
+>>> t.event_types
+ACTIVATE_CB          6
+Device delegate      1
+MPI_ACTIVATE         2
+MPI_DATA_CTL         3
+MPI_DATA_PLD_RCV     5
+MPI_DATA_PLD_SND     4
+PUT_CB               7
+TASK_MEMORY          0
+potrf_dgemm          8
+potrf_dpotrf        11
+potrf_dsyrk          9
+potrf_dtrsm         10
+dtype: int64
+> ^D
+Closing remaining open files:dpotrf.h5...done
+$> grep 'hid=2' dpotrf-*.dot | grep tid=6 | grep did=10
+dpotrf-400-100-0.dot:potrf_dtrsm_2_0_3 [shape="polygon",style=filled,fillcolor="#e3e361",fontcolor="black",label="<7/0> potrf_dtrsm(0, 3)[0, 3]<37>{2}",tooltip="tpid=2:did=10:tname=potrf_dtrsm:tid=6"];
+
+```
+Task ```potrf_dtrsm(0, 3)``` is the task that generated the payload receive event of index 7, that started at 46007558
+and ended at 46325381 on node 1.
