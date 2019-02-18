@@ -144,3 +144,59 @@ dpotrf-400-100-0.dot:potrf_dtrsm_2_0_3 [shape="polygon",style=filled,fillcolor="
 ```
 Task ```potrf_dtrsm(0, 3)``` is the task that generated the payload receive event of index 7, that started at 46007558
 and ended at 46325381 on node 1.
+
+One can use [PyDot](https://pypi.org/project/pydot/) to parse a DOT file in python and write complex scripts that link the HDF5 profiling information to the DOT information.
+
+```
+#!python
+
+import pydot as pydot
+import pandas as pd
+
+graph = pydot.graph_from_dot_file('dpotrf-400-100.dot')
+t = pd.HDFStore('/tmp/summa-saturn.icl.utk.edu-32-400-100-lfq-HL2YoE.h5')
+
+# Find the First network event that corresponds to a payload receive, and extract did, tpi and tid
+rec = t.events[t.events.type == t.event_types['MPI_DATA_PLD_RCV']].iloc[0]
+print "The first recorded payload received executed on node %d, it ran from %g (s) to %g(s)" % (rec.node_id, rec.begin/1e9, rec.end/1e9)
+rec_node_id = rec.node_id
+did = int(rec.did)
+tpid = int(rec.tpid)
+tid = int(rec.tid)
+tname = t.event_names[did]
+
+# Find when that task started and ended, and on what node
+task_begin = t.events[ ( (t.events.id == tid) & (t.events.taskpool_id == tpid) & (t.events.type == did) )].iloc[0]['begin']
+task_end = t.events[ ( (t.events.id == tid) & (t.events.taskpool_id == tpid) & (t.events.type == did) )].iloc[0]['end']
+task_node = t.events[ ( (t.events.id == tid) & (t.events.taskpool_id == tpid) & (t.events.type == did) )].iloc[0]['node_id']
+print "Task %d of class %s generated the first recorded payload receive. It executed from time %g (s) to %g (s) on node %d" % (tid, t.event_names[did], task_begin/1e9, task_end/1e9, task_node)
+
+# Find the corresponding task in the DOT file
+tooltip = u'"tpid=%d:did=%d:tname=%s:tid=%d"' % (tpid, did, tname, tid)
+for n in graph[0].get_node_list():
+   if(n.get_tooltip() == tooltip):
+     task = n
+     break
+taskname = task.get_name()
+
+# Find all edges where this task is a source, and print where they executed and at what time
+for e in graph[0].get_edge_list():
+   if( e.get_source() == taskname ):
+      dest_task = e.get_destination()
+      for n in graph[0].get_node_list():
+        if( n.get_name() == dest_task ):
+           dest_tp = n.get_tooltip()
+           tp_list = dest_tp[1:-1].split(':')
+           for tp in tp_list:
+               kv = tp.split('=')
+               if( kv[0]=='tpid' ):
+                 dest_tpid =int(kv[1])
+               if( kv[0]=='did' ):
+                 dest_did =int(kv[1])
+               if( kv[0]=='tid' ):
+                 dest_tid =int(kv[1])
+           dest_task = t.events[( (t.events.id == dest_tid) & (t.events.type == dest_did) & (t.events.taskpool_id == dest_tpid) )].iloc[0]
+           if( dest_task['node_id'] == rec_node_id ):
+              print "  One successor on node %d is task %d of class %s that executed from time %g (s) to %g (s)" % (rec_node_id, dest_tid, t.event_names[dest_did], dest_task['begin']/1e9, dest_task['end']/1e9)
+           break
+```
