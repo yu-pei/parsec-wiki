@@ -103,7 +103,7 @@ This will generate 2 (one per rank) DOT files, named ```dpotrf-0.dot``` and ```d
 
 We will use them to connect events in the HDF5 file.
 
-Tasks in the DOT files can be uniquely mapped to payload send and payload receive events of the HDF5 Profiling files through the following association: ```tpid -> tpid```, ```tid -> tid```, and ```fid -> tname```and ```did -> type```. For example:
+Tasks in the DOT files can be uniquely mapped to payload send and payload receive events of the HDF5 Profiling files through the following association: ```tpid -> tpid```, ```tid -> tid```, and ```did -> type```. For example:
 
 ```
 #!shell
