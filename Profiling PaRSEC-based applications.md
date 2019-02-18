@@ -138,7 +138,7 @@ potrf_dtrsm         10
 dtype: int64
 > ^D
 Closing remaining open files:dpotrf.h5...done
-$> grep 'hid=2' dpotrf-*.dot | grep tid=6 | grep did=10
+$> grep 'tpid=2' dpotrf-*.dot | grep tid=6 | grep did=10
 dpotrf-400-100-0.dot:potrf_dtrsm_2_0_3 [shape="polygon",style=filled,fillcolor="#e3e361",fontcolor="black",label="<7/0> potrf_dtrsm(0, 3)[0, 3]<37>{2}",tooltip="tpid=2:did=10:tname=potrf_dtrsm:tid=6"];
 
 ```
