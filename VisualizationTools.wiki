@@ -1,46 +1,48 @@
-### Streaming data out of the runtime
+=== Streaming data out of the runtime ===
 
 Starting from commit
-[e14cc8332d05](https://bitbucket.org/icldistcomp/parsec/commits/e14cc8332d05) PaRSEC gained the capability to automatically generate and export properties out of the Parameterized Task Graph algorithms. In addition, a python visualizer is available for online monitoring of PaRSEC activity.
+[[https://bitbucket.org/icldistcomp/parsec/commits/e14cc8332d05|e14cc8332d05]] PaRSEC gained the capability to automatically generate and export properties out of the Parameterized Task Graph algorithms. In addition, a python visualizer is available for online monitoring of PaRSEC activity.
 
- - Adds: property feature for PTG. Properties can be attached to a function in the PTG/JDF file
- - Adds: properties can return type: int32_t, int64_t, float, double. (int32_t is the default)
- - Adds: multiple properties can be attached to a function
+ * Adds: property feature for PTG. Properties can be attached to a function in the PTG/JDF file
+ * Adds: properties can return type: int32_t, int64_t, float, double. (int32_t is the default)
+ * Adds: multiple properties can be attached to a function
 
 First, let's see how to add properties to an already existing JDF file. The properties for tasks are specified using the `[]` notation after the name and parameters of the function declaration as indicated below.
-```
+{{{
 GEMM(m, n, k) [float Gflops = inline_c%{ return 1/1000000000.*FLOPS_ZGEMM(CLEAN_MB(descC, m), CLEAN_NB(descC, n), CLEAN_NB(descA, k)); %}
                float Mflops = inline_c%{ return 1/1000000.*FLOPS_ZGEMM(CLEAN_MB(descC, m), CLEAN_NB(descC, n), CLEAN_NB(descA, k)); %}
                double kflops = inline_c%{ return 1/1000.*FLOPS_ZGEMM(CLEAN_MB(descC, m), CLEAN_NB(descC, n), CLEAN_NB(descA, k)); %}
                flops = inline_c%{ return FLOPS_ZGEMM(CLEAN_MB(descC, m), CLEAN_NB(descC, n), CLEAN_NB(descA, k)); %}] ]
 
 GEMM(m, n, k) [int32_t flops = inline_c%{ return FLOPS_ZGEMM(m, n, k); %}]
-```
+}}}
 Every time a taskpool is pushed to a context, the dictionary will explore it, extract all the properties available, register them and compare them to what was requested by the user. Every propety that matches a user requested one is then streamed outside the runtime from each node.
 
-#### How to request properties?
+==== How to request properties? ====
 
 Easy, user can request properties using basic wildcards as MCA parameters in ${HOME}/.parsec/mca-params.conf:
 
 `profiling_properties=dgemm_NN_summa:FOO:*;dgemm_NN_summa:GEMM:kflops;*:*:flops`
 
-To request properties, provide a string in the form, namespace:function:property. The namespace is the PTG name (inherited from the source file name), the function is the function that need to expose it's properties and the property is the name of the property attached to the function to be exposed. Despite the use of the regexp `*` we are not providing full regexp support, `*` can only be used on the property name. As an example writing something like `dgemm_*_summa:FOO:flops`, will not work, the `*` in the middle of a string will not be treated as a wildcard. Use semi-colon ';' to form a list of properties.
+To request properties, provide a string in the form, namespace:function:property. The namespace is the PTG name (inherited from the source file name), the function is the function that need to expose its properties and the property is the name of the property attached to the function to be exposed. Despite the use of the regexp `*` we are not providing full regexp support, `*` can only be used on the property name. As an example writing something like `dgemm_*_summa:FOO:flops`, will not work, the `*` in the middle of a string will not be treated as a wildcard. Use semi-colon ';' to form a list of properties.
 
-#### Make the properties available for online use
+==== Make the properties available for online use ====
 The simplest way to access these properties is via a shared memory area, updated by the runtime with the current values. To activate a shared memory area named "parsec_shmem", and export data through it, you will need to activate the shmem, and the PINS alperf module, in ${HOME}/.parsec/mca-params.conf:
-```
+{{{
+#!bash
 mca_pins=alperf
 pins_shmem_activate=1
 pins_shmem_name=parsec_shmem
-```
+}}}
 parsec_shmem is the default name when no name is specified. The alperf PINS module is in charge of evaluating function and accumulating, or setting, the values in the shmem. This data can be either used locally, or saved for offline processing or be used by online tools to provide a view on the ongoing activities of the runtime.
 
-#### Online visualization of PaRSEC activity/progress
+==== Online visualization of PaRSEC activity/progress ====
 
 In tools/aggregator_visu, there is a small tool, the reader. This tool can read a shared memory exported by PaRSEC, single node for now. Once compiled, step that should be done automatically during the installation, it needs the name of the shared memory as first parameter, and the property to retrieve.
 
 As an example the `header` argument will display something like this `./reader parsec_shmem header`
-```xml
+{{{
+xml
 <?xml version="1.0"?>
 <root>
 <application>
@@ -61,10 +63,10 @@ As an example the `header` argument will display something like this `./reader p
   <pages_per_eu>1</pages_per_eu>
 </application>
 </root>
-```
+}}}
 Passing data will send the client in a while loop until the application leaves (not working yet).
 `./reader parsec_shmem data`
-```
+{{{
 Node 0/1 {
   VP 0 {
   }
@@ -77,74 +79,80 @@ Node 0/1 {
     dgemm_NN_summa:GEMM:kflops   1014000.000000
   }
 }
-```
+}}}
 
-#### Visualizing data streamed from the PaRSEC runtime
+==== Visualizing data streamed from the PaRSEC runtime ====
 To visualize performances and, optionally to control the application resources, one need to start the following applications in this order:
- 1. Aggregator
- 1. Demo server
- 1. Application
- 1. GUI
+ * Aggregator
+ * Demo server
+ * Application
+ * GUI
 
-###### Build PaRSEC
+====== Build PaRSEC ======
 Compile PaRSEC with `DAGUE_PROF_TRACE` option turned ON, in order to activate the PINS modules. alperf module will be listed during configure, and therefore will be compiled.
 
-###### Starting the aggregator process
+====== Starting the aggregator process ======
 Set up these environment variables for the PaRSEC runtime to know where to find the aggregator process:
 
-```sh
+{{{
+#!bash
 export AGGREGATOR_HOSTNAME=<hostname of the machine running the aggregator>
 export AGGREGATOR_PORT=<the port on which the aggregator is listenning, P1>
-```
+}}}
 Call the aggregator process:
-```sh
+{{{
+#!bash
 ./aggregator.py -N <nb_processes N>
                 -M <nb execution units / argo streams M>
                 -P <nb of rows in the process grid P>
                 -Q <nb of columns in the process grid Q>
                 -p <port number to listen for connection, P1>
-```
-###### (Optional) Using a server to send commands
+}}}
+====== (Optional) Using a server to send commands ======
 The application needs to know where this server is located:
-```sh
+{{{
+#!bash
 export SERVER_HOSTNAME=<hostname of the machine running the demo server>
 export SERVER_PORT=<demo_server is waiting on port P2>
-```
+}}}
 To start the demo server:
-```sh
+{{{
+#!bash
 $(DPLASMA_BUILD)/demo_server <number of mpi processes N>
                              <port number to listen for connection, P2>
-```
+}}}
 To control the demo server, the format of commands is simplistic and ceertainly not user friendly, but this server exists as a toy:
 
 ```> i c j``` where
 
-- i is an integer, the rank of the target MPI rank to control, -1 is for all the ranks
-- c is a character for the command:
-- n: this command doesn't take the core rank, and will return the statuses of all the cores
-- s: this command will stop the target core on the target process
-- w: this command will start the target core on the target process
-- j is an integer, the rank of the target core to control
+* i is an integer, the rank of the target MPI rank to control, -1 is for all the ranks
+* c is a character for the command:
+* n: this command doesn't take the core rank, and will return the statuses of all the cores
+* s: this command will stop the target core on the target process
+* w: this command will start the target core on the target process
+* j is an integer, the rank of the target core to control
 
-###### Starting the application
+====== Starting the application  ======
 Start your favorite application running on top of PaRSEC (+argobots).
-```sh
+{{{
+#!bash
 [mpirun -np N]
   ./app [application specific parameters]
         -- --mca mca_pins alperf --mca pins_alperf_events task,flops
-```
+}}}
 After starting the application, the aggregator should list the available keys {K} to plot.
 
-###### Visualizing
+====== Visualizing ======
 In order to plot, you need to run:
-```sh
+{{{
+#!bash
 ./plot_gui.py -N <nb processes N>
               -M <nb computing threads M>
               -P <nb rows in the process grid P>
               -Q <nb columns in the process grid Q>
               -g <aggregator hostname>
               -a <aggregator port P1>
-```
+}}}
 The GUI application is connected to the aggregator, set of plotable keys has been shared and acknowledged with the user. You can ask to plot a key:
 
 ```> plot <key_name>```
