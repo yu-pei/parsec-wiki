@@ -82,6 +82,7 @@ Node 0/1 {
 }}}
 
 ==== Visualizing data streamed from the PaRSEC runtime ====
+
 To visualize performances and, optionally to control the application resources, one need to start the following applications in this order:
  * Aggregator
  * Demo server
@@ -89,9 +90,11 @@ To visualize performances and, optionally to control the application resources, 
  * GUI
 
 ====== Build PaRSEC ======
-Compile PaRSEC with `DAGUE_PROF_TRACE` option turned ON, in order to activate the PINS modules. alperf module will be listed during configure, and therefore will be compiled.
+
+Compile PaRSEC with `PARSEC_PROF_TRACE` option turned ON, in order to activate the PINS modules. alperf module will be listed during configure, and therefore will be compiled.
 
 ====== Starting the aggregator process ======
+
 Set up these environment variables for the PaRSEC runtime to know where to find the aggregator process:
 
 {{{
@@ -108,7 +111,9 @@ Call the aggregator process:
                 -Q <nb of columns in the process grid Q>
                 -p <port number to listen for connection, P1>
 }}}
+
 ====== (Optional) Using a server to send commands ======
+
 The application needs to know where this server is located:
 {{{
 #!bash
@@ -133,6 +138,7 @@ To control the demo server, the format of commands is simplistic and ceertainly 
 * j is an integer, the rank of the target core to control
 
 ====== Starting the application  ======
+
 Start your favorite application running on top of PaRSEC (+argobots).
 {{{
 #!bash
@@ -143,6 +149,7 @@ Start your favorite application running on top of PaRSEC (+argobots).
 After starting the application, the aggregator should list the available keys {K} to plot.
 
 ====== Visualizing ======
+
 In order to plot, you need to run:
 {{{
 #!bash
