@@ -17,6 +17,7 @@ Two moderated mailing-lists are available, one for the users and the other for t
 ** [[PINS|How to write a PINS Module to instrument PaRSEC applications]]
 ** [[PaRSEC%20Trace%20Tables%20via%20Python|How to use the Python PaRSEC Trace Tables interface]]
 ** [[PaRSEC%20on%20Intel%20Xeon%20Phi%20Native%20Mode.wiki|How to run PaRSEC in Intel Xeon Phi (native mode)]]
+** [[VisualizationTools.wiki|Visualkization: Stream algorithmic properties out of the PaRSEC runtime]]
 ** [[Using PaRSEC binding to bind computation and communication cores.md|Binding with MPI and PaRSEC]]
 * [[Migrating Legacy Applications to PaRSEC]]
 
