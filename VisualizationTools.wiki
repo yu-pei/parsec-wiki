@@ -22,9 +22,9 @@ Every time a taskpool is pushed to a context, the dictionary will explore it, ex
 
 Easy, user can request properties using basic wildcards as MCA parameters in ${HOME}/.parsec/mca-params.conf:
 
-`profiling_properties=dgemm_NN_summa:FOO:*;dgemm_NN_summa:GEMM:kflops;*:*:flops`
+{{{profiling_properties=dgemm_NN_summa:FOO:*;dgemm_NN_summa:GEMM:kflops;*:*:flops}}}
 
-To request properties, provide a string in the form, namespace:function:property. The namespace is the PTG name (inherited from the source file name), the function is the function that need to expose its properties and the property is the name of the property attached to the function to be exposed. Despite the use of the regexp `*` we are not providing full regexp support, `*` can only be used on the property name. As an example writing something like `dgemm_*_summa:FOO:flops`, will not work, the `*` in the middle of a string will not be treated as a wildcard. Use semi-colon ';' to form a list of properties.
+To request properties, provide a string in the form, namespace:function:property. The namespace is the PTG name (inherited from the source file name), the function is the function that need to expose its properties and the property is the name of the property attached to the function to be exposed. Despite the use of the regexp `*` we are not providing full regexp support, `*` can only be used on the property name. As an example writing something like {{{dgemm_*_summa:FOO:flops}}}, will not work, the `*` in the middle of a string will not be treated as a wildcard. Use semi-colon ';' to form a list of properties.
 
 ==== Make the properties available for online use ====
 The simplest way to access these properties is via a shared memory area, updated by the runtime with the current values. To activate a shared memory area named "parsec_shmem", and export data through it, you will need to activate the shmem, and the PINS alperf module, in ${HOME}/.parsec/mca-params.conf:
@@ -42,7 +42,7 @@ In tools/aggregator_visu, there is a small tool, the reader. This tool can read 
 
 As an example the `header` argument will display something like this `./reader parsec_shmem header`
 {{{
-xml
+#!xml
 <?xml version="1.0"?>
 <root>
 <application>
@@ -123,7 +123,7 @@ $(DPLASMA_BUILD)/demo_server <number of mpi processes N>
 }}}
 To control the demo server, the format of commands is simplistic and ceertainly not user friendly, but this server exists as a toy:
 
-```> i c j``` where
+{{{> i c j}}} where
 
 * i is an integer, the rank of the target MPI rank to control, -1 is for all the ranks
 * c is a character for the command:
@@ -155,4 +155,4 @@ In order to plot, you need to run:
 }}}
 The GUI application is connected to the aggregator, set of plotable keys has been shared and acknowledged with the user. You can ask to plot a key:
 
-```> plot <key_name>```
+{{{> plot <key_name>}}}
