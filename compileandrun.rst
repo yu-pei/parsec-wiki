@@ -1,47 +1,45 @@
-=================
-INSTALLING PaRSEC
-=================
+==================
+INSTALLING DPLASMA
+==================
 
 .. contents:: Table of Contents
 
 Software Dependencies
 =====================
 
-To compile PaRSEC on a new platform, you will need some of the software
-below. From 1 to 2 (included) they are mandatory. Everything else is
+To compile DPLASMA on a new platform, you will need some of the software
+below. From 1 to 4 (included) they are mandatory. Everything else is
 optional, they provide nice features not critical to the normal usage
 of this software package.
 
 1. cmake version 3.12 or above. cmake can be found in the debian
    package cmake, or as sources at the CMake_ download page
-2. Any MPI library Open MPI, MPICH2, MVAPICH or any vendor blessed
+2. A version of the Basic Linear Algebra Subroutines (BLAS) with LAPACKE_
+   (or an external LAPACK/LAPACKE to completement your BLAS, see below)
+3. Any MPI library Open MPI, MPICH2, MVAPICH or any vendor blessed
    implementation.
-3. hwloc_ for processor and memory locality features
-4. For using PINS (instrumentation based on PAPI) PAPI_ is required
-5. For the profiling tools you need several libraries.
-
-   - GTG_ for the trace generation
-   - Vite_ a visualization environment (only required for visualization)
-   - GD_ usually available on most of the Linux distribution via GraphViz
-     installation
+4. The PaRSEC_ Runtime
+5. Optional (but highly recommended): hwloc_ for processor and memory
+   locality features in PaRSEC
+6. Optional: CUDA_ for Nvidia hardware acceleration
 
 .. _CMake: http://www.cmake.org/
+.. _LAPACKE: https://github.com/Reference-LAPACK/lapack
+.. _PaRSEC: https://bitbucket.org/icldistcomp/parsec/
 .. _hwloc: http://www.open-mpi.org/projects/hwloc/
-.. _PAPI: http://icl.cs.utk.edu/papi/
-.. _GTG: https://gforge.inria.fr/projects/gtg/
-.. _Vite: https://gforge.inria.fr/projects/vite/
-.. _GD: http://www.graphviz.org/
+.. _CUDA: https://developer.nvidia.com/cuda-zone
 
-Configuring PaRSEC for a new platform
-=====================================
 
-PaRSEC is a CMake_ built project. CMake has a comparable goal to
+Configuring DPLASMA for a new platform
+======================================
+
+DPLASMA is a CMake_ built project. CMake has a comparable goal to
 configure_, but it's subtly different. For one thing, CMake display the
 commands with colors, but this is not necessarily its most prominent
 feature.
 
 CMake keeps everything it found hitherto in a cache file named
-``CMakeCache.txt``. Until you have successfully configured PaRSEC,
+``CMakeCache.txt``. Until you have successfully configured DPLASMA,
 remove the ``CMakeCache.txt`` file each time you run ``cmake``.
 
 .. _configure: https://www.gnu.org/software/autoconf/
@@ -120,6 +118,27 @@ load environment modules_, etc. Of note are the ``CMAKE_DEFINES`` and
 , and ``A=B`` environment are prepended to the ``cmake`` invocation,
 respectively.
 
+Submodule or External PaRSEC
+----------------------------
+
+By default, DPLASMA will try to detect as system (or speficied in the
+``PaRSEC_ROOT`` environment variable) automatically. If an installed
+PaRSEC is not found, DPLASMA will download an appropriate version of
+PaRSEC from ``bitbucket.org`` and setup a ``git submodule``. This
+Submodule PaRSEC will be configured and built at the same time as
+DPLASMA. Passing ``--without-parsec`` to ``configure``  will force using
+the submodule PaRSEC instead of looking for an installed version.
+
+Conversely, you can prevent loading the Submodule PaRSEC by setting
+``--with-parsec``. You can select a particular externally installed
+PaRSEC by setting the configure option
+``--with-parsec=$PARSEC_INSTALL_DIRECTORY``.
+
+Note that many of the ``configure`` options apply only to the submodule
+PaRSEC and have no effect when you are using an external PaRSEC. Setting
+these will result in a warning by CMake that some variables have been
+defined but unused.
+
 Cross Compiling
 ---------------
 
@@ -182,53 +201,98 @@ Hopefully, once the expected arguments are provided the output will look similar
 
 .. code:: console
 
-  -- The C compiler identification is GNU 7.4.0
-  -- Checking whether C compiler has -isysroot
-  -- Checking whether C compiler has -isysroot - yes
-  -- Checking whether C compiler supports OSX deployment target flag
-  -- Checking whether C compiler supports OSX deployment target flag - yes
-  -- Check for working C compiler: /opt/local/bin/gcc
-  -- Check for working C compiler: /opt/local/bin/gcc -- works
+  ### This program was invoked with the following command line
+  #
+      ../dplasma/configure  --with-platform=ibm.ac922.summit --enable-debug=noisier\,paranoid
+  #
+  #################################################
+  # Platform ibm.ac922.summit
+  # This file is for a compilation on OLCF Summit.
+  #   configure --with-platform=ibm.ac922.summit ...
+  # Set preferences and dependencies for the
+  # ibm.ac922.summit system executables and libs
+  #   CC=mpicc CXX=mpiCC FC=mpif90
+  #
+
+  The following have been reloaded with a version change:
+    1) cmake/3.14.2 => cmake/3.15.2
+
+  ### CMake generated invocation
+  #
+       LAPACKE_ROOT=/ccs/home/bouteilla/parsec/dplasma/lapack CC=mpicc CXX=mpicxx FC=mpif90 CFLAGS='' LDFLAGS='' /autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -G 'Unix Makefiles' /ccs/home/bouteilla/parsec/summit.debug.dplasma/../dplasma  -DBLAS_LIBRARIES='/sw/summit/essl/6.2.0-20190419/essl/6.2/lib64/libessl.so' -DBLA_VENDOR=IBMESSL -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Debug -DPARSEC_DEBUG_PARANOID=ON -DPARSEC_DEBUG_NOISIER=ON -DPARSEC_GPU_WITH_CUDA=ON
+  #
+  Removing Cmake Cache...
+  -- The C compiler identification is XLClang 16.1.1.3
+  -- Check for working C compiler: /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/spectrum-mpi-10.3.0.1-20190611-aqjt3jo53mogrrhcrd2iufr435azcaha/bin/mpicc
+  -- Check for working C compiler: /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/spectrum-mpi-10.3.0.1-20190611-aqjt3jo53mogrrhcrd2iufr435azcaha/bin/mpicc -- works
   -- Detecting C compiler ABI info
   -- Detecting C compiler ABI info - done
   -- Detecting C compile features
   -- Detecting C compile features - done
-  -- The Fortran compiler identification is GNU 7.4.0
-  -- Checking whether Fortran compiler has -isysroot
-  -- Checking whether Fortran compiler has -isysroot - yes
-  -- Checking whether Fortran compiler supports OSX deployment target flag
-  -- Checking whether Fortran compiler supports OSX deployment target flag - yes
-  -- Check for working Fortran compiler: /opt/local/bin/gfortran
-  -- Check for working Fortran compiler: /opt/local/bin/gfortran  -- works
+  -- The Fortran compiler identification is XL 16.1.1
+  -- Check for working Fortran compiler: /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/spectrum-mpi-10.3.0.1-20190611-aqjt3jo53mogrrhcrd2iufr435azcaha/bin/mpif90
+  -- Check for working Fortran compiler: /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/spectrum-mpi-10.3.0.1-20190611-aqjt3jo53mogrrhcrd2iufr435azcaha/bin/mpif90  -- works
   -- Detecting Fortran compiler ABI info
   -- Detecting Fortran compiler ABI info - done
-  -- Checking whether /opt/local/bin/gfortran supports Fortran 90
-  -- Checking whether /opt/local/bin/gfortran supports Fortran 90 -- yes
-  -- The CXX compiler identification is GNU 7.4.0
-  -- Checking whether CXX compiler has -isysroot
-  -- Checking whether CXX compiler has -isysroot - yes
-  -- Checking whether CXX compiler supports OSX deployment target flag
-  -- Checking whether CXX compiler supports OSX deployment target flag - yes
-  -- Check for working CXX compiler: /opt/local/bin/g++
-  -- Check for working CXX compiler: /opt/local/bin/g++ -- works
+  -- Checking whether /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/spectrum-mpi-10.3.0.1-20190611-aqjt3jo53mogrrhcrd2iufr435azcaha/bin/mpif90 supports Fortran 90
+  -- Checking whether /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/spectrum-mpi-10.3.0.1-20190611-aqjt3jo53mogrrhcrd2iufr435azcaha/bin/mpif90 supports Fortran 90 -- yes
+  -- Detecting Fortran/C Interface
+  -- Detecting Fortran/C Interface - Found GLOBAL and MODULE mangling
+  -- Found BLAS: /sw/summit/essl/6.2.0-20190419/essl/6.2/lib64/libessl.so
+  -- Looking for zgemm
+  -- Looking for zgemm - found
+  -- Looking for Fortran zgeqrf
+  -- Looking for Fortran zgeqrf - found
+  -- Performing Test BLAS_HAS_CBLAS
+  -- Performing Test BLAS_HAS_CBLAS - Success
+  -- Performing Test BLAS_HAS_LAPACKE
+  -- Performing Test BLAS_HAS_LAPACKE - Success
+  -- Found LAPACKE: /sw/summit/essl/6.2.0-20190419/essl/6.2/lib64/libessl.so  found components:  BLAS CBLAS LAPACK LAPACKE
+  -- Found LAPACKE and defined the following imported targets:
+  --   - LAPACKE::LAPACKE:
+  --       + include:      /sw/summit/essl/6.2.0-20190419/essl/6.2/include;/ccs/home/bouteilla/parsec/dplasma/lapack/LAPACKE/include
+  --       + library:      /sw/summit/essl/6.2.0-20190419/essl/6.2/lib64/libessl.so
+  --       + dependencies: /ccs/home/bouteilla/parsec/dplasma/lapack/liblapacke.a;
+  --   - LAPACKE::LAPACK:
+  --       + include:      /sw/summit/essl/6.2.0-20190419/essl/6.2/include;/ccs/home/bouteilla/parsec/dplasma/lapack/LAPACKE/include
+  --       + library:      /sw/summit/essl/6.2.0-20190419/essl/6.2/lib64/libessl.so
+  --       + dependencies: /ccs/home/bouteilla/parsec/dplasma/lapack/liblapack.a;
+  --   - LAPACKE::CBLAS:
+  --       + include:      /sw/summit/essl/6.2.0-20190419/essl/6.2/include;/ccs/home/bouteilla/parsec/dplasma/lapack/LAPACKE/include
+  --       + library:      /sw/summit/essl/6.2.0-20190419/essl/6.2/lib64/libessl.so
+  --       + dependencies:
+  --   - LAPACKE::BLAS:
+  --       + include:      /sw/summit/essl/6.2.0-20190419/essl/6.2/include;/ccs/home/bouteilla/parsec/dplasma/lapack/LAPACKE/include
+  --       + library:      /sw/summit/essl/6.2.0-20190419/essl/6.2/lib64/libessl.so
+  --       + dependencies: /sw/summit/essl/6.2.0-20190419/essl/6.2/lib64/libessl.so;
+  -- Looking for timersub
+  -- Looking for timersub - found
+  -- Looking for asprintf
+  -- Looking for asprintf - not found
+  -- Looking for asprintf
+  -- Looking for asprintf - found
+  -- Found PythonInterp: /usr/bin/python (found version "2.7.5")
+  -- ########################################################################
+  -- #             Configuring internal submodule PaRSEC runtime!
+  -- The CXX compiler identification is XLClang 16.1.1.3
+  -- Check for working CXX compiler: /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/spectrum-mpi-10.3.0.1-20190611-aqjt3jo53mogrrhcrd2iufr435azcaha/bin/mpicxx
+  -- Check for working CXX compiler: /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/spectrum-mpi-10.3.0.1-20190611-aqjt3jo53mogrrhcrd2iufr435azcaha/bin/mpicxx -- works
   -- Detecting CXX compiler ABI info
   -- Detecting CXX compiler ABI info - done
   -- Detecting CXX compile features
   -- Detecting CXX compile features - done
-  -- Found BISON: /opt/local/bin/bison (found version "3.4.1")
-  -- Found FLEX: /opt/local/bin/flex (found version "2.6.4")
-  -- Building for target x86_64
-  -- Found target X86_64
+  -- Found BISON: /usr/bin/bison (found version "3.0.4")
+  -- Found FLEX: /usr/bin/flex (found version "2.5.37")
+  -- Building for target ppc64le
+  -- Found target for PPC
   -- Performing Test C_M32or64
   -- Performing Test C_M32or64 - Success
   -- Performing Test PARSEC_HAVE_STD_C1x
   -- Performing Test PARSEC_HAVE_STD_C1x - Success
-  -- Performing Test PARSEC_HAVE_WALL
-  -- Performing Test PARSEC_HAVE_WALL - Success
-  -- Performing Test PARSEC_HAVE_WEXTRA
-  -- Performing Test PARSEC_HAVE_WEXTRA - Success
-  -- Performing Test PARSEC_HAVE_PAR_EQUALITY
-  -- Performing Test PARSEC_HAVE_PAR_EQUALITY - Success
+  -- Performing Test PARSEC_HAVE_STD_C99
+  -- Performing Test PARSEC_HAVE_STD_C99 - Success
+  -- Performing Test PARSEC_HAVE_WD
+  -- Performing Test PARSEC_HAVE_WD - Failed
   -- Performing Test PARSEC_HAVE_G3
   -- Performing Test PARSEC_HAVE_G3 - Success
   -- Looking for sys/types.h
@@ -240,24 +304,30 @@ Hopefully, once the expected arguments are provided the output will look similar
   -- Check size of __int128_t
   -- Check size of __int128_t - done
   -- Performing Test PARSEC_COMPILER_C11_COMPLIANT
-  -- Performing Test PARSEC_COMPILER_C11_COMPLIANT - Success
-  -- Performing Test PARSEC_STDC_HAVE_C11_ATOMICS
-  -- Performing Test PARSEC_STDC_HAVE_C11_ATOMICS - Success
-  -- Looking for include file stdatomic.h
-  -- Looking for include file stdatomic.h - found
-  -- Performing Test PARSEC_ATOMIC_USE_C11_32
-  -- Performing Test PARSEC_ATOMIC_USE_C11_32 - Success
-  -- Performing Test PARSEC_ATOMIC_USE_C11_64
-  -- Performing Test PARSEC_ATOMIC_USE_C11_64 - Success
-  -- Performing Test PARSEC_ATOMIC_USE_C11_128
-  -- Performing Test PARSEC_ATOMIC_USE_C11_128 - Failed
-  -- Performing Test PARSEC_ATOMIC_USE_C11_128
-  -- Performing Test PARSEC_ATOMIC_USE_C11_128 - Failed
-  -- Performing Test PARSEC_ATOMIC_USE_C11_128
-  -- Performing Test PARSEC_ATOMIC_USE_C11_128 - Success
-  -- 	 support for 32 bits atomics - found
-  -- 	 support for 64 bits atomics - found
-  -- 	 support for 128 bits atomics - found
+  -- Performing Test PARSEC_COMPILER_C11_COMPLIANT - Failed
+  -- Performing Test PARSEC_ATOMIC_USE_GCC_32_BUILTINS
+  -- Performing Test PARSEC_ATOMIC_USE_GCC_32_BUILTINS - Success
+  -- Performing Test PARSEC_ATOMIC_USE_GCC_64_BUILTINS
+  -- Performing Test PARSEC_ATOMIC_USE_GCC_64_BUILTINS - Success
+  -- Performing Test PARSEC_ATOMIC_USE_GCC_128_BUILTINS
+  -- Performing Test PARSEC_ATOMIC_USE_GCC_128_BUILTINS - Failed
+  -- Performing Test PARSEC_ATOMIC_USE_GCC_128_BUILTINS
+  -- Performing Test PARSEC_ATOMIC_USE_GCC_128_BUILTINS - Failed
+  -- Performing Test PARSEC_ATOMIC_USE_XLC_32_BUILTINS
+  -- Performing Test PARSEC_ATOMIC_USE_XLC_32_BUILTINS - Success
+  -- Performing Test PARSEC_ATOMIC_USE_XLC_64_BUILTINS
+  -- Performing Test PARSEC_ATOMIC_USE_XLC_64_BUILTINS - Success
+  -- Performing Test PARSEC_ATOMIC_USE_XLC_LLSC_32_BUILTINS
+  -- Performing Test PARSEC_ATOMIC_USE_XLC_LLSC_32_BUILTINS - Success
+  -- Performing Test PARSEC_ATOMIC_USE_XLC_LLSC_64_BUILTINS
+  -- Performing Test PARSEC_ATOMIC_USE_XLC_LLSC_64_BUILTINS - Success
+  -- Performing Test PARSEC_ATOMIC_USE_MIPOSPRO_32_BUILTINS
+  -- Performing Test PARSEC_ATOMIC_USE_MIPOSPRO_32_BUILTINS - Failed
+  -- Performing Test PARSEC_ATOMIC_USE_SUN_32
+  -- Performing Test PARSEC_ATOMIC_USE_SUN_32 - Failed
+  --       support for 32 bits atomics - found
+  --       support for 64 bits atomics - found
+  --       support for XL LL/SC atomics - found
   -- Looking for pthread.h
   -- Looking for pthread.h - found
   -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
@@ -266,13 +336,9 @@ Hopefully, once the expected arguments are provided the output will look similar
   -- Looking for pthread_getspecific
   -- Looking for pthread_getspecific - found
   -- Looking for pthread_barrier_init
-  -- Looking for pthread_barrier_init - not found
-  -- Looking for pthread_barrier_init
-  -- Looking for pthread_barrier_init - not found
+  -- Looking for pthread_barrier_init - found
   -- Looking for sched_setaffinity
-  -- Looking for sched_setaffinity - not found
-  -- Looking for sched_setaffinity in rt
-  -- Looking for sched_setaffinity in rt - not found
+  -- Looking for sched_setaffinity - found
   -- Performing Test PARSEC_HAVE_TIMESPEC_TV_NSEC
   -- Performing Test PARSEC_HAVE_TIMESPEC_TV_NSEC - Success
   -- Looking for clock_gettime in c
@@ -304,15 +370,13 @@ Hopefully, once the expected arguments are provided the output will look similar
   -- Looking for include file ctype.h
   -- Looking for include file ctype.h - found
   -- Performing Test PARSEC_HAVE_BUILTIN_CPU
-  -- Performing Test PARSEC_HAVE_BUILTIN_CPU - Success
-  -- Performing Test PARSEC_HAVE_BUILTIN_CPU512
-  -- Performing Test PARSEC_HAVE_BUILTIN_CPU512 - Success
+  -- Performing Test PARSEC_HAVE_BUILTIN_CPU - Failed
   -- Looking for getrusage
   -- Looking for getrusage - found
   -- Looking for RUSAGE_THREAD
   -- Looking for RUSAGE_THREAD - not found
   -- Looking for RUSAGE_THREAD
-  -- Looking for RUSAGE_THREAD - not found
+  -- Looking for RUSAGE_THREAD - found
   -- Looking for include file limits.h
   -- Looking for include file limits.h - found
   -- Looking for include file string.h
@@ -333,54 +397,42 @@ Hopefully, once the expected arguments are provided the output will look similar
   -- Performing Test PARSEC_HAVE_ATTRIBUTE_VISIBILITY - Success
   -- Performing Test PARSEC_HAVE_BUILTIN_EXPECT
   -- Performing Test PARSEC_HAVE_BUILTIN_EXPECT - Success
-  -- Looking for dlsym
-  -- Looking for dlsym - found
-  -- Found HWLOC: /opt/local/lib/libhwloc.dylib
+  -- Found HWLOC: /usr/lib64/libhwloc.so
   -- Performing Test PARSEC_HAVE_HWLOC_PARENT_MEMBER
   -- Performing Test PARSEC_HAVE_HWLOC_PARENT_MEMBER - Success
   -- Performing Test PARSEC_HAVE_HWLOC_CACHE_ATTR
   -- Performing Test PARSEC_HAVE_HWLOC_CACHE_ATTR - Success
   -- Performing Test PARSEC_HAVE_HWLOC_OBJ_PU
   -- Performing Test PARSEC_HAVE_HWLOC_OBJ_PU - Success
-  -- Looking for hwloc_bitmap_free in /opt/local/lib/libhwloc.dylib
-  -- Looking for hwloc_bitmap_free in /opt/local/lib/libhwloc.dylib - found
-  -- Performing Test MPI_WORKS_WITH_WRAPPER
-  -- Performing Test MPI_WORKS_WITH_WRAPPER - Failed
-  -- Found MPI_C: /opt/ompi/master/debug/lib/libmpi.dylib (found version "3.1")
-  -- Found MPI_CXX: /opt/ompi/master/debug/lib/libmpi_cxx.dylib (found version "3.1")
-  -- Found MPI_Fortran: /opt/ompi/master/debug/lib/libmpi_usempif08.dylib (found version "3.1")
-  -- Found MPI: TRUE (found version "3.1")
+  -- Looking for hwloc_bitmap_free in /usr/lib64/libhwloc.so
+  -- Looking for hwloc_bitmap_free in /usr/lib64/libhwloc.so - found
+  -- Performing Test CC_CONTAINS_MPI
+  -- Performing Test CC_CONTAINS_MPI - Success
   -- Looking for MPI_Type_create_resized
   -- Looking for MPI_Type_create_resized - found
   -- Performing Test PARSEC_HAVE_MPI_OVERTAKE
   -- Performing Test PARSEC_HAVE_MPI_OVERTAKE - Success
-  -- Looking for include file Ayudame.h
-  -- Looking for include file Ayudame.h - not found
-  -- Fortran adds libraries path /opt/local/lib/gcc7/gcc/x86_64-apple-darwin18/7.4.0;/opt/local/lib/gcc7;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/usr/lib
-  -- Fortran adds libraries gfortran;gcc_ext.10.5;gcc;quadmath;m;gcc_ext.10.5;gcc
-  -- Found GTG: /opt/lib/libgtg.dylib
+  -- Found CUDA: /sw/summit/cuda/10.1.168 (found version "10.1")
+  -- Found CUDA 10.1 in /sw/summit/cuda/10.1.168
+  -- Looking for cudaDeviceCanAccessPeer
+  -- Looking for cudaDeviceCanAccessPeer - found
+  -- Add -q64 and -nofor_main to the Fortran linker.
+  CMAKE_Fortran_COMPILER full path: /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-3/spectrum-mpi-10.3.0.1-20190611-aqjt3jo53mogrrhcrd2iufr435azcaha/bin/mpif90
+  Fortran compiler: mpif90
+  No optimized Fortran compiler flags are known, we just try -O2...
+  -- Could NOT find GTG (missing: GTG_LIBRARY GTG_INCLUDE_DIR)
   -- Checking for module 'libgvc'
-  --   Found libgvc, version 2.40.1
-  -- Found GRAPHVIZ: /opt/local/lib/libgvc.dylib;/opt/local/lib/libcgraph.dylib;/opt/local/lib/libcdt.dylib;/opt/local/lib/libpathplan.dylib
-  -- Looking for gdImagePng in /opt/local/lib/libgd.dylib
-  -- Looking for gdImagePng in /opt/local/lib/libgd.dylib - found
-  -- Found ZLIB: /opt/local/lib/libz.dylib (found version "1.2.11")
-  -- Found PNG: /opt/local/lib/libpng.dylib (found version "1.4.12")
-  -- Looking for gdImageJpeg in /opt/local/lib/libgd.dylib
-  -- Looking for gdImageJpeg in /opt/local/lib/libgd.dylib - found
-  -- Found JPEG: /opt/local/lib/libjpeg.dylib (found version "80")
-  -- Looking for gdImageGif in /opt/local/lib/libgd.dylib
-  -- Looking for gdImageGif in /opt/local/lib/libgd.dylib - found
-  -- Found PythonInterp: /opt/local/bin/python (found version "2.7.16")
-  -- Cython version 0.29.13 found
-  -- Found Cython: /opt/local/bin/cython (Required is at least version "0.21.2")
+  --   No package 'libgvc' found
+  -- Could NOT find GRAPHVIZ (missing: GRAPHVIZ_LIBRARY GRAPHVIZ_INCLUDE_DIR)
+  -- Could NOT find Cython (missing: CYTHON_EXECUTABLE) (Required is at least version "0.21.2")
   -- Looking for shm_open
-  -- Looking for shm_open - found
+  -- Looking for shm_open - not found
+  -- Looking for shm_open in rt
+  -- Looking for shm_open in rt - found
   -- PARSEC Modular Component Architecture (MCA) discovery:
   -- -- Found Component `pins'
   -- Module alperf not selectable: PARSEC_PROF_TRACE disabled.
   -- ---- Module `iterators_checker' is ON
-  -- The PAPI Library is found at PAPI_LIBRARY-NOTFOUND
   -- Module papi not selectable: PARSEC_PROF_TRACE disabled.
   -- ---- Module `print_steals' is ON
   -- ---- Module `ptg_to_dtd' is ON
@@ -400,26 +452,40 @@ Hopefully, once the expected arguments are provided the output will look similar
   -- Component sched sources:
   -- PARSEC Modular Component Architecture (MCA) discovery done.
   -- Could NOT find Omega; Options depending on Omega will be disabled (missing: OMEGA_INCLUDE_DIR OMEGA_LIBRARY)
-  -- Detecting Fortran/C Interface
-  -- Detecting Fortran/C Interface - Found GLOBAL and MODULE mangling
   -- Looking for PARSEC_ATOMIC_HAS_ATOMIC_CAS_INT128
-  -- Looking for PARSEC_ATOMIC_HAS_ATOMIC_CAS_INT128 - found
-  -- Internal PaRSEC uses CAS 128B. Reconfiguring parsec_options.h
+  -- Looking for PARSEC_ATOMIC_HAS_ATOMIC_CAS_INT128 - not found
+  -- Check size of ((parsec_lifo_t*)0)->lifo_head
+  -- Check size of ((parsec_lifo_t*)0)->lifo_head - done
+  -- Internal PaRSEC does not use CAS on int128_t. Keeping parsec_options.h unchanged
 
 
   Configuration flags:
-    CMAKE_C_FLAGS          =  -m64 -std=c1x
-    CMAKE_C_LDFLAGS        =  -m64
+    CMAKE_C_FLAGS          =  -q64 -qlanglvl=extc99
+    CMAKE_C_LDFLAGS        =  -q64
     CMAKE_EXE_LINKER_FLAGS =
-    EXTRA_LIBS             = -latomic;/opt/local/lib/libhwloc.dylib;-L/opt/local/lib/gcc7/gcc/x86_64-apple-darwin18/7.4.0;-L/opt/local/lib/gcc7;-L/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/usr/lib;gfortran;gcc_ext.10.5;gcc;quadmath;m
+    EXTRA_LIBS             = /usr/lib64/libhwloc.so
 
 
 
+  -- #             Configuring internal submodule PaRSEC runtime: DONE!
+  -- ########################################################################
+  -- CUDA support for DPLASMA enabled
+  -- Looking for include file complex.h
+  -- Looking for include file complex.h - found
+  -- Generate precision dependencies in /ccs/home/bouteilla/parsec/dplasma/include        generated_headers
+  -- Generate precision dependencies in /ccs/home/bouteilla/parsec/dplasma/cores  generated_headers
+  -- Generate precision dependencies in /ccs/home/bouteilla/parsec/dplasma/cores  generated_files
+  -- Generate precision dependencies in /ccs/home/bouteilla/parsec/dplasma/cores  all_precisions_files
+  -- Generate precision dependencies in /ccs/home/bouteilla/parsec/dplasma/cores  cplx_files
+  -- Generate precision dependencies in /ccs/home/bouteilla/parsec/dplasma/cores  generated_cuda_files
+  -- Generate precision dependencies in /ccs/home/bouteilla/parsec/dplasma/lib    generated_jdf
+  -- Generate precision dependencies in /ccs/home/bouteilla/parsec/dplasma/lib    generated_wrappers
+  -- Generate precision dependencies in /ccs/home/bouteilla/parsec/dplasma/tests  generated_testings
   -- Configuring done
   -- Generating done
-  -- Build files have been written to:
+  -- Build files have been written to: /ccs/home/bouteilla/parsec/summit.debug.dplasma
 
-If this is done, congratulations, PaRSEC is configured and you're ready for
+If this is done, congratulations, DPLASMA is configured and you're ready for
 building and testing the system.
 
 Troubleshooting
@@ -496,11 +562,13 @@ when you invoke again a ``configure`` script.
 
 Notable parameters are::
 
+  BLA_VENDOR                      ALL (Typically you want either Intel10_64lp_seq, IBMESSL, or OpenBLAS)
+
+Available in submodule PaRSEC builds only::
+
   PARSEC_DEBUG                    OFF (and all other PARSEC_DEBUG options)
   PARSEC_DIST_COLLECTIVES         ON
-  PARSEC_DIST_WITH_MPI            ON
   PARSEC_GPU_WITH_CUDA            ON
-  PARSEC_OMEGA_DIR                OFF
   PARSEC_PROF_*                   OFF (all PARSEC_PROF_ flags off)
 
 Using the *expert* mode (key 't' to toggle to expert mode), you can change other
@@ -518,8 +586,66 @@ all the options you want in ccmake, type 'c' to configure again, and 'g' to
 generate the files. If you entered wrong values in some fields, ccmake will
 complain at 'c' time.
 
-Building PaRSEC
-===============
+BLAS and LAPACKE
+================
+
+Choosing a BLAS
+---------------
+
+DPLASMA needs to have access to a BLAS implementation and LAPACKE_ (+TMG)
+interface. It is recommended that you use a vendor supplied BLAS (e.g.,
+Intel MKL_, IBM ESSL_, OpenBLAS_, etc.) rather than a generic option.
+Using the reference BLAS_ (or, to a lesser extent, ATLAS_) often result in
+poor performance.
+
+In order to control which BLAS will be selected, you can either
+
+1. Pass the --with-blas=xxx to the configure script (see above)
+2. Set the BLA_VENDOR CMake variable (-DBLA_VENDOR=xxx)
+
+Typical values for these options are ``Intel10_64lp_seq`` (Intel MKL), ``IBMESSL``,
+``OpenBLAS``, etc. You can refer to the CMake FindBLAS_ documentation to discover
+more options.
+
+.. _MKL: https://software.intel.com/en-us/mkl
+.. _ESSL: https://www.ibm.com/support/knowledgecenter/en/SSFHY8/essl_welcome.html
+.. _OpenBLAS: https://www.openblas.net
+.. _ATLAS: http://math-atlas.sourceforge.net
+.. _BLAS: https://github.com/Reference-LAPACK/lapack
+.. _FindBLAS: https://cmake.org/cmake/help/latest/module/FindBLAS.html
+
+LAPACKE
+-------
+
+LAPACKE lets C programs call Fortran LAPACK functions. Fortunately, many
+modern BLAS vendors (e.g., MKL, OpenBLAS) provide a full LAPACKE stack (including
+CBLAS). In this case, just providing a BLAS is sufficient.
+
+However, some vendors provide only a subset of LAPACK/LAPACKE (e.g., ESSL). In this
+case, it is still recommended that you use the vendor BLAS, but you will need to
+complement the missing features with the reference LAPACK/LAPACKE library.
+
+.. code:: shell
+
+  LAPACKE_ROOT=$LAPACK_BUILD_DIR configure --with-blas=IBMESSL
+
+OpenMP vs Serial BLAS
+---------------------
+
+In general, DPLASMA operates faster when using a serial BLAS, letting PaRSEC
+manage parallelism. This setup can be achieved by linking with a serial version
+of the BLAS library (``Intel10_64lp_seq`` rather than ``Intel10_64lp``), or
+alternatively, by disabling the OpenMP based BLAS-internal parallelism found in
+many BLAS by setting the environment variable ``export OMP_NUM_THREADS=1`` at
+runtime.
+
+Still, some architectures may benefit greatly from using an OpenMP BLAS, notably,
+Intel KNC Phi accelerators on which OpenMP parallelism should be set to the number
+of hardware threads per core. If you have an unusual architecture, experiment for
+yourself!
+
+Building DPLASMA
+================
 
 If the configuration was good, compilation should be as simple and
 fancy as ``make``. To debug issues, use ``make VERBOSE=1`` or turn the
@@ -533,12 +659,50 @@ Some DOE sites are exploring the use of Spack_ to install software. You
 can integrate PaRSEC in a Spack environment by using the provided
 configurations in ``contrib/spack``. See the Readme there for more details.
 
-Running with PaRSEC
-===================
+Running with DPLASMA
+====================
+
+The dplasma library is compiled into ``dplasma/lib``. All testing programs are
+compiled in ``dplasma/tests``. Examples are:
+
+``dplasma/testing/testing_?getrf``
+    LU Factorization (simple or double precision)
+``dplasma/testing/testing_?geqrf``
+    QR Factorization (simple or double precision)
+``dplasma/testing/testing_?potrf``
+    Cholesky Factorization (simple or double precision)
+
+All the binaries should accept as input:
+
+    -c <n>                  the number of threads used for kernel execution on each node.
+                            This should be set to the number of cores. Remember that one
+                            additional thread will be spawned to handle the communications
+                            in the MPI version.
+    -N SIZE                 a mandatory argument to define the size of the matrix
+    -g <number of GPUs>     number of GPUs to use, if the operation is GPU-enabled
+    -t <blocksize>          columns in a tile
+    -T <blocksize>          rows in a tile, (WARNING: most algorithm included in DPLASMA
+                            requires square tiles)
+    -p <number of rows>     to require a 2-D block cyclic distribution of p rows
+    -q <number of columns>  to require a 2D block cyclic distribution of q columns
+
+A typical dplasma run using MPI looks like
 
 .. code:: bash
 
-  mpiexec -n 8 ./some_parsec_app
+  mpiexec -np 8 ./testing_spotrf -c 8 -g 0 -p 4 -q 2 -t 120 -T 120 -N 1000
+
+This invocation run a Cholesky factorization on 8 nodes, 8 computing threads per node, nodes being
+arranged in a ``4x2`` grid, with a distributed generation of the matrix of size ``1000x1000`` floats, with
+tiles of size ``120x120``. Each test can dump the list of options with ``-h``. Some tests have specific options
+(like ``-I`` to tune the inner block size in QR and LU, and ``-M`` in LU or QR to have non-square matrices).
+
+In addition to the parameters usually accepted by DPLASMA (see ``mpirun -np 1 ./testing_dpotrf --help`` for a full
+list), the PaRSEC runtime engine can be tuned through its MCA. MCA parameters can be passed to the runtime engine
+after the DPLASMA arguments, by separating the DPLASMA arguments from the PaRSEC arguments with -- (e.g.
+``mpirun -np 8 ./testing_dpotrf -c 8 -N 1000 -- --mca mca_sched ap`` would tell DPLASMA to use 8 cores, and PaRSEC
+to use the AP (Absolute Priority) scheduling heuristic). A complete list of MCA parameters can be found by passing
+``--help`` to the PaRSEC runtime engine (e.g. ``mpirun -np 1 ./testing_dpotrf -c 1 -N 100 -- --help``).
 
 TL;DR
 =====
@@ -546,12 +710,12 @@ TL;DR
 .. code:: bash
 
   mkdir builddir && cd builddir
-  ${srcdir}/configure --with-hwloc --with-mpi --disable-debug --prefix=$PWD/install
+  ${srcdir}/configure --with-hwloc --with-mpi --with-blas=Intel10_64lp_seq --disable-debug --prefix=$PWD/install
   make install
-  mpiexec -n 8 examples/ex00
+  mpiexec -n 8 tests/testing_dpotrf -N 1000 -x -v
 
 ______
 
 --
 Happy hacking,
-  The PaRSEC team.
+  The DPLASMA team.
