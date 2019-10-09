@@ -14,10 +14,10 @@ Two moderated mailing-lists are available, one for the users and the other for t
 ** [[writejdf|How to write a PaRSEC enabled operation by editing the JDF file directly]]
 ** [[datadistribution|How to write a program that uses a PaRSEC enabled operation]] (a.k.a. "what is this data distribution thing?")
 ** [[Profiling PaRSEC-based applications|How to profile PaRSEC applications]]
-*** [[Profiling-PaRSEC-Applications-with-PAPI|Profiling PaRSEC Applications with PAPI]]
+*** [[Profiling PaRSEC Applications with PAPI|Profiling PaRSEC Applications with PAPI]]
 ** [[PINS|How to write a PINS Module to instrument PaRSEC applications]]
-** [[PaRSEC-Trace-Tables-via-Python|How to use the Python PaRSEC Trace Tables interface]]
-** [[PaRSEC-on-Intel-Xeon-Phi-Native-Mode.wiki|How to run PaRSEC in Intel Xeon Phi (native mode)]]
+** [[PaRSEC Trace Tables via Pythonn|How to use the Python PaRSEC Trace Tables interface]]
+** [[PaRSEC on Intel Xeon Phi Native Mode.wiki|How to run PaRSEC in Intel Xeon Phi (native mode)]]
 ** [[VisualizationTools.wiki|Visualization: Stream algorithmic properties out of the PaRSEC runtime]]
 ** [[Using PaRSEC binding to bind computation and communication cores.md|Binding with MPI and PaRSEC]]
 * [[Migrating Legacy Applications to PaRSEC]]
