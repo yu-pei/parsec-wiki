@@ -82,7 +82,7 @@ will appear in the ``config.log``) by using the following form:
 
 .. code:: bash
 
-    configure CC=icc FC=ftn CXX=icpc -DPARSEC_EAGER_LIMIT=0
+    configure CC=icc FC=ifort CXX=icpc -DPARSEC_EAGER_LIMIT=0
 
 Plarform Files
 --------------
