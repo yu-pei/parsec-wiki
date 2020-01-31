@@ -4,6 +4,8 @@ Two moderated mailing-lists are available, one for the users and the other for t
 
 == How to Compile and Run DPLASMA ==
 
+We use DPLASMA as a demonstrator on how to compile PaRSEC and use it to compile PaRSEC enabled operations.
+
 * [[compileandrun|How to compile and run dplasma]] 
 * [[compileandrun-v1.x|obsolete version (v1.x)]]
 
