@@ -1,4 +1,20 @@
-== How to Write a PaRSEC-Enabled Operation by using the PaRSEC Compiler ==
+== THE INFORMATION ON THIS PAGE IS NOW OBSOLETE. ==
+
+The automatic conversion from affine loops to JDF has been deprecated (the **Q2J tool has been removed** from the PaRSEC project).
+
+As an alternative, you can:
+
+# Write a PTG representation of the algorithm in a JDF file directly.
+# Use the DTD DSL to express the algorithm as affine loops in the inspector-executor model.
+
+== Deprecated content follows ==
+
+
+
+----
+
+
+== How to Write a PaRSEC-Enabled Operation by using the PaRSEC Compiler (i.e., Q2J) ==
 
 See [[understanding|Understanding the Compilation process]] to get a big picture. 
 
@@ -14,4 +30,3 @@ If you didn't compile the compiler yet (it is an optional step, with additional 
 You should have a look at the generated JDF, maybe tune it, to add priorities, or change the data affinity. And then, proceed to the translation of the JDF into a C file, and a parsec opaque object. See the [[writejdf|Calling the JDF Translator]] section of How to Write a PaRSEC-Enabled Operation by editing the JDF file directly.
 
 === Compiling the PaRSEC Compiler ===
-
