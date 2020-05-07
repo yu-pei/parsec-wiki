@@ -33,7 +33,8 @@ We use DPLASMA as a demonstrator on how to compile PaRSEC and use it to compile 
 The PaRSEC / DPLASMA community has put together tutorials to explain how to use PaRSEC in a distributed heterogeneous setting, how to implement your own Domain Specific Language on top of PaRSEC, and how to improve the efficiency of your algorithms by using a dataflow-like task-based programming environment. These tutorials are targetted toward the user community, but potential developers of PaRSEC might find some interesting information as well. 
 [[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-1.pdf|Tutorial 1]] and [[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-2.pdf|Tutorial 2]].
 
-** [[presentations|Presentation @ CCDSC Lyon 2012]]
+** [[presentations|Presentations]]
+** [[pug|PaRSEC User Group Meetings]]
 
 == Extras ==
 
