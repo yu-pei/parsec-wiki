@@ -34,7 +34,8 @@ The PaRSEC / DPLASMA community has put together tutorials to explain how to use 
 [[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-1.pdf|Tutorial 1]] and [[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-2.pdf|Tutorial 2]].
 
 ** [[presentations|Presentations]]
-** [[pug|PaRSEC User Group Meetings]]
+
+== [[pug|PaRSEC User Group Meetings]] ==
 
 == Extras ==
 
