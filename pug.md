@@ -1,3 +1,10 @@
+### June 4 2020 ###
+1. The ParSEC schedulers
+    - How to select tasks that can be migrated
+1. Hardware specific optimization mechanisms for DPLASMA that depends on ParSEC JDF.\\
+    - autotuning
+1. Mechanism behind shared memory layout optimization in parsec - how are decisions made for NUMA aware handling of data?
+
 ### May 21 2020 ###
 
 **Topic**:  What is Modular Component Architecture (MCA) and how it applies to PaRSEC.
