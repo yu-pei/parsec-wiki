@@ -1,3 +1,11 @@
+### Future discussions
+1. How to create a DSL
+
+### June 18 2020 ###
+1. Task migration
+2. Task tracking
+3. [Visualization Tools](https://bitbucket.org/icldistcomp/parsec/wiki/VisualizationTools.wiki)
+
 ### June 4 2020 ###
 1. The ParSEC schedulers
     - How to select tasks that can be migrated
