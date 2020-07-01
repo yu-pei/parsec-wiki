@@ -3,3 +3,5 @@
 [2017 the big picture](https://bytebucket.org/icldistcomp/parsec/wiki/files/parsec_2017.pdf)
 
 [2017 PaRSEC tutorial](https://bytebucket.org/icldistcomp/parsec/wiki/files/parsec_tutorial_JLESC_2017.pdf)
+
+[2020 ECP PaRSEC tutorial](https://bytebucket.org/icldistcomp/parsec/wiki/files/PaRSEC Tutorial ECP 2020.pdf)
