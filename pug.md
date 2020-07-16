@@ -1,6 +1,11 @@
 ### Future discussions
 1. How to create a DSL
 
+### July 16 2020 ###
+1. What is prepare_input and how tasks inputs are manipulated in PTG ?
+1. How to correctly release a task ? (even when migrated)
+1. This is not a question but an outcome of the discussion: Can we clean the dependencies tracking before prepare_input ? The idea is that once a task is allocated (which means all input dependencies are available), we do not need the tracking support for the task anymore and we can eagerly release the hash_dep.
+
 ### June 18 2020 ###
 1. Task migration
 2. Task tracking
