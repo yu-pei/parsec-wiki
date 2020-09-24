@@ -1,6 +1,10 @@
 ### Future discussions
 1. How to create a DSL
 
+### September 24 2020 ###
+
+No agenda yet.
+
 ### September 10 2020 ###
 
 1. What is a gather control and how to use it.
