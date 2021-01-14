@@ -1,6 +1,11 @@
 ### Future discussions
 1. How to create a DSL
 
+### January 14 2021 ###
+Topics for discussions:
+1. How to allow variable size communications
+1. How to do task batching
+
 ### September 24 2020 ###
 
 No agenda yet.
