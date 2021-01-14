@@ -3,8 +3,11 @@
 
 ### January 14 2021 ###
 Topics for discussions:
+
 1. How to allow variable size communications
 1. How to do task batching
+
+Slides: [Local iterators in PTG](https://bytebucket.org/icldistcomp/parsec/wiki/files/pug011421_ptg_local_iterators.pdf)
 
 ### September 24 2020 ###
 
