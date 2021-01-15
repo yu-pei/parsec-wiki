@@ -9,6 +9,8 @@ Topics for discussions:
 
 Slides: [Local iterators in PTG](https://bytebucket.org/icldistcomp/parsec/wiki/files/pug011421_ptg_local_iterators.pdf)
 
+[Block sparse GEMM Repository](https://bitbucket.org/herault/irr-gemm-gpu-over-parsec/src/master/)
+
 ### September 24 2020 ###
 
 No agenda yet.
