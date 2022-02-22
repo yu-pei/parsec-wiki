@@ -1,6 +1,6 @@
 == How to Compile and Run DPLASMA ==
 
-Version 2.0, December 22, 2012, tested with on release 1.0 (from the public repository [[https://bitbucket.org/bosilca/parsec.public/commits/e0fef3754b8fffb2d6fe48c6670f22836fdbc47b]]).
+Version 2.0, December 22, 2012, tested with on release 1.0 (from the public repository [https://bitbucket.org/bosilca/parsec.public/commits/e0fef3754b8fffb2d6fe48c6670f22836fdbc47b]).
 
 === Tools Dependences ===
 

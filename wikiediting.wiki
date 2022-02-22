@@ -12,7 +12,7 @@ The wiki itself is actually a hg repository, which means you can clone it, edit 
 Go ahead and try:
 
 {{{
-$ hg clone http://bitbucket.org/bosilca/dplasma/wiki/
+$ git clone https://github.com/ICLDisco/parsec.wiki.git
 }}}
 
 Wiki pages are normal files, with the .wiki extension. You can edit them locally, as well as creating new ones.

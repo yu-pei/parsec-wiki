@@ -1,6 +1,6 @@
 == How to get more information on PaRSEC and/or DPLASMA ==
 
-Two moderated mailing-lists are available, one for the users and the other for the developers involved in the project. The user mailing list subscriptions are handled via [[https://groups.google.com/a/icl.utk.edu/d/forum/dplasma-users|the user mailing-list]], while the developers via [[https://groups.google.com/a/icl.utk.edu/d/forum/dplasma-devel|the developers mailing-list]]. Please feel free to join us.
+Two moderated mailing-lists are available, one for the users and the other for the developers involved in the project. The user mailing list subscriptions are handled via [https://groups.google.com/a/icl.utk.edu/d/forum/dplasma-users the user mailing-list], while the developers via [https://groups.google.com/a/icl.utk.edu/d/forum/dplasma-devel the developers mailing-list]. Please feel free to join us.
 
 == How to Compile and Run DPLASMA ==
 
@@ -19,31 +19,31 @@ We use DPLASMA as a demonstrator on how to compile PaRSEC and use it to compile 
 *** [[Profiling PaRSEC Applications with PAPI|Profiling PaRSEC Applications with PAPI]]
 ** [[PINS|How to write a PINS Module to instrument PaRSEC applications]]
 ** [[PaRSEC Trace Tables via Python|How to use the Python PaRSEC Trace Tables interface]]
-** [[PaRSEC on Intel Xeon Phi Native Mode.wiki|How to run PaRSEC in Intel Xeon Phi (native mode)]]
-** [[VisualizationTools.wiki|Visualization: Stream algorithmic properties out of the PaRSEC runtime]]
-** [[Using PaRSEC binding to bind computation and communication cores.md|Binding with MPI and PaRSEC]]
+** [[PaRSEC on Intel Xeon Phi Native Mode|How to run PaRSEC in Intel Xeon Phi (native mode)]]
+** [[VisualizationTools|Visualization: Stream algorithmic properties out of the PaRSEC runtime]]
+** [[Using PaRSEC binding to bind computation and communication cores|Binding with MPI and PaRSEC]]
 * [[Migrating Legacy Applications to PaRSEC]]
 
 == How to contribute to PaRSEC ==
 
- * [[Git Best Practices|Git Best Practices]]
- * [[Git tips to contribute to the project|Git basics to generate and review a pull request]]
+* [[Git Best Practices|Git Best Practices]]
+* [[Git tips to contribute to the project|Git basics to generate and review a pull request]]
 
 == Tutorials about PaRSEC / DPLASMA ==
 The PaRSEC / DPLASMA community has put together tutorials to explain how to use PaRSEC in a distributed heterogeneous setting, how to implement your own Domain Specific Language on top of PaRSEC, and how to improve the efficiency of your algorithms by using a dataflow-like task-based programming environment. These tutorials are targetted toward the user community, but potential developers of PaRSEC might find some interesting information as well. 
-[[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-1.pdf|Tutorial 1]] and [[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-2.pdf|Tutorial 2]].
+[http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-1.pdf Tutorial 1] and [http://icl.cs.utk.edu/projectsfiles/parsec/pubs/parsec-tutorial-2.pdf Tutorial 2].
 
-** [[presentations|Presentations]]
+* [[presentations|Presentations]]
 
 == [[pug|PaRSEC User Group Meetings]] ==
 
 == Extras ==
 
- * [[Status of HPL over PaRSEC|Memo on HPL over PaRSEC]]
- * [[Memory error detectors|Memory errors detectors]]
- * [[high level|A high level description of the PaRSEC runtime]]
- * [[https://bitbucket.org/icldistcomp/parsec/wiki/Collective%20Design|Memo on proposal for Collective Design]]
+* [[Status of HPL over PaRSEC|Memo on HPL over PaRSEC]]
+* [[Memory error detectors|Memory errors detectors]]
+* [[high level|A high level description of the PaRSEC runtime]]
+* [[Collective Design (WIP)|Memo on proposal for Collective Design]]
 
- ---- 
+ ----
 
 [[wikiediting|Hints on the wiki editing]] (the previous welcome page)

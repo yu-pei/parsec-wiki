@@ -1,7 +1,7 @@
 === Streaming data out of the runtime ===
 
 Starting from commit
-[[https://bitbucket.org/icldistcomp/parsec/commits/e14cc8332d05|e14cc8332d05]] PaRSEC gained the capability to automatically generate and export properties out of the Parameterized Task Graph algorithms. In addition, a python visualizer is available for online monitoring of PaRSEC activity.
+[https://bitbucket.org/icldistcomp/parsec/commits/e14cc8332d05|e14cc8332d05] PaRSEC gained the capability to automatically generate and export properties out of the Parameterized Task Graph algorithms. In addition, a python visualizer is available for online monitoring of PaRSEC activity.
 
  * Adds: property feature for PTG. Properties can be attached to a function in the PTG/JDF file
  * Adds: properties can return type: int32_t, int64_t, float, double. (int32_t is the default)
