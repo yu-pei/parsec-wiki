@@ -1,10 +1,10 @@
-# Parsec Migration from Bitbucket to Github
+## Parsec Migration from Bitbucket to Github
 
-# Fork PaRSEC on Github
+### Fork PaRSEC on Github
 
 Use the 'Fork' option to create a local fork for the repo on your own Github.
 
-## Changing your local copy
+### Changing your local copy
 
 Get the list of current remotes you have configured on your current local clone
 
@@ -46,7 +46,7 @@ git remote add origin git@github.com:icldisco/parsec.git
 git remote add mine   git@github.com:abouteiller/parsec.git
 ```
 
-## Copy your branches
+### Copy your branches
 
 You will need to copy your branches you still want to work on to your new Github Fork, so that you can use them as sources for PRs later
 
@@ -55,7 +55,7 @@ git checkout bbt-mine/topic/xyz
 git checkout push -vu mine
 ```
 
-## Create a PR that replicates your existing PR on Bitbucket, but this time on Github.
+### Create a PR that replicates your existing PR on Bitbucket, but this time on Github.
 
 Go to the Github interface. Your newly pushed branch will probably show as "new" and propose to make a PR. Do it. If not go into 'branches' in your local repo and create the PR from there instead. 
 
