@@ -1,6 +1,30 @@
 ### Future discussions
 1. How to create a DSL
 
+### March 10 2022 ###
+The main topic of discussion is the support for accelerators, how different types of tasks map onto them, and how the memory management is handled.
+
+Here is a more detailed list of topics:
+
+1. What is recursive in devices?
+2. If there are 2 GPUs, what is their naming scheme
+  - dev_0 – CPU
+  - dev_1 - recursive
+  - dev_2 - GPU1
+  - dev_3 - GPU2?
+3. How is memory allocated in GPU?
+  - Is 95% memory initially allocated and then managed separately using
+  - Zone_malloc_init()
+  - Zone_malloc()
+  - Is task->data[i].data_out used to hold the GPU data?
+4. Can we use CUDA occupancy for load calculation?
+  - NVIDIA Management Library (NVML)
+  - nvmlDeviceGetUtilizationRates()
+  - Are all tasks executed by a single CUDA thread?
+5. What do these signify in a CUDA body?
+  - `BODY [type=CUDA dyld=cublasDgemm dyldtype=cublas_dgemm_t weight=(1)]`
+
+
 ### January 14 2021 ###
 Topics for discussions:
 
