@@ -4,13 +4,13 @@ In many instances it might be interesting to extract and use information about t
 
 In case you are on a system with accelerators and you need to be able to extract profiling information from the execution of tasks on these accelerators you have to hand edit the src/gpu_data.c file and add the information you want to profile to the ```parsec_cuda_trackable_events``` variable. Here is a quick description of the available values:
 
-* PARSEC_PROFILE_CUDA_TRACK_EXEC show the task submission and retrieval time. This does not include the time required to move the data to and from the accelerator.
+* PARSEC_PROFILE_CUDA_TRACK_EXEC shows the task submission and retrieval time. This does not include the time required to move the data to and from the accelerator.
 
-* PARSEC_PROFILE_CUDA_TRACK_DATA_IN track the movement of data from the main memory to the accelerator memory. This operation can be skipped if the data is already available on the accelerator memory due to a previous operation.
+* PARSEC_PROFILE_CUDA_TRACK_DATA_IN tracks the movement of data from the main memory to the accelerator memory. This operation can be skipped if the data is already available on the accelerator memory due to a previous operation.
 
-* PARSEC_PROFILE_CUDA_TRACK_DATA_OUT track the data movement from the accelerator memory back to the main memory after the completion of a task. This operation can be delayed until the data is needed by a task that will execute on the CPU.
+* PARSEC_PROFILE_CUDA_TRACK_DATA_OUT tracks the data movement from the accelerator memory back to the main memory after the completion of a task. This operation can be delayed until the data is needed by a task that will execute on the CPU.
 
-* PARSEC_PROFILE_CUDA_TRACK_OWN show the threads that own the accelerator, in the sense that it will manage the tasks submission and data movements.
+* PARSEC_PROFILE_CUDA_TRACK_OWN shows the threads that own the accelerator, in the sense that it will manage the tasks submission and data movements.
 
 To generate the profiling trace output, python or cython is not a requirement (we can generate the binary trace data). But in order to convert that into HDF5 format data, your PaRSEC build environment should have Python3 loaded, and Cython loaded as well (on Saturn we can module load Python and py-cython). During CMake, make sure that your Python and Cython have been detected.
 
@@ -123,7 +123,7 @@ The picture below is the trace corresponding to the above mentioned execution as
 
 # Deep Exploration of the Profile for Network Events #
 
-It is sometimes necessary to connect network events to task events, and track the data flow inside the profiling to measure distributed timings. For example, if one want to compute the average time it takes for a data to be produced on one node and consumed on another, one need to connect the task termination, network activation and payload emission, and remote task execution events.
+It is sometimes necessary to connect network events to task events, and track the data flow inside the profiling to measure distributed timings. For example, if one wants to compute the average time it takes for a data to be produced on one node and consumed on another, one needs to connect the task termination, network activation and payload emission, and remote task execution events.
 
 It is possible to achieve this using the profiling information complemented by the DAG Graphing information. We recommend that the DAG graphing generation is executed in a separate run, if possible (i.e. if the DAG is deterministic), in order to reduce the overheads due to instrumentation on the profiled run. To generate the DAG graphing information, compile with the option ```PARSEC_PROF_GRAPH``` ```ON```, and pass the argument ```-. <dot-filename>``` to the PaRSEC command line. For example:
 
@@ -142,7 +142,7 @@ potrf_dpotrf_4_0 [pencolor="#589AB7",shape="ellipse",style=filled,fillcolor="#AB
 potrf_dpotrf_4_0 -> potrf_dtrsm_4_0_2 [label="T=>T" color="#00FF00" style="solid"];
 ```
 
-It contain nodes as well as edges here. For example, the tpid=4, tcid=0, tid=0 represents potrf_dpotrf task when k is 0. And the second entry indicates that there's an edge between the potrf(0) task and a trsm(0, 2) task. We will use them to connect events in the HDF5 file. (we can merge multiple dot files into 1 file using the parsec-dotmerger tool in the install/bin directory
+It contains nodes as well as edges here. For example, the tpid=4, tcid=0, tid=0 represents potrf_dpotrf task when k is 0. And the second entry indicates that there's an edge between the potrf(0) task and a trsm(0, 2) task. We will use them to connect events in the HDF5 file. (we can merge multiple dot files into 1 file using the parsec-dotmerger tool in the install/bin directory
 
 ```
 parsec-dotmerger dpotrf-0.dot dpotrf-1.dot >> merged.dot
