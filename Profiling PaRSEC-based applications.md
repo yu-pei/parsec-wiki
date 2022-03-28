@@ -12,7 +12,14 @@ In case you are on a system with accelerators and you need to be able to extract
 
 * PARSEC_PROFILE_CUDA_TRACK_OWN shows the threads that own the accelerator, in the sense that it will manage the tasks submission and data movements.
 
-To generate the profiling trace output, python or cython is not a requirement (we can generate the binary trace data). But in order to convert that into HDF5 format data, your PaRSEC build environment should have Python3 loaded, and Cython loaded as well (on Saturn we can module load Python and py-cython). During CMake, make sure that your Python and Cython have been detected.
+To generate the profiling trace output, python or cython is not a requirement (we can generate the binary trace data). But in order to convert that into HDF5 format data, your PaRSEC build environment should have Python3 loaded, and Cython loaded as well. During CMake, make sure that your Python and Cython have been detected. On saturn/methane, the following series of module loads should work:
+
+```
+module load python
+module load py-cython
+module load py-tables # python will import from this later
+module load py-pandas # python will import from this later
+```
 
 Using DPLASMA as test application on PaRSEC, the cmake/build command can look like this:
 
@@ -60,20 +67,22 @@ These files follow an internal binary format that contains realtime timestamps i
 
 First, check that python is supported by your PaRSEC compilation from the output of CMake. It should not complain about python or cython not working. If it does, you need to upgrade your python / cython installation.
 
-Second, load tools/profiling/python/utilities/bash.env (or fish.env if you use fish) in your shell environment to define the appropriate PYTHONPATH
+Second, load `nstall/bin/parsec.env.sh` (or fish.env if you use fish) in your shell environment to define the appropriate PYTHONPATH
 
-(Update: To be able to convert the obtained trace output to something we can analyze in Python, we need to call the profile2h5 in the install/bin folder. But first we need to set our python environment properly so that we have all the PYTHONPATH. This can be achieved via loading the parsec.env.sh environment filed generated in the install/bin folder. The profile2h5 file depends on several Python modules (numpy, pandas, and tables/pytables) they can be installed via pip install or conda.)
-
-```
-#!shell
-. tools/profiling/python/utilities/bash.env
-```
-
-Then, convert the profile files in the HDF5 file with the python script tools/profiling/python/profile2h5:
+(Note: if you did not load the python package modules from above (or they didn't work for some reason), then we need to set our python environment properly so that we have all the PYTHONPATH. This can be achieved via loading the `parsec.env.sh` environment file generated in the `install/bin` folder. The profile2h5 file depends on several Python modules (numpy, pandas, and tables/pytables) they can be installed via pip install or conda.)
 
 ```
 #!shell
-> python2.7 tools/profiling/python/profile2h5 demo-0.prof-6NdC2R demo-1.prof-6NdC2R 
+. install/bin/parsec.env.sh
+```
+
+Then, convert the profile files to the HDF5 file with the python script `install/libexec/parsec/profile2h5.py`.
+There is also a symlink called `profile2h5` in the `install/bin` folder:
+
+
+```
+#!shell
+> python install/libexec/parsec/profile2h5 demo-0.prof-6NdC2R demo-1.prof-6NdC2R 
 Processing ['demo-0.prof-6NdC2R', 'demo-1.prof-6NdC2R']
 Generated: ./demo-hostname--4-3000-180-lfq-6NdC2R.h5
 >
@@ -81,10 +90,10 @@ Generated: ./demo-hostname--4-3000-180-lfq-6NdC2R.h5
 
 The generated file name features the hostname, some information about the run, and a random number. It is an HDF5 file that you can process with the tool of your choice. Pandas / NUMPY are excellent tools to handle this data.
 
-Visual traces can be obtained with the tools/profiling/python/h5totrace.py: In its simplest call, one can simply issue:
+Visual traces can be obtained with the `install/libexec/parsec/h5totrace.py`: In its simplest call, one can simply issue:
 ```
 #!shell
->  python2.7 tools/profiling/python/h5totrace.py --h5 demo-hostname-4-3000-180-lfq-6NdC2R.h5 --out demo.trace
+>  python install/libexec/parsec/h5totrace.py --h5 demo-hostname-4-3000-180-lfq-6NdC2R.h5 --out demo.trace
 Closing remaining open files:demo-hostname-4-3000-180-lfq-6NdC2R.h5...done
 ```
 
