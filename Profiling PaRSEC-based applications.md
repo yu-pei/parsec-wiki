@@ -12,6 +12,8 @@ In case you are on a system with accelerators and you need to be able to extract
 
 * PARSEC_PROFILE_CUDA_TRACK_OWN shows the threads that own the accelerator, in the sense that it will manage the tasks submission and data movements.
 
+## Setup ##
+
 To generate the profiling trace output, python or cython is not a requirement (we can generate the binary trace data). But in order to convert that into HDF5 format data, your PaRSEC build environment should have Python3 loaded, and Cython loaded as well. During CMake, make sure that your Python and Cython have been detected. On saturn/methane, the following series of module loads should work:
 
 ```
@@ -29,6 +31,8 @@ Using DPLASMA as test application on PaRSEC, the cmake/build command can look li
 cmake ../ -DDPLASMA_PRECISIONS=d -DCMAKE_INSTALL_PREFIX=./install -DPARSEC_PROF_TRACE=ON make -j 4 install
 
 ```
+
+## Generating Traces ##
 
 Once the desired options have been set, a complete rebuild of the software is necessary. You're now ready to use the profiling. Let's suppose you want to profile the ```dplasma/testing/testing_dpotrf``` test in a heterogeneous distributed environment. I'll take a small example so I will limit the number of processes to 2, the number of cores per process to 2 as well, the size of a tile to 200 and the size of the matrix to 4000. The command will look similar to the following:
 
@@ -64,6 +68,8 @@ These files follow an internal binary format that contains realtime timestamps i
 
 * directly convert from profile to PAJe [(external website)](http://paje.sourceforge.net/) / VITE [(external website)](http://vite.gforge.inria.fr/) traces using the dbp2paje converter in tools/profiling. This method is obsolete and is not recommended anymore
 * convert the profile files to HDF5 files, and use python tools to analyze and convert this portable trace on other machines. This requires python and cython to work on the target machine, and is explained in more details below:
+
+## Processing ##
 
 First, check that python is supported by your PaRSEC compilation from the output of CMake. It should not complain about python or cython not working. If it does, you need to upgrade your python / cython installation.
 
@@ -129,6 +135,19 @@ The traces information is stored in this H5 file, there are many different event
 The picture below is the trace corresponding to the above mentioned execution as showed using [Vite](http://vite.gforge.inria.fr/). Don't worry a normal trace will look much better, in this trace I kept the MPI event support, but removed the MPI events and threads. 
 
 ![Vite Trace](files/dpotrf.trace.png)
+
+## Performance ##
+
+The PaRSEC Tracing should not subtract much from performance. You should expect at least 90% performance.
+If you are noticing less than this on a networked system, it might be because you are sending the large
+output file over a Network File System. On ICL Systems, the `\tmp` directory is not on this networked
+file system that your home directoy is on. You should write the trace file there and copy it to wherever
+you wish afterwards. Consider this line, instead, in your `~.parsec/mca-params.conf`
+
+```
+profile_filename=/tmp/test_profile_output
+```
+
 
 # Deep Exploration of the Profile for Network Events #
 
