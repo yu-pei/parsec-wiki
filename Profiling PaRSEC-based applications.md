@@ -145,7 +145,7 @@ file system that your home directoy is on. You should write the trace file there
 you wish afterwards. Consider this line, instead, in your `~.parsec/mca-params.conf`
 
 ```
-profile_filename=\tmp\test_profile_output
+profile_filename=/tmp/test_profile_output
 ```
 
 
